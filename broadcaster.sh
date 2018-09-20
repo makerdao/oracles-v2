@@ -8,8 +8,9 @@ declare -a assets=("eth" "mkr" "rep" "poly")
 getPriceFromSource () {
 	local _asset=$1
 	local _source=$2
-	local _price=$(timeout 5 setzer price "$_asset"-"$_source" 2> /dev/null)
-	echo "$_source = $_price" >&2
+	local _price
+	_price=$(timeout 5 setzer price "$_asset"-"$_source" 2> /dev/null)
+	printf "\\t%s = %s\\n" "$_source" "$_price"
 	if [[ $_price =~ ^[+-]?[0-9]+\.?[0-9]*$  ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
@@ -35,7 +36,8 @@ getMedian () {
 
 #get id of scuttlebot peer
 getFeedId () {
-	local _id=$(/home/nkunkel/scuttlebot/bin.js whoami | jq '.id')
+	local _id
+	_id=$(/home/nkunkel/scuttlebot/bin.js whoami | jq '.id')
 	sed -e 's/^"//' -e 's/"$//' <<<"$_id"
 }
 
@@ -47,7 +49,8 @@ pullLatestFeedMsg () {
 
 pullPreviousFeedMsg () {
     #trim quotes from prev key
-    local _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
+    local _prev
+    _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
     /home/nkunkel/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, time: .timestamp, previous: .previous, type: .content.type, price: .content.median}'
 }
 
@@ -56,8 +59,9 @@ pullLatestFeedMsgType () {
 	local _feed=$1
 	local _asset=$2
     local _counter=0
+    local _msg
     #get latest message from feed
-    local _msg=$( pullLatestFeedMsg "$_feed" )
+    _msg=$( pullLatestFeedMsg "$_feed" )
     #if message does not contain a price, get the previous message until we find one that does
     while (( _counter < 10 )) && [[ $(isAssetType "$_asset" "$_msg") == "false" ]]; do
         #clear previous key
@@ -84,32 +88,36 @@ timestamp () {
 #is message expired
 isExpired () {
 	local _msg="$1"
-	local curTime=$(timestamp)
-	local expiryTime=$(( curTime - EXPIRYINTERVAL ))
-	[ $(echo "$_msg" | jq '.time') -lt "$expiryTime" ] && echo "Previous price is expired" >&2 && echo true || echo false
+	local _curTime
+	_curTime=$(timestamp)
+	local expiryTime=$(( _curTime - EXPIRYINTERVAL ))
+	[ "$(echo "$_msg" | jq '.time')" -lt "$expiryTime" ] && echo "Previous price is expired" >&2 && echo true || echo false
 }
 
 #is message of type asset
 isAssetType () {
 	local _assetType="$1"
 	local _msg="$2"
-	[ $(echo "$_msg" | jq --arg _assetType "$_assetType" '.type == $_assetType') == "true" ] && echo true || echo false
+	[ "$(echo "$_msg" | jq --arg _assetType "$_assetType" '.type == $_assetType')" == "true" ] && echo true || echo false
 }
 
 #is price significantly different from previous price
 isPriceStale () {
 	local _msg=$1
 	local _newPrice="$2"
-	local _oldPrice=$(echo "$_msg" | jq '.price')
-	local _spread=$(setzer spread "$_oldPrice" "$_newPrice")
-	echo "Old Price = $_oldPrice vs New Price = $_newPrice -> spread = $_spread" >&2
+	local _oldPrice
+	local _spread
+	_oldPrice=$(echo "$_msg" | jq '.price')
+	_spread=$(setzer spread "$_oldPrice" "$_newPrice")
+	#echo "Old Price = $_oldPrice vs New Price = $_newPrice -> spread = $_spread" >&2
+	printf "\\tOld Price = %s\\n\\tNew Price = %s\\n-> spread = %s\\n" "$_oldPrice" "$_newPrice" "$_spread" >&2
 	test=$(bc <<< "${_spread#-} >= ${MAXSPREAD}")
 	[[ ${test} -ne 0 ]] && echo true || echo false
 }
 
 #sign message - this is just a placeholder
 signMessage () {
-    echo -n $1 $2 $3 $4 $5| sha256sum
+    echo -n "$1" "$2" "$3" "$4" "$5" | sha256sum
 }
 
 #init/clear price and source data
@@ -124,27 +132,27 @@ broadcastPrices () {
 	local _time="$2"
 	local _median="$3"
 	cmd="/home/nkunkel/scuttlebot/bin.js publish --type $_assetType --time $_time --median $_median"
-	[[ ${#validSources[@]} != ${#validPrices[@]} ]] && exit 1
+	[[ "${#validSources[@]}" != "${#validPrices[@]}" ]] && echo "error: number of sources doesn't match number of prices" && exit 1
 	for index in ${!validSources[*]}; do
 		cmd+=" --${validSources[index]} ${validPrices[index]}"
 	done
-	eval $cmd
+	eval "$cmd"
 }
 
 #publish new price messages for all assets
 execute () {
 	for asset in "${assets[@]}"; do
-		printf "\nQuerying %s prices...\n" "${asset^^}"
+		printf "\\nQuerying %s prices...\\n" "${asset^^}"
 		initStorage 
 		readSources "$asset"
-		median=$(getMedian ${validPrices[@]})
+		median=$(getMedian "${validPrices[@]}")
 		echo "-> median = $median" >&2
 		time=$(timestamp)
 		feed=$(getFeedId)
 		latestMsg=$(pullLatestFeedMsgType "$feed" "$asset")
-		if [ -z "${latestMsg}" ] || [ $(isAssetType "$asset" "$latestMsg") == "false" ] || [ $(isExpired "$latestMsg") == "true" ] || [ $(isPriceStale "$latestMsg" "$median") == "true" ]; then
+		if [ -z "${latestMsg}" ] || [ "$(isAssetType "$asset" "$latestMsg")" == "false" ] || [ "$(isExpired "$latestMsg")" == "true" ] || [ "$(isPriceStale "$latestMsg" "$median")" == "true" ]; then
 			echo "Submitting new price message..."
-			broadcastPrices $asset $time $median ${validSources[@]} ${validPrices[@]}
+			broadcastPrices "$asset" "$time" "$median" "${validSources[@]}" "${validPrices[@]}"
 		fi
 	done
 }
