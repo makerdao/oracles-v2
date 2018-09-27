@@ -8,7 +8,7 @@ getPriceFromSource () {
 	local _source=$2
 	local _price
 	_price=$(timeout 5 setzer price "$_asset"-"$_source" 2> /dev/null)
-	printf "\\t%s = %s\\n" "$_source" "$_price" >&2
+	verbose "$_source = $_price"
 	if [[ $_price =~ ^[+-]?[0-9]+\.?[0-9]*$  ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
@@ -60,6 +60,7 @@ pullLatestFeedMsgType () {
     local _msg
     #get latest message from feed
     _msg=$( pullLatestFeedMsg "$_feed" )
+    verbose "latest message = $_msg"
     #if message does not contain a price, get the previous message until we find one that does
     while (( _counter < 10 )) && [[ $(isAssetType "$_asset" "$_msg") == "false" ]]; do
         #clear previous key
@@ -72,6 +73,7 @@ pullLatestFeedMsgType () {
         [[ $_key == "null" ]] && break
         #grab previous message
         _msg=$( pullPreviousFeedMsg "$_key" )
+        verbose "previous message = $_msg"
         #increment message counter
         _counter=$(( _counter + 1 ))
     done
@@ -83,18 +85,9 @@ timestamp () {
     date +"%s%3N"
 }
 
-#is the message expired
-#note that this uses the timestamp on the message itself (which is in ms),
-#and NOT the timestamp within the message content (which is in s).
-
-isExpired () {
-	local _msg="$1"
-	local _curTime
-	local _lastTime
-	_curTime=$(timestamp)
-	_lastTime="$(echo "$_msg" | jq '.time')"
-	local _expiryTime=$(( _curTime - OMNIA_EXPIRY_INTERVAL_MS ))
-	[ "$_lastTime" -lt "$_expiryTime" ] && printf "Previous price posted at t = %.10s is expired by %s seconds\\n" "$_lastTime" "$(( (_curTime - _lastTime - OMNIA_EXPIRY_INTERVAL_MS) / 1000))" >&2 && echo true || echo false
+#is message empty
+isEmpty () {
+	[ -z "$1" ] && verbose "Cannot find recent message for asset $asset" && echo true || echo false
 }
 
 #is message of type asset
@@ -102,6 +95,20 @@ isAssetType () {
 	local _assetType="$1"
 	local _msg="$2"
 	[ "$(echo "$_msg" | jq --arg _assetType "$_assetType" '.type == $_assetType')" == "true" ] && echo true || echo false
+}
+
+#is message expired
+#note that this uses the timestamp on the message itself (which is in ms),
+#and NOT the timestamp within the message content (which is in s).
+isExpired () {
+	local _msg="$1"
+	local _curTime
+	local _lastTime
+	_curTime=$(timestamp)
+	_lastTime="$(echo "$_msg" | jq '.time')"
+	local _expiryTime=$(( _curTime - OMNIA_EXPIRY_INTERVAL_MS ))
+	local _expirationDif=$(( (_curTime - _lastTime - OMNIA_EXPIRY_INTERVAL_MS) / 1000))
+	[ "$_lastTime" -lt "$_expiryTime" ] && log "Previous price posted at t = $(( _lastTime / 1000 )) is expired by $_expirationDif seconds" && echo true || echo false
 }
 
 #is price significantly different from previous price
@@ -112,9 +119,10 @@ isPriceStale () {
 	local _spread
 	_oldPrice=$(echo "$_msg" | jq '.price')
 	_spread=$(setzer spread "$_oldPrice" "$_newPrice")
-	printf "\\tOld Price = %s\\n\\tNew Price = %s\\n-> spread = %s\\n" "$_oldPrice" "$_newPrice" "$_spread" >&2
+	log "Old Price = ${_oldPrice}   New Price = ${_newPrice}"
+	log "-> spread = $_spread"
 	test=$(bc <<< "${_spread#-} >= ${OMNIA_SPREAD}")
-	[[ ${test} -ne 0 ]] && printf "Spread is greater than %s\\n" "${OMNIA_SPREAD}" >&2 && echo true || echo false
+	[[ ${test} -ne 0 ]] && log "Spread is greater than ${OMNIA_SPREAD}" && echo true || echo false
 }
 
 #convert price to hex
@@ -147,6 +155,7 @@ signMessage () {
 	for arg in "$@"; do
 		_data+="$arg"
 	done
+	verbose "Signing message..."
     ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
 }
 
@@ -166,32 +175,31 @@ broadcastPrices () {
 	local _hash="$6"
 	local _sig="$7"
 	cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --median $_median --0xmedian $_medianHex --time $_time --0xtime $_timeHex --hash $_hash --signature $_sig"
-	[[ "${#validSources[@]}" != "${#validPrices[@]}" ]] && echo "error: number of sources doesn't match number of prices" && exit 1
+	[[ "${#validSources[@]}" != "${#validPrices[@]}" ]] && error "Error: number of sources doesn't match number of prices" && exit 1
 	for index in ${!validSources[*]}; do
 		cmd+=" --${validSources[index]} ${validPrices[index]}"
 	done
-	echo "$cmd" >&2
-	eval "$cmd" >&2
+	log "Submitting new price message..."
+	verbose "$cmd"
+	verbose "$(eval "$cmd")"
 }
 
 #publish new price messages for all assets
 execute () {
 	for asset in "${assets[@]}"; do
 		initStorage
-		verbose "Querying ${asset^^} prices..."
+		log "Querying ${asset^^} prices..."
 		readSources "$asset"
 		median=$(getMedian "${validPrices[@]}")
-		echo "-> median = $median" >&2
-		feed=$FEED_ID
-		latestMsg=$(pullLatestFeedMsgType "$feed" "$asset")
-		if [ -z "${latestMsg}" ] || [ "$(isAssetType "$asset" "$latestMsg")" == "false" ] || [ "$(isExpired "$latestMsg")" == "true" ] || [ "$(isPriceStale "$latestMsg" "$median")" == "true" ]; then
+		verbose "-> median = $median"
+		latestMsg=$(pullLatestFeedMsgType "$SCUTTLEBOT_FEED_ID" "$asset")
+		if [ "$(isEmpty "$latestMsg")" == "true" ] || [ "$(isAssetType "$asset" "$latestMsg")" == "false" ] || [ "$(isExpired "$latestMsg")" == "true" ] || [ "$(isPriceStale "$latestMsg" "$median")" == "true" ]; then
 			time=$(date +%s)
 			timeHex=$(time2Hex "$time")
 			medianHex=$(price2Hex "$median")
 			hash=$(keccak256Hash "$medianHex" "$timeHex")
 			sig=$(signMessage "$hash")
-			printf "\\n-> Message Signature = %s\\n" "$sig" >&2
-			printf "\\nSubmitting new price message...\\n" >&2
+			verbose "-> Message Signature = $sig"
 			broadcastPrices "$asset" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
 		fi
 	done
@@ -202,7 +210,7 @@ initEnv () {
 	if [[ -e $HOME/omnia.conf ]]; then
   		# shellcheck source=/dev/null
   		. "$HOME/omnia.conf"
-  		verbose "Imported configuration from /etc/omnia.conf"
+  		verbose "Imported configuration from $HOME/omnia.conf"
 	fi
 
 	# Local configuration (via -C or --config)
@@ -224,7 +232,7 @@ initEnv () {
 
 	#Set default configuration if none found
 	[[ $OMNIA_SPREAD ]] || export OMNIA_SPREAD=2
-	[[ $OMNIA_EXPIRY_INTERVAL ]] || export OMNIA_EXPIRY_INTERVAL_MS=600000
+	[[ $OMNIA_EXPIRY_INTERVAL_MS ]] || export OMNIA_EXPIRY_INTERVAL_MS=600000
 	[[ $OMNIA_INTERVAL_SECONDS ]] || export OMNIA_INTERVAL_SECONDS=60
 
 	echo ""
@@ -243,11 +251,15 @@ initEnv () {
 }
 
 function log {
-  echo "[$(date "+%D %T")] $1"
+ 	echo "[$(date "+%D %T")] $1" >&2
 }
 
 function verbose {
-  [[ $OMNIA_VERBOSE ]] && echo "[$(date "+%D %T")] [V] $1" >&2
+ 	[[ $OMNIA_VERBOSE ]] && echo "[$(date "+%D %T")] [V] $1" >&2
+}
+
+function error {
+	echo "[$(date "+%D %T")] [E] $1" >&2
 }
 
 auto () {
