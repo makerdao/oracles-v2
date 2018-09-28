@@ -174,7 +174,7 @@ broadcastPrices () {
 	local _timeHex="$5"
 	local _hash="$6"
 	local _sig="$7"
-	cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --median $_median --0xmedian $_medianHex --time $_time --0xtime $_timeHex --hash $_hash --signature $_sig"
+	cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --median $_median --0xmedian $_medianHex --time $_time --0xtime $_timeHex --hash ${_hash:2} --signature ${_sig:2}"
 	[[ "${#validSources[@]}" != "${#validPrices[@]}" ]] && error "Error: number of sources doesn't match number of prices" && exit 1
 	for index in ${!validSources[*]}; do
 		cmd+=" --${validSources[index]} ${validPrices[index]}"
