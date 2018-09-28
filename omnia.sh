@@ -81,8 +81,13 @@ pullLatestFeedMsgType () {
 }
 
 #get unix timestamp in ms
-timestamp () {
+timestampMs () {
     date +"%s%3N"
+}
+
+#get unix timestamp in s
+timestampS () {
+	date +"%s"
 }
 
 #is message empty
@@ -104,7 +109,7 @@ isExpired () {
 	local _msg="$1"
 	local _curTime
 	local _lastTime
-	_curTime=$(timestamp)
+	_curTime=$(timestampMs)
 	_lastTime="$(echo "$_msg" | jq '.time')"
 	local _expiryTime=$(( _curTime - OMNIA_EXPIRY_INTERVAL_MS ))
 	local _expirationDif=$(( (_curTime - _lastTime - OMNIA_EXPIRY_INTERVAL_MS) / 1000))
@@ -174,7 +179,7 @@ broadcastPrices () {
 	local _timeHex="$5"
 	local _hash="$6"
 	local _sig="$7"
-	cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --median $_median --0xmedian $_medianHex --time $_time --0xtime $_timeHex --hash ${_hash:2} --signature ${_sig:2}"
+	cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --version $OMNIA_VERSION --median $_median --0xmedian $_medianHex --time $_time --0xtime $_timeHex --hash ${_hash:2} --signature ${_sig:2}"
 	[[ "${#validSources[@]}" != "${#validPrices[@]}" ]] && error "Error: number of sources doesn't match number of prices" && exit 1
 	for index in ${!validSources[*]}; do
 		cmd+=" --${validSources[index]} ${validPrices[index]}"
@@ -194,7 +199,7 @@ execute () {
 		verbose "-> median = $median"
 		latestMsg=$(pullLatestFeedMsgType "$SCUTTLEBOT_FEED_ID" "$asset")
 		if [ "$(isEmpty "$latestMsg")" == "true" ] || [ "$(isAssetType "$asset" "$latestMsg")" == "false" ] || [ "$(isExpired "$latestMsg")" == "true" ] || [ "$(isPriceStale "$latestMsg" "$median")" == "true" ]; then
-			time=$(date +%s)
+			time=$(timestampS)
 			timeHex=$(time2Hex "$time")
 			medianHex=$(price2Hex "$median")
 			hash=$(keccak256Hash "$medianHex" "$timeHex")
@@ -206,6 +211,8 @@ execute () {
 }
 
 initEnv () {
+	OMNIA_VERSION="0.7.0"
+
 	# Global configuration
 	if [[ -e $HOME/omnia.conf ]]; then
   		# shellcheck source=/dev/null
@@ -238,6 +245,7 @@ initEnv () {
 	echo ""
 	echo "--------- STARTING OMNIA ---------"
   	echo "Bot started $(date)"
+  	echo "Omnia Version:               V$OMNIA_VERSION"
 	echo "Ethereum account:            $ETH_FROM"
 	echo "Feed address:                $SCUTTLEBOT_FEED_ID"
 	echo ""
