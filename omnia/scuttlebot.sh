@@ -7,6 +7,17 @@ getFeedId () {
 	sed -e 's/^"//' -e 's/"$//' <<<"$_id"
 }
 
+pullMessages () {
+    #this would is used for pulling all messages from all feeds with in-bounds timestamp
+    #returns an array of objects containg only relevant info
+    #breaks up that array into nested subarrays by feed
+    local _type=$1
+    local _after=$2
+    local _limit=$3
+    #TODO pass args into jq
+    "$HOME"/scuttlebot/bin.js logt --type "$_type" | jq -S 'select(.value.content.time >= 1536082440) | {author: .value.author, time: .value.timestamp, price: .value.content.median}' | jq -s 'group_by(.author)'
+}
+
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
@@ -21,7 +32,7 @@ pullPreviousFeedMsg () {
     "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, time: .timestamp, previous: .previous, type: .content.type, price: .content.median}'
 }
 
-#pull latest price message from feed
+#pull latest message of type _ from feed
 pullLatestFeedMsgOfType () {
 	local _feed=$1
 	local _asset=$2
