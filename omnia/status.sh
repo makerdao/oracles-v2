@@ -29,7 +29,7 @@ isMsgExpired () {
 	local _curTime
 	local _lastTime
 	_curTime=$(timestampS)
-	_lastTime=$(( "$(echo "$_msg" | jq '.time')" / 1000 ))
+	_lastTime=$(( $(echo "$_msg" | jq '.time') / 1000 ))
 	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_MSG_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
 }
 
@@ -61,7 +61,7 @@ isMsgStale () {
 	local _newPrice="$2"
 	local _oldPrice
 	_oldPrice=$(echo "$_oldPriceMsg" | jq '.price')
-	[ "$(isPriceStale "$_oldPrice" "$_newPrice" "$OMNIA_MSG_SPREAD")" == "true" ] && echo true || echo false
+	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_MSG_SPREAD")" == "true" ] && echo true || echo false
 }
 
 #is spread between existing Oracle price larger than spread limit
@@ -69,7 +69,7 @@ isOracleStale () {
 	local _newPrice="$1"
 	local _oldPrice
 	_oldPrice=$(pullOraclePrice)
-	[ "$(isPriceStale "$_oldPrice" "$_newPrice" "$OMNIA_ORACLE_SPREAD")" == "true" ] && echo true || echo false
+	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_ORACLE_SPREAD")" == "true" ] && echo true || echo false
 }
 
 #are there enough feed messages to establish quorum
