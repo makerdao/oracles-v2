@@ -13,7 +13,6 @@ extractPrices () {
     for msg in "${_msgs[@]}"; do
        _prices+=("$(echo "$msg" | jq '.price')")
     done
-    verbose _prices
     echo "${_prices[@]}"
 }
 

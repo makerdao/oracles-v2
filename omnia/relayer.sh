@@ -12,9 +12,9 @@ pullLatestPricesOfAsset () {
 
         #DEBUG
         verbose "$_asset price msg from feed ($feed) = $priceEntry"
-        [ -n "${priceEntry}" ] && verbose "price msg contains data" || error "Error: price msg is empty, skipping..."
-        [ "$(isMsgExpired "$priceEntry")" == "true" ] && error "Error: price timestamp is expired, skipping..." || verbose "price timestamp is valid"
-        [ "$(isAsset "$_asset" "$priceEntry")" == "true" ] && verbose "message is of type $_asset" || error "Error: Could not find recent message of type $_asset, skipping..."
+        [ -n "${priceEntry}" ] && ( verbose "price msg contains data" || error "Error: price msg is empty, skipping..." )
+        [ "$(isMsgExpired "$priceEntry")" == "true" ] && ( error "Error: price timestamp is expired, skipping..." || verbose "price timestamp is valid" ) 
+        [ "$(isAsset "$_asset" "$priceEntry")" == "true" ] && ( verbose "message is of type $_asset" || error "Error: Could not find recent message of type $_asset, skipping..." )
 
         #verify price msg is valid and not expired
         if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$priceEntry")" == "false" ] && [ "$(isAsset "$_asset" "$priceEntry")" == "true" ]; then
@@ -25,7 +25,6 @@ pullLatestPricesOfAsset () {
             verbose "Current price catalogue = ${entries[*]}"
         fi
     done
-    printf 'Final Price Catalogue = %s\n' "${entries[@]}"
 }
 
 #consider renaming to pushNewOraclePrice
@@ -43,14 +42,20 @@ updateOracle () {
             echo entry: "$entry"
         done
 
-        [ "$(isQuorum "${entries[@]}")" == "false" ] && return
+        [ "$(isQuorum "$asset" "${#entries[@]}")" == "false" ] && log "Not enough feeds (${#entries[@]}) to reach quorum" && continue
         _prices=$(extractPrices "${entries[@]}")
         #DEBUG
-        echo "Debug:"
-        echo "${_prices[@]}"
+        echo "Prices = ${_prices[*]}"
+
         _median=$(getMedian "${_prices[@]}")
         log "median = $_median"
-        if [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$  && ( "$(isOracleStale "$_median")" == "true" || "$(isOracleExpired)" == "true" ) ]]; then
+
+        #DEBUG
+        [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$ ]] && verbose "Median is valid" || error "median is invalid"
+        [[ "$(isOracleStale "$asset" "$_median")" == "true" ]] && verbose "oracle price is stale" || verbose "oracle price is fresh"
+        [[ "$(isOracleExpired "$asset" )" == "true" ]] && verbose "Oracle price is expired" || verbose "Oracle price is recent"
+
+        if [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$  && ( "$(isOracleStale "$asset" "$_median")" == "true" || "$(isOracleExpired "$asset")" == "true" ) ]]; then
             local allPrices=()
             local allT=()
             local allR=()
@@ -85,7 +90,7 @@ pushNewOraclePrice () {
     #get gas price from eth gas station
     
     verbose "Sending tx..."
-    seth send $
+    #seth send $
 }
 
 #NOTES

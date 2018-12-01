@@ -35,10 +35,11 @@ isMsgExpired () {
 
 #is last price update to Oracle expired
 isOracleExpired () {
+	local _asset="$1"
 	local _curTime
 	local _lastTime
 	_curTime=$(timestampS)
-	_lastTime=$(pullOracleTime)
+	_lastTime=$(pullOracleTime "$_asset")
 	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_ORACLE_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
 }
 
@@ -52,6 +53,10 @@ isStale () {
 	log "Old Price = ${_oldPrice}   New Price = ${_newPrice}"
 	log "-> spread = $_spread"
 	test=$(bc <<< "${_spread#-} >= ${_spreadLimit}")
+	#DEBUG
+	verbose "spread = ${_spread#-}"
+	verbose "spread limit = ${_spreadLimit}"
+
 	[[ ${test} -ne 0 ]] && log "Spread is greater than ${_spreadLimit}" && echo true || echo false
 }
 
@@ -66,26 +71,30 @@ isMsgStale () {
 
 #is spread between existing Oracle price larger than spread limit
 isOracleStale () {
-	local _newPrice="$1"
+	local _asset="$1"
+	local _newPrice="$2"
 	local _oldPrice
-	_oldPrice=$(pullOraclePrice)
+	_oldPrice=$(pullOraclePrice "$_asset")
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_ORACLE_SPREAD")" == "true" ] && echo true || echo false
 }
 
 #are there enough feed messages to establish quorum
 isQuorum () {
-	local _msgs=( "$@" )
-	local numMsgs=${#_msgs[@]}
-	local quorum
-	#get min number of feeds from Oracle contract
+	local _asset="$1"
+	local _numFeeds="$2"
+
+	local _quorum
+	#get min number of feeds requored for quorum from Oracle contract
 	#note we cant trust users not to run modified clients
 	#so whether quorum is achieved is reinforced in the contract
-	#quorum="$(seth --to-dec "$(seth call "$OMNIA_ORACLE_ADDR" "min()(uint256)")")"
+	_quorum=$(pullOracleQuorum "$_asset")
+	verbose "quorum for $_asset = $_quorum feeds"
+
 	#for testing purposes quorum is set to 2
-	quorum=2
+	_quorum=2
 
 	#DEBUG
-	verbose "Message Content passed to quorum checker is: ""${_msgs[*]}"""
+	verbose "number of feeds counted = $_numFeeds"
 
-	[ "$numMsgs" -ge "$quorum" ] && echo true || ( echo false && error "Error: Could not reach quorum ($quorum), only $numMsgs feeds reporting." )
+	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && error "Error: Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
 }

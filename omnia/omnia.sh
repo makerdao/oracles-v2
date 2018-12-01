@@ -35,7 +35,10 @@ initEnv () {
 	[[ $ETH_FROM ]] || errors+=("No default account set. Please set it via ETH_FROM ")
 	[[ $ETH_KEYSTORE ]] || errors+=("No path to keystore file set. Please set it via ETH_KEYSTORE ")
 	[[ $ETH_PASSWORD ]] || errors+=("No path to password set. Please set it via ETH_PASSWORD ")
-	[[ $OMNIA_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_ORACLE_ADDR ")
+	[[ $OMNIA_ETH_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_ETH_ORACLE_ADDR ")
+	[[ $OMNIA_MKR_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_MKR_ORACLE_ADDR ")
+	[[ $OMNIA_REP_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_REP_ORACLE_ADDR ")
+	[[ $OMNIA_POLY_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_POLY_ORACLE_ADDR ")
 
 	export SCUTTLEBOT_FEED_ID=$(getFeedId)
 	[[ $SCUTTLEBOT_FEED_ID ]] || errors+=("Could not get scuttlebot feed id, make sure scuttlebot server is running ")
@@ -46,7 +49,7 @@ initEnv () {
 	[[ $OMNIA_INTERVAL ]] || export OMNIA_INTERVAL=60
 	[[ $OMNIA_MSG_SPREAD ]] || export OMNIA_MSG_SPREAD=1
 	[[ $OMNIA_MSG_EXPIRY_INTERVAL ]] || export OMNIA_MSG_EXPIRY_INTERVAL=180
-	[[ $OMNIA_ORACLE_SPREAD ]] || export OMNIA_ORACLE_SPREAD=2
+	[[ $OMNIA_ORACLE_SPREAD ]] || export OMNIA_ORACLE_SPREAD=1
 	[[ $OMNIA_ORACLE_EXPIRY_INTERVAL ]] || export OMNIA_ORACLE_EXPIRY_INTERVAL=3600
 
 	echo ""
@@ -62,7 +65,10 @@ initEnv () {
 	echo "Price expiration interval:         $OMNIA_MSG_EXPIRY_INTERVAL seconds"
 	echo ""
 	echo "ORACLE"
-	echo "Oracle address:                    $OMNIA_ORACLE_ADDR"
+	echo "ETH Oracle address:                $OMNIA_ETH_ORACLE_ADDR"
+	echo "MKR Oracle address:                $OMNIA_MKR_ORACLE_ADDR"
+	echo "REP Oracle address:                $OMNIA_REP_ORACLE_ADDR"
+	echo "POLY Oracle address:               $OMNIA_POLY_ORACLE_ADDR"
 	echo "Spread to update:                  $OMNIA_ORACLE_SPREAD %"
 	echo "Price expiration interval          $OMNIA_ORACLE_EXPIRY_INTERVAL seconds"
 	echo ""
