@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 declare -a assets=("eth" "mkr" "rep" "poly")
-declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@4wuvO7zjo4Cp71w1mUJBOXbRAZjtr91rt7bpfhcEDmE=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519") 
+declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519") 
+#"@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519"
+#"@4wuvO7zjo4Cp71w1mUJBOXbRAZjtr91rt7bpfhcEDmE=.ed25519"
 
 . ethereum.sh
 . log.sh
@@ -107,7 +109,7 @@ execute () {
 	done
 }
 
-auto () {
+oracle () {
 	initEnv
 	while true; do
 		execute
@@ -116,4 +118,13 @@ auto () {
 	done
 }
 
-auto
+relayer () {
+	initEnv
+	updateOracle
+	#for asset in "${assets[@]}"; do
+	#	pullLatestPricesOfAsset "$asset"
+	#done
+}
+
+relayer
+oracle

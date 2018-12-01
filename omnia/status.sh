@@ -80,11 +80,12 @@ isQuorum () {
 	#get min number of feeds from Oracle contract
 	#note we cant trust users not to run modified clients
 	#so whether quorum is achieved is reinforced in the contract
-	quorum="$(seth --to-dec "$(seth call "$OMNIA_ORACLE_ADDR" "min()(uint256)")")"
+	#quorum="$(seth --to-dec "$(seth call "$OMNIA_ORACLE_ADDR" "min()(uint256)")")"
+	#for testing purposes quorum is set to 2
+	quorum=2
 
 	#DEBUG
-	verbose "Number of message passed = $numMsgs"
-	verbose "Min Quorum = $quorum"
+	verbose "Message Content passed to quorum checker is: ""${_msgs[*]}"""
 
-	[ "$numMsgs" -ge "$quorum" ] && echo true || echo false && log "Error: Could not reach quorum ($quorum), only $numMsgs feeds reporting."
+	[ "$numMsgs" -ge "$quorum" ] && echo true || ( echo false && error "Error: Could not reach quorum ($quorum), only $numMsgs feeds reporting." )
 }

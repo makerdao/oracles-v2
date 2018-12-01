@@ -3,42 +3,53 @@
 #pulls latest price of an asset from each feed
 pullLatestPricesOfAsset () {
     local _asset="$1"
-    entries=()
     #scrape all feeds
+    verbose "Pulling $_asset Messages"
     for feed in "${feeds[@]}"; do
         verbose "Working with feed: $feed"
         #grab latest price msg of asset from feed
         priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_asset")
 
         #DEBUG
-        verbose "price entry from feed ($feed) = $priceEntry"
-        [ -n "${priceEntry}" ] && echo "priceEntry contains data" || echo "Error: priceEntry is empty"
-        [ "$(isMsgExpired "$priceEntry")" == "true" ] && echo "Error: price timestamp is expired" || echo " price timestamp is valid"
-        [ "$(isAsset "$_asset" "$priceEntry")" == "true" ] && echo "message is of type $_asset" || echo "Error: message is not of type $_asset"
+        verbose "$_asset price msg from feed ($feed) = $priceEntry"
+        [ -n "${priceEntry}" ] && verbose "price msg contains data" || error "Error: price msg is empty, skipping..."
+        [ "$(isMsgExpired "$priceEntry")" == "true" ] && error "Error: price timestamp is expired, skipping..." || verbose "price timestamp is valid"
+        [ "$(isAsset "$_asset" "$priceEntry")" == "true" ] && verbose "message is of type $_asset" || error "Error: Could not find recent message of type $_asset, skipping..."
 
         #verify price msg is valid and not expired
         if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$priceEntry")" == "false" ] && [ "$(isAsset "$_asset" "$priceEntry")" == "true" ]; then
-            verbose "Added message from $feed to catalogue"
+            verbose "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
 
             #DEBUG
-            verbose "Current price catalogue = "
-            printf '%s\n' "${entries[@]}"
+            verbose "Current price catalogue = ${entries[*]}"
         fi
     done
+    printf 'Final Price Catalogue = %s\n' "${entries[@]}"
 }
 
 #consider renaming to pushNewOraclePrice
 updateOracle () {
     for asset in "${assets[@]}"; do
+        local entries=()
         local _prices
         local _median
-        local _priceMsgs
         local _sortedPriceMsgs
-        _priceMsgs=$(pullLatestPricesOfAsset "$asset")
-        [ "$(isQuorum "${_priceMsgs[@]}")" == "false" ] && return
-        _prices=$(extractPrices "${_priceMsgs[@]}")
+        pullLatestPricesOfAsset "$asset"
+
+        #DEBUG
+        echo "number of elements in entries = ${#entries[@]}"
+        for entry in "${entries[@]}"; do
+            echo entry: "$entry"
+        done
+
+        [ "$(isQuorum "${entries[@]}")" == "false" ] && return
+        _prices=$(extractPrices "${entries[@]}")
+        #DEBUG
+        echo "Debug:"
+        echo "${_prices[@]}"
         _median=$(getMedian "${_prices[@]}")
+        log "median = $_median"
         if [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$  && ( "$(isOracleStale "$_median")" == "true" || "$(isOracleExpired)" == "true" ) ]]; then
             local allPrices=()
             local allT=()
@@ -50,6 +61,12 @@ updateOracle () {
             pushNewOraclePrice
         fi
     done
+}
+
+sortMsgs () {
+    local _msgs=( "$@" )
+    verbose "Sorting Messages..."
+    echo "${_msgs[@]}" | jq 'select(price: .value.content.median, 0xprice: .value.content.0xmedian, time .value.content.time, 0xtime: .value.content.0xtime, signature: .value.content.signature' | jq 'sort_by(.value.content.median)'
 }
 
 generateCalldata () {
@@ -69,12 +86,6 @@ pushNewOraclePrice () {
     
     verbose "Sending tx..."
     seth send $
-}
-
-sortMsgs () {
-    local _msgs=( "$@" )
-    verbose "Sorting Messages..."
-    echo "${_msgs[@]}" | jq 'select(price: .value.content.median, 0xprice: .value.content.0xmedian, time .value.content.time, 0xtime: .value.content.0xtime, signature: .value.content.signature' | jq 'sort_by(.value.content.median)'
 }
 
 #NOTES
