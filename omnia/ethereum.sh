@@ -11,7 +11,7 @@ pullOraclePrice () {
 		"REP")
 			_address="$OMNIA_REP_ORACLE_ADDR" ;;
 		"POLY")
-			_address="OMNIA_POLY_ORACLE_ADDR" ;;
+			_address="$OMNIA_POLY_ORACLE_ADDR" ;;
 	esac
 	seth --from-wei "$(seth --to-dec "$(seth call "$_address" "read()(bytes32)")")"
 }
@@ -47,7 +47,7 @@ pullOracleQuorum () {
 		"REP")
 			_address="$OMNIA_REP_ORACLE_ADDR" ;;
 		"POLY")
-			_address="OMNIA_POLY_ORACLE_ADDR" ;;
+			_address="$OMNIA_POLY_ORACLE_ADDR" ;;
 	esac
 	seth --to-dec "$(seth call "$_address" "min()(uint256)")"
 }

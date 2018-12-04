@@ -33,7 +33,8 @@ updateOracle () {
         local entries=()
         local _prices
         local _median
-        local _sortedPriceMsgs
+        local _sortedEntries=()
+
         pullLatestPricesOfAsset "$asset"
 
         #DEBUG
@@ -42,7 +43,7 @@ updateOracle () {
             echo entry: "$entry"
         done
 
-        [ "$(isQuorum "$asset" "${#entries[@]}")" == "false" ] && log "Not enough feeds (${#entries[@]}) to reach quorum" && continue
+        [ "$(isQuorum "$asset" "${#entries[@]}")" == "false" ] && continue
         _prices=$(extractPrices "${entries[@]}")
         #DEBUG
         echo "Prices = ${_prices[*]}"
@@ -61,8 +62,10 @@ updateOracle () {
             local allR=()
             local allS=()
             local allV=()
-            _sortedPriceMsgs=$(sortMsgs "${_priceMsgs[@]}")
-            generateCalldata "${_sortedPriceMsgs[@]}"
+            sortMsgs "${entries[@]}"
+            verbose "number of sortedEntries is ${#_sortedEntries[@]}"
+            verbose "sorted messages = ${_sortedEntries[*]}"
+            generateCalldata "${_sortedEntries[@]}"
             pushNewOraclePrice
         fi
     done
@@ -71,15 +74,16 @@ updateOracle () {
 sortMsgs () {
     local _msgs=( "$@" )
     verbose "Sorting Messages..."
-    echo "${_msgs[@]}" | jq 'select(price: .value.content.median, 0xprice: .value.content.0xmedian, time .value.content.time, 0xtime: .value.content.0xtime, signature: .value.content.signature' | jq 'sort_by(.value.content.median)'
+    verbose "Presorted Messages = ${_msgs[*]}"
+    readarray -t _sortedEntries < <(echo "${_msgs[*]}" | jq -s '.' | jq 'sort_by(.price)' | jq -c '.[]')
 }
 
 generateCalldata () {
     local _msgs=( "$@" )
     verbose "Generating Calldata..."
     for msg in "${_msgs[@]}"; do
-        allPrices+=("$("0x" + "$(echo "$msg" | jq '.0xprice')")")
-        allT+=("$('0x' + "$(echo "$msg" | jq '.0xtime')")")
+        allPrices+=("$("0x" + "$(echo "$msg" | jq '.price0x')")")
+        allT+=("$('0x' + "$(echo "$msg" | jq '.time0x')")")
         allR+=("$('0x' + "${"$(echo "$msg" | jq '.signature')":0:64})")")
         allS+=("$('0x' + "${"$(echo "$msg" | jq '.signature')":64:64}")")
         allV+=("$('0x' + "${"$(echo "$msg" | jq '.signature')":128:2}")")

@@ -15,7 +15,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.7.9"
+	OMNIA_VERSION="0.8.0"
 
 	# Global configuration
 	if [[ -e /etc/omnia.conf ]]; then
@@ -49,7 +49,7 @@ initEnv () {
 	[[ $OMNIA_INTERVAL ]] || export OMNIA_INTERVAL=60
 	[[ $OMNIA_MSG_SPREAD ]] || export OMNIA_MSG_SPREAD=1
 	[[ $OMNIA_MSG_EXPIRY_INTERVAL ]] || export OMNIA_MSG_EXPIRY_INTERVAL=180
-	[[ $OMNIA_ORACLE_SPREAD ]] || export OMNIA_ORACLE_SPREAD=1
+	[[ $OMNIA_ORACLE_SPREAD ]] || export OMNIA_ORACLE_SPREAD=.1
 	[[ $OMNIA_ORACLE_EXPIRY_INTERVAL ]] || export OMNIA_ORACLE_EXPIRY_INTERVAL=3600
 
 	echo ""
@@ -127,9 +127,6 @@ oracle () {
 relayer () {
 	initEnv
 	updateOracle
-	#for asset in "${assets[@]}"; do
-	#	pullLatestPricesOfAsset "$asset"
-	#done
 }
 
 relayer

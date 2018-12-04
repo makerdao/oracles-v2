@@ -21,7 +21,7 @@ pullMessages () {
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
-    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, time: .value.timestamp, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median}' 
+    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, time: .value.timestamp, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
 }
 
 #pull previous message
@@ -29,7 +29,7 @@ pullPreviousFeedMsg () {
     #trim quotes from prev key
     local _prev
     _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
-    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, time: .timestamp, previous: .previous, type: .content.type, price: .content.median}'
+    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, time: .timestamp, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
 }
 
 #pull latest message of type _ from feed
@@ -69,7 +69,7 @@ broadcastPriceMsg () {
     local _timeHex="$5"
     local _hash="$6"
     local _sig="$7"
-    cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --version $OMNIA_VERSION --median $_median --0xmedian $_medianHex --time $_time --0xtime $_timeHex --hash ${_hash:2} --signature ${_sig:2}"
+    cmd="$HOME/scuttlebot/bin.js publish --type $_assetType --version $OMNIA_VERSION --median $_median --median0x $_medianHex --time $_time --time0x $_timeHex --hash ${_hash:2} --signature ${_sig:2}"
     [[ "${#validSources[@]}" != "${#validPrices[@]}" ]] && error "Error: number of sources doesn't match number of prices" && exit 1
     for index in ${!validSources[*]}; do
         cmd+=" --${validSources[index]} ${validPrices[index]}"
