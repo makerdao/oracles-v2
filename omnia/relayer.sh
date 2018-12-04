@@ -66,7 +66,7 @@ updateOracle () {
             verbose "number of sortedEntries is ${#_sortedEntries[@]}"
             verbose "sorted messages = ${_sortedEntries[*]}"
             generateCalldata "${_sortedEntries[@]}"
-            pushNewOraclePrice
+            pushTransaction
         fi
     done
 }
@@ -82,15 +82,21 @@ generateCalldata () {
     local _msgs=( "$@" )
     verbose "Generating Calldata..."
     for msg in "${_msgs[@]}"; do
-        allPrices+=("$("0x" + "$(echo "$msg" | jq '.price0x')")")
-        allT+=("$('0x' + "$(echo "$msg" | jq '.time0x')")")
-        allR+=("$('0x' + "${"$(echo "$msg" | jq '.signature')":0:64})")")
-        allS+=("$('0x' + "${"$(echo "$msg" | jq '.signature')":64:64}")")
-        allV+=("$('0x' + "${"$(echo "$msg" | jq '.signature')":128:2}")")
+        allPrices+=( "0x$( echo "$msg" | jq -r '.price0x' )" )
+        allT+=( "0x$( echo "$msg" | jq -r '.time0x' )" )
+        allR+=( "$(echo "$msg" | jq -r '.signature' | cut -c 1-64)" )
+        allS+=( "$(echo "$msg" | jq -r '.signature' | cut -c 65-128)" )
+        allV+=( "$(echo "$msg" | jq -r '.signature' | cut -c 129-130)" )
     done
+    #DEBUG
+    verbose "allPrices = ${allPrices[*]}"
+    verbose "allT = ${allT[*]}"
+    verbose "allR = ${allR[*]}"
+    verbose "allS = ${allS[*]}"
+    verbose "allV = ${allV[*]}"
 }
 
-pushNewOraclePrice () {
+pushTransaction () {
     #get gas price from eth gas station
     
     verbose "Sending tx..."
