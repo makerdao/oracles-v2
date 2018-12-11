@@ -2,7 +2,9 @@
 
 #read price data of asset
 readSources () {
-	local _asset="$1"
+	local _assetpair="$1"
+	local _asset
+	_asset=$(lookupBaseToken "$_assetpair")
 	mapfile -t _sources < <(setzer sources "$_asset")
 	if [[ "${#_sources[@]}" -ne 0 ]]; then
 		for source in "${_sources[@]}"; do

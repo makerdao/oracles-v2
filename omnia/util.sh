@@ -35,6 +35,8 @@ timestampS () {
 price2Hex () {
 	local _price="$1"
 	#convert price to wei and then uint256
+	#note this assumes token has 18 decimal places
+	#need to create more robust solution for other tokens
 	seth --to-uint256 "$(seth --to-wei "$_price" eth)"
 }
 
@@ -53,4 +55,35 @@ keccak256Hash () {
 		_inputs+="$arg"
 	done
 	seth keccak "$_inputs"
+}
+
+lookupOracleContract () {
+	local _assetPair="$1"
+	local _address
+	case ${_assetPair^^} in
+		"ETHUSD")
+			_address="$OMNIA_ETHUSD_ORACLE_ADDR" ;;
+		"MKRUSD")
+			_address="$OMNIA_MKRUSD_ORACLE_ADDR" ;;
+		"REPUSD")
+			_address="$OMNIA_REPUSD_ORACLE_ADDR" ;;
+		"POLYUSD")
+			_address="$OMNIA_POLYUSD_ORACLE_ADDR" ;;
+	esac
+	echo "$_address"
+}
+
+#this is a hacky wordaround until we update setzer to use asset pairs as input
+lookupBaseToken () {
+	local _pair="$1"
+	case ${_pair^^} in
+		"ETHUSD")
+			echo "eth" ;;
+		"MKRUSD")
+			echo "mkr" ;;
+		"REPUSD")
+			echo "rep" ;;
+		"POLYUSD")
+			echo "poly" ;;
+	esac
 }

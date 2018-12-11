@@ -7,10 +7,10 @@ isEmpty () {
 }
 
 #is message of type asset
-isAsset () {
-	local _asset="$1"
+isAssetPair () {
+	local _assetPair="$1"
 	local _msg="$2"
-	[ "$(echo "$_msg" | jq --arg _asset "$_asset" '.type == $_asset')" == "true" ] && echo true || echo false
+	[ "$(echo "$_msg" | jq --arg _assetPair "$_assetPair" '.type == $_assetPair')" == "true" ] && echo true || echo false
 }
 
 #has interval elapsed
@@ -35,11 +35,11 @@ isMsgExpired () {
 
 #is last price update to Oracle expired
 isOracleExpired () {
-	local _asset="$1"
+	local _assetPair="$1"
 	local _curTime
 	local _lastTime
 	_curTime=$(timestampS)
-	_lastTime=$(pullOracleTime "$_asset")
+	_lastTime=$(pullOracleTime "$_assetPair")
 	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_ORACLE_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
 }
 
@@ -71,24 +71,24 @@ isMsgStale () {
 
 #is spread between existing Oracle price larger than spread limit
 isOracleStale () {
-	local _asset="$1"
+	local _assetPair="$1"
 	local _newPrice="$2"
 	local _oldPrice
-	_oldPrice=$(pullOraclePrice "$_asset")
+	_oldPrice=$(pullOraclePrice "$_assetPair")
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_ORACLE_SPREAD")" == "true" ] && echo true || echo false
 }
 
 #are there enough feed messages to establish quorum
 isQuorum () {
-	local _asset="$1"
+	local _assetPair="$1"
 	local _numFeeds="$2"
 
 	local _quorum
 	#get min number of feeds requored for quorum from Oracle contract
 	#note we cant trust users not to run modified clients
 	#so whether quorum is achieved is reinforced in the contract
-	_quorum=$(pullOracleQuorum "$_asset")
-	verbose "quorum for $_asset = $_quorum feeds"
+	_quorum=$(pullOracleQuorum "$_assetPair")
+	verbose "quorum for $_assetPair = $_quorum feeds"
 
 	#for testing purposes quorum is set to 2
 	_quorum=2

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-declare -a assets=("eth" "mkr" "rep" "poly")
+declare -a assetPairs=("ETHUSD" "MKRUSD" "REPUSD" "POLYUSD")
 declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519") 
 #"@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519"
 #"@4wuvO7zjo4Cp71w1mUJBOXbRAZjtr91rt7bpfhcEDmE=.ed25519"
 
-. ethereum.sh
+. ethereum.
 . log.sh
 . scuttlebot.sh
 . source.sh
@@ -15,7 +15,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.8.0"
+	OMNIA_VERSION="0.8.1"
 
 	# Global configuration
 	if [[ -e /etc/omnia.conf ]]; then
@@ -35,10 +35,10 @@ initEnv () {
 	[[ $ETH_FROM ]] || errors+=("No default account set. Please set it via ETH_FROM ")
 	[[ $ETH_KEYSTORE ]] || errors+=("No path to keystore file set. Please set it via ETH_KEYSTORE ")
 	[[ $ETH_PASSWORD ]] || errors+=("No path to password set. Please set it via ETH_PASSWORD ")
-	[[ $OMNIA_ETH_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_ETH_ORACLE_ADDR ")
-	[[ $OMNIA_MKR_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_MKR_ORACLE_ADDR ")
-	[[ $OMNIA_REP_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_REP_ORACLE_ADDR ")
-	[[ $OMNIA_POLY_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_POLY_ORACLE_ADDR ")
+	[[ $OMNIA_ETHUSD_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_ETHUSD_ORACLE_ADDR ")
+	[[ $OMNIA_MKRUSD_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_MKRUSD_ORACLE_ADDR ")
+	[[ $OMNIA_REPUSD_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_REPUSD_ORACLE_ADDR ")
+	[[ $OMNIA_POLYUSD_ORACLE_ADDR ]] || errors+=("No Oracle contract address set. Please set it via OMNIA_POLYUSD_ORACLE_ADDR ")
 
 	export SCUTTLEBOT_FEED_ID=$(getFeedId)
 	[[ $SCUTTLEBOT_FEED_ID ]] || errors+=("Could not get scuttlebot feed id, make sure scuttlebot server is running ")
@@ -65,10 +65,10 @@ initEnv () {
 	echo "Price expiration interval:         $OMNIA_MSG_EXPIRY_INTERVAL seconds"
 	echo ""
 	echo "ORACLE"
-	echo "ETH Oracle address:                $OMNIA_ETH_ORACLE_ADDR"
-	echo "MKR Oracle address:                $OMNIA_MKR_ORACLE_ADDR"
-	echo "REP Oracle address:                $OMNIA_REP_ORACLE_ADDR"
-	echo "POLY Oracle address:               $OMNIA_POLY_ORACLE_ADDR"
+	echo "ETHUSD Oracle address:             $OMNIA_ETHUSD_ORACLE_ADDR"
+	echo "MKRUSD Oracle address:             $OMNIA_MKRUSD_ORACLE_ADDR"
+	echo "REPUSD Oracle address:             $OMNIA_REPUSD_ORACLE_ADDR"
+	echo "POLYUSD Oracle address:            $OMNIA_POLYUSD_ORACLE_ADDR"
 	echo "Spread to update:                  $OMNIA_ORACLE_SPREAD %"
 	echo "Price expiration interval          $OMNIA_ORACLE_EXPIRY_INTERVAL seconds"
 	echo ""
@@ -76,12 +76,6 @@ initEnv () {
 	echo "Relay Mode:                        $OMNIA_RELAY"
 	echo "------- INITIALIZATION COMPLETE -------"
 	echo ""
-}
-
-#init/clear price and source data
-initStorage () {
-	validSources=()
-	validPrices=()
 }
 
 #sign message
@@ -96,21 +90,22 @@ signMessage () {
 
 #publish new price messages for all assets
 execute () {
-	for asset in "${assets[@]}"; do
-		initStorage
-		log "Querying ${asset^^} prices..."
-		readSources "$asset"
+	for assetPair in "${assetPairs[@]}"; do
+		validSources=()
+		validPrices=()
+		log "Querying ${assetPair^^} prices..."
+		readSources "$assetPair"
 		median=$(getMedian "${validPrices[@]}")
 		verbose "-> median = $median"
-		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$asset")
-		if [ "$(isEmpty "$latestMsg")" == "true" ] || [ "$(isAsset "$asset" "$latestMsg")" == "false" ] || [ "$(isMsgExpired "$latestMsg")" == "true" ] || [ "$(isMsgStale "$latestMsg" "$median")" == "true" ]; then
+		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
+		if [ "$(isEmpty "$latestMsg")" == "true" ] || [ "$(isAssetPair "$assetPair" "$latestMsg")" == "false" ] || [ "$(isMsgExpired "$latestMsg")" == "true" ] || [ "$(isMsgStale "$latestMsg" "$median")" == "true" ]; then
 			time=$(timestampS)
 			timeHex=$(time2Hex "$time")
 			medianHex=$(price2Hex "$median")
-			hash=$(keccak256Hash "$medianHex" "$timeHex")
+			hash=$(keccak256Hash "$assetPair" "$medianHex" "$timeHex")
 			sig=$(signMessage "$hash")
 			verbose "-> Message Signature = $sig"
-			broadcastPriceMsg "$asset" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
+			broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
 		fi
 	done
 }
@@ -129,5 +124,4 @@ relayer () {
 	updateOracle
 }
 
-relayer
 oracle
