@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-declare -a assetPairs=("ETHUSD" "MKRUSD" "REPUSD" "POLYUSD")
-declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519") 
-#"@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519"
+declare -a assetPairs=("ETHUSD")
+declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519")
 #"@4wuvO7zjo4Cp71w1mUJBOXbRAZjtr91rt7bpfhcEDmE=.ed25519"
 
-. ethereum.
+. ethereum.sh
 . log.sh
 . scuttlebot.sh
 . source.sh
@@ -15,7 +14,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.8.1"
+	OMNIA_VERSION="0.8.3"
 
 	# Global configuration
 	if [[ -e /etc/omnia.conf ]]; then
@@ -102,7 +101,8 @@ execute () {
 			time=$(timestampS)
 			timeHex=$(time2Hex "$time")
 			medianHex=$(price2Hex "$median")
-			hash=$(keccak256Hash "$assetPair" "$medianHex" "$timeHex")
+			assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
+			hash=$(keccak256Hash "0x" "$medianHex" "$timeHex" "$assetPairHex")
 			sig=$(signMessage "$hash")
 			verbose "-> Message Signature = $sig"
 			broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
@@ -124,4 +124,5 @@ relayer () {
 	updateOracle
 }
 
+relayer
 oracle

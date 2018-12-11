@@ -40,10 +40,9 @@ price2Hex () {
 	seth --to-uint256 "$(seth --to-wei "$_price" eth)"
 }
 
-#converts blockstamp to hex
+#converts timestamp to 32 byte hex
 time2Hex () {
 	local _time="$1"
-	#convert blockstamp to uint256
 	seth --to-uint256 "$_time"
 
 }
@@ -54,6 +53,7 @@ keccak256Hash () {
 	for arg in "$@"; do
 		_inputs+="$arg"
 	done
+	verbose "inputs to hash function = $_inputs"
 	seth keccak "$_inputs"
 }
 
@@ -71,19 +71,4 @@ lookupOracleContract () {
 			_address="$OMNIA_POLYUSD_ORACLE_ADDR" ;;
 	esac
 	echo "$_address"
-}
-
-#this is a hacky wordaround until we update setzer to use asset pairs as input
-lookupBaseToken () {
-	local _pair="$1"
-	case ${_pair^^} in
-		"ETHUSD")
-			echo "eth" ;;
-		"MKRUSD")
-			echo "mkr" ;;
-		"REPUSD")
-			echo "rep" ;;
-		"POLYUSD")
-			echo "poly" ;;
-	esac
 }

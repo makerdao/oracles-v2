@@ -43,7 +43,7 @@ isOracleExpired () {
 	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_ORACLE_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
 }
 
-#is spread larger than specified spread limit
+#is spread greater than specified spread limit
 isStale () {
 	local _oldPrice="$1"
 	local _newPrice="$2"
@@ -60,7 +60,7 @@ isStale () {
 	[[ ${test} -ne 0 ]] && log "Spread is greater than ${_spreadLimit}" && echo true || echo false
 }
 
-#is spread between existing Scuttlebot price larger than spread limit
+#is spread between existing Scuttlebot price greatner than spread limit
 isMsgStale () {
 	local _oldPriceMsg="$1"
 	local _newPrice="$2"
@@ -69,13 +69,24 @@ isMsgStale () {
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_MSG_SPREAD")" == "true" ] && echo true || echo false
 }
 
-#is spread between existing Oracle price larger than spread limit
+#is spread between existing Oracle price greater than spread limit
 isOracleStale () {
 	local _assetPair="$1"
 	local _newPrice="$2"
 	local _oldPrice
 	_oldPrice=$(pullOraclePrice "$_assetPair")
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_ORACLE_SPREAD")" == "true" ] && echo true || echo false
+}
+
+#is timestamp of message more recent than timestamp of last Oracle update
+isMsgNew () {
+	local _assetPair="$1"
+	local _msg="$2"
+	local _msgTime
+	local _oracleTime
+	_oracleTime=$(pullOracleTime "$_assetPair")
+	_msgTime=$(( $(echo "$_msg" | jq '.time') / 1000 ))
+	[ "$_oracleTime" -gt "$_msgTime" ] && verbose "Message is older than last Oracle update, skipping..." && echo false || echo true
 }
 
 #are there enough feed messages to establish quorum
@@ -90,11 +101,8 @@ isQuorum () {
 	_quorum=$(pullOracleQuorum "$_assetPair")
 	verbose "quorum for $_assetPair = $_quorum feeds"
 
-	#for testing purposes quorum is set to 2
-	_quorum=2
-
 	#DEBUG
 	verbose "number of feeds counted = $_numFeeds"
 
-	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && error "Error: Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
+	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && verbose "Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
 }

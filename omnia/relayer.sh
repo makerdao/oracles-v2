@@ -13,11 +13,12 @@ pullLatestPricesOfAssetPair () {
         #DEBUG
         verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
         [ -n "${priceEntry}" ] && ( verbose "price msg contains data" || error "Error: price msg is empty, skipping..." )
-        [ "$(isMsgExpired "$priceEntry")" == "true" ] && ( error "Error: price timestamp is expired, skipping..." || verbose "price timestamp is valid" ) 
         [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "message is of type $_assetPair" || error "Error: Could not find recent message of type $_assetPair, skipping..." )
+        [ "$(isMsgExpired "$priceEntry")" == "true" ] && ( verbose "msg timestamp is expired, skipping..." || verbose "msg timestamp is valid" ) 
+        [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is newer than last Oracle update" || verbose "Message is older than last Oracle update, skipping...")
 
         #verify price msg is valid and not expired
-        if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ]; then
+        if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
             verbose "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
 
@@ -81,14 +82,17 @@ sortMsgs () {
 
 generateCalldata () {
     local _msgs=( "$@" )
+    local _sig
+    local _v
     verbose "Generating Calldata..."
     for msg in "${_msgs[@]}"; do
-        allPrices+=( "0x$( echo "$msg" | jq -r '.price0x' )" )
-        allTimes+=( "0x$( echo "$msg" | jq -r '.time0x' )" )
-        sig=$( echo "$msg" | jq -r '.signature' )
-        allR+=( "${sig:0:64}" )
-        allS+=( "${sig:64:64}" )
-        allV+=( "${sig:128:2}" )
+        _sig=$( echo "$msg" | jq -r '.signature' )
+        _v=${_sig:128:2}
+        allR+=( "${_sig:0:64}" )
+        allS+=( "${_sig:64:64}" )
+        allV+=( "$(seth --to-word "0x$_v" )" )
+        allPrices+=( "$( echo "$msg" | jq -r '.price0x' )" )
+        allTimes+=( "$( echo "$msg" | jq -r '.time0x' )" )
     done
     #DEBUG
     verbose "allPrices = ${allPrices[*]}"
@@ -114,9 +118,3 @@ pushTransaction () {
     echo SUCCESS: "$(seth receipt "$tx" status)"
     echo GAS USED: "$(seth receipt "$tx" gasUsed)"
 }
-
-# NEED TO ADD ASSETPAIR AS ARG TO GET HASHED BEFORE SIGNING SIG.
-# THEN EITHER PASS THIS IN TO ORACLE EVERY TIME, BUT BETTER IS IF ORACLE CONTRACT
-# HAS THIS SET IN CONSTRUCTOR. THIS ALSO MEANS YOU NEED TO CHANGE MESSAGE TYPE TO BE
-# ETHUSD NOT ETH, MKRUSD NOT MKR, etc. BUT that means we cant pass that value into setzer
-# since it uses "eth" not "ethusd". Think this through a bit more.
