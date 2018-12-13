@@ -3,9 +3,21 @@
 #pulls latest price of an asset from each feed
 pullLatestPricesOfAssetPair () {
     local _assetPair="$1"
-    #scrape all feeds
+    local _randomizedFeeds=()
+    local _quorum
+
+    #randomize order of feeds
+    _randomizedFeeds=( $(shuf -e "${feeds[@]}") )
+
+    #get quorum for asset pair
+    _quorum=$(pullOracleQuorum "$_assetPair")
+
     verbose "Pulling $_assetPair Messages"
-    for feed in "${feeds[@]}"; do
+    #scrape all feeds
+    for feed in "${_randomizedFeeds[@]}"; do
+        #stop collecting messages once quorum has been achieved
+        [ "${#entries[@]}" -eq "$_quorum" ] && verbose "Collected enough messages for quorum" && return
+ 
         verbose "Working with feed: $feed"
         #grab latest price msg of asset from feed
         priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
@@ -21,9 +33,6 @@ pullLatestPricesOfAssetPair () {
         if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
             verbose "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
-
-            #DEBUG
-            verbose "Current price catalogue = ${entries[*]}"
         fi
     done
 }
@@ -65,7 +74,6 @@ updateOracle () {
             local allS=()
             local allV=()
             sortMsgs "${entries[@]}"
-            verbose "number of sortedEntries is ${#_sortedEntries[@]}"
             verbose "sorted messages = ${_sortedEntries[*]}"
             generateCalldata "${_sortedEntries[@]}"
             pushTransaction "$assetPair"

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 declare -a assetPairs=("ETHUSD")
-declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519")
-#"@4wuvO7zjo4Cp71w1mUJBOXbRAZjtr91rt7bpfhcEDmE=.ed25519"
+declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519" "@EbPRv+q8uPZBd9C+ATINR7gRKgRC4eNz3a0NGMoneak=.ed25519")
 
 . ethereum.sh
 . log.sh
@@ -14,7 +13,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.8.3"
+	OMNIA_VERSION="0.8.5"
 
 	# Global configuration
 	if [[ -e /etc/omnia.conf ]]; then
@@ -46,9 +45,9 @@ initEnv () {
 
 	#Set default configuration if none found
 	[[ $OMNIA_INTERVAL ]] || export OMNIA_INTERVAL=60
-	[[ $OMNIA_MSG_SPREAD ]] || export OMNIA_MSG_SPREAD=1
+	[[ $OMNIA_MSG_SPREAD ]] || export OMNIA_MSG_SPREAD=.5
 	[[ $OMNIA_MSG_EXPIRY_INTERVAL ]] || export OMNIA_MSG_EXPIRY_INTERVAL=180
-	[[ $OMNIA_ORACLE_SPREAD ]] || export OMNIA_ORACLE_SPREAD=.1
+	[[ $OMNIA_ORACLE_SPREAD ]] || export OMNIA_ORACLE_SPREAD=.5
 	[[ $OMNIA_ORACLE_EXPIRY_INTERVAL ]] || export OMNIA_ORACLE_EXPIRY_INTERVAL=3600
 
 	echo ""
@@ -120,9 +119,12 @@ oracle () {
 }
 
 relayer () {
-	initEnv
+    initEnv
+    while true; do
 	updateOracle
+	verbose "SLEEPING FOR $OMNIA_INTERVAL seconds"
+	sleep $OMNIA_INTERVAL
+    done
 }
 
 relayer
-oracle
