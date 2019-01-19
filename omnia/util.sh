@@ -32,23 +32,24 @@ timestampS () {
 }
 
 #convert price to hex with respect to that tokens decimals
-price2Hex () {
+adjustDecimals () {
 	local _price="$1"
 	local _assetPair="$2"
 	local _decimals
-	_decimals=$(lookupOracleContract "$_assetPair")
+	_decimals=$(lookupTokenDecimals "$_assetPair")
 	bc <<<"$_price * 10 ^ $_decimals / 1"
 }
 
 #convert price to hex
-#assumes standard token (18 decimals)
-#price2Hex () {
-#	local _price="$1"
-	#convert price to wei and then uint256
-	#note this assumes token has 18 decimal places
-	#need to create more robust solution for other tokens
-#	seth --to-uint256 "$(seth --to-wei "$_price" eth)"
-#}
+price2Hex () {
+	local _price="$1"
+	local _assetPair="$2"
+	local _adjustedPrice
+	#adjust price to decimals corresponding to asset pair
+	_adjustedPrice=$(adjustDecimals "$_price" "$_assetPair")
+	#convert price to hex
+	seth --to-uint256 "$_adjustedPrice"
+}
 
 #converts timestamp to 32 byte hex
 time2Hex () {
