@@ -13,7 +13,7 @@ importEnv () {
 	importEthereumEnv $config
 	importOptionsEnv $config
 	importAssetPairsEnv $config
-	#importScuttlebotEnv
+	importScuttlebotEnv
 
 	verbose "Imported configuration from $config"
 }
