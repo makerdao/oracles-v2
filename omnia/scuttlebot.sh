@@ -3,7 +3,7 @@
 #get id of scuttlebot peer
 getFeedId () {
 	local _id
-	_id=$("$HOME"/scuttlebot/bin.js whoami | jq '.id')
+	_id=$("$HOME"/scuttlebot/bin.js whoami 2> /dev/null | jq '.id')
 	sed -e 's/^"//' -e 's/"$//' <<<"$_id"
 }
 
@@ -21,7 +21,7 @@ pullMessages () {
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
-    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, time: .value.timestamp, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
+    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, version: .value.content.version, time: .value.timestamp, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
 }
 
 #pull previous message
@@ -29,7 +29,7 @@ pullPreviousFeedMsg () {
     #trim quotes from prev key
     local _prev
     _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
-    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, time: .timestamp, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
+    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .timestamp, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
 }
 
 #pull latest message of type _ from feed

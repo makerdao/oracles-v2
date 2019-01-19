@@ -76,7 +76,7 @@ updateOracle () {
             sortMsgs "${entries[@]}"
             verbose "sorted messages = ${_sortedEntries[*]}"
             generateCalldata "${_sortedEntries[@]}"
-            pushTransaction "$assetPair"
+            pushOraclePrice "$assetPair"
         fi
     done
 }
@@ -108,21 +108,4 @@ generateCalldata () {
     verbose "allR = ${allR[*]}"
     verbose "allS = ${allS[*]}"
     verbose "allV = ${allV[*]}"
-}
-
-pushTransaction () {
-    local _assetPair="$1"
-    local _oracleContract
-    #TODO - calculate and use custom gas price
-    _oracleContract=$(lookupOracleContract "$_assetPair")
-    verbose "Sending tx..."
-    tx=$(seth send --async "$_oracleContract" 'poke(uint256[],uint256[],uint8[],bytes32[],bytes32[])' \
-        "[$(join "${allPrices[@]}")]" \
-        "[$(join "${allTimes[@]}")]" \
-        "[$(join "${allV[@]}")]" \
-        "[$(join "${allR[@]}")]" \
-        "[$(join "${allS[@]}")]")
-    echo "TX: $tx"
-    echo SUCCESS: "$(seth receipt "$tx" status)"
-    echo GAS USED: "$(seth receipt "$tx" gasUsed)"
 }
