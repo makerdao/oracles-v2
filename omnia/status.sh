@@ -29,7 +29,7 @@ isMsgExpired () {
 	local _curTime
 	local _lastTime
 	_curTime=$(timestampS)
-	_lastTime=$(( $(echo "$_msg" | jq '.time') / 1000 ))
+	_lastTime=$(echo "$_msg" | jq '.time')
 	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_MSG_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
 }
 
@@ -85,7 +85,7 @@ isMsgNew () {
 	local _msgTime
 	local _oracleTime
 	_oracleTime=$(pullOracleTime "$_assetPair")
-	_msgTime=$(( $(echo "$_msg" | jq '.time') / 1000 ))
+	_msgTime=$(echo "$_msg" | jq '.time')
 	[ "$_oracleTime" -gt "$_msgTime" ] && verbose "Message is older than last Oracle update, skipping..." && echo false || echo true
 }
 

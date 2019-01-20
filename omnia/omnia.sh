@@ -12,7 +12,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.8.7"
+	OMNIA_VERSION="0.8.8"
 
 	#Load Global configuration
   	importEnv
