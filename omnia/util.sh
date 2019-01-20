@@ -47,7 +47,7 @@ price2Hex () {
 	local _adjustedPrice
 	#adjust price to decimals corresponding to asset pair
 	_adjustedPrice=$(adjustDecimals "$_price" "$_assetPair")
-	#convert price to hex
+	#convert price to 32 byte hex
 	seth --to-uint256 "$_adjustedPrice"
 }
 
@@ -67,6 +67,7 @@ keccak256Hash () {
 	seth keccak "$_inputs"
 }
 
+#get the Oracle contract of an asset pair
 lookupOracleContract () {
 	local _assetPair="$1"
 	local _address
@@ -74,6 +75,7 @@ lookupOracleContract () {
 	echo "$_address"
 }
 
+#get the number of decimals of a token 
 lookupTokenDecimals () {
 	local _assetPair="$1"
 	local _decimals

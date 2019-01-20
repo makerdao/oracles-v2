@@ -7,6 +7,8 @@ getFeedId () {
 	sed -e 's/^"//' -e 's/"$//' <<<"$_id"
 }
 
+#not functional yet
+#not needed until we start having watchdog peers policing Oracle activity
 pullMessages () {
     #this id used for pulling all messages from all feeds with in-bounds timestamp
     #returns an array of objects containg only relevant info
@@ -21,7 +23,7 @@ pullMessages () {
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
-    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, version: .value.content.version, time: .value.timestamp, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
+    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
 }
 
 #pull previous message
@@ -29,7 +31,7 @@ pullPreviousFeedMsg () {
     #trim quotes from prev key
     local _prev
     _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
-    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .timestamp, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
+    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
 }
 
 #pull latest message of type _ from feed
