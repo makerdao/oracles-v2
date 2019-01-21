@@ -32,4 +32,4 @@ Instructions for querying Oracle price:
 	 
 Instructions for querying Oracle if token has standard 18 decimals:
 	     
-	     seth --from-wei $(seth --to-dec $(seth call 0xa541d04193bccf9c3b62ef34ebc3aa19d00bb69f "read()(bytes32)"))
+	     seth --from-wei $(seth --to-dec $(seth call <ORACLE_CONTRACT> "read()(bytes32)"))
