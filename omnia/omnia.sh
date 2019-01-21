@@ -38,7 +38,7 @@ initEnv () {
 	echo "Price expiration interval          $OMNIA_ORACLE_EXPIRY_INTERVAL seconds"
 	echo ""
 	echo "Verbose Mode:                      $OMNIA_VERBOSE"
-	echo "Relay Mode:                        $OMNIA_RELAYER"
+	echo "Relayer Mode:                      $OMNIA_RELAYER"
 	echo "------- INITIALIZATION COMPLETE -------"
 	echo ""
 }
@@ -77,21 +77,20 @@ execute () {
 }
 
 oracle () {
-	initEnv
 	while true; do
 		execute
 		verbose "sleeping for $OMNIA_INTERVAL seconds"
-		sleep $OMNIA_INTERVAL
+		sleep "$OMNIA_INTERVAL"
 	done
 }
 
 relayer () {
-    initEnv
     while true; do
 	updateOracle
 	verbose "SLEEPING FOR $OMNIA_INTERVAL seconds"
-	sleep $OMNIA_INTERVAL
+	sleep "$OMNIA_INTERVAL"
     done
 }
 
-oracle
+initEnv
+[ "$OMNIA_RELAYER" == "true" ] && relayer || oracle

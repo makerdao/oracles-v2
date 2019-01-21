@@ -7,15 +7,15 @@ importEnv () {
 	elif [[ -e ./omnia.conf ]]; then 
 		config="./omnia.conf"
 	else
-		error "Error Could not find omnia.conf config file to load parameters.\\nPlease create /etc/omnia.conf or put it in the working directory."
+		error "Error Could not find omnia.conf config file to load parameters."
+		error "Please create /etc/omnia.conf or put it in the working directory."
 		exit 1
 	fi
+	verbose "Importing configuration from $config..."
 	importEthereumEnv $config
 	importOptionsEnv $config
 	importAssetPairsEnv $config
 	importScuttlebotEnv
-
-	verbose "Imported configuration from $config"
 }
 
 importEthereumEnv () {
