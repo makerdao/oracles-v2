@@ -17,9 +17,11 @@ getPriceFromSource () {
 	local _source=$2
 	local _price
 	_price=$(timeout 5 setzer price "${_assetPair,,}"-"$_source" 2> /dev/null)
-	verbose "$_source = $_price"
 	if [[ $_price =~ ^[+-]?[0-9]+\.?[0-9]*$  ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
+		verbose "$_source => $_price"
+	else
+		error "Error - [$_source] Invalid price data = $_price"
 	fi
 }

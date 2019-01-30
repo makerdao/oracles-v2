@@ -37,6 +37,8 @@ adjustDecimals () {
 	local _assetPair="$2"
 	local _decimals
 	_decimals=$(lookupTokenDecimals "$_assetPair")
+	#debug
+	verbose "decimals = $_decimals"
 	bc <<<"$_price * 10 ^ $_decimals / 1"
 }
 
@@ -47,6 +49,8 @@ price2Hex () {
 	local _adjustedPrice
 	#adjust price to decimals corresponding to asset pair
 	_adjustedPrice=$(adjustDecimals "$_price" "$_assetPair")
+	#debug
+	verbose "Adjusted Price = $_adjustedPrice"
 	#convert price to 32 byte hex
 	seth --to-uint256 "$_adjustedPrice"
 }

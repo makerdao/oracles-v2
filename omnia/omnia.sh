@@ -12,7 +12,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.8.8"
+	OMNIA_VERSION="0.8.9"
 
 	#Load Global configuration
   	importEnv
@@ -58,21 +58,79 @@ execute () {
 	for assetPair in "${assetPairs[@]}"; do
 		validSources=()
 		validPrices=()
+
 		log "Querying ${assetPair^^} prices..."
+		#Query prices of asset pair
 		readSources "$assetPair"
-		median=$(getMedian "${validPrices[@]}")
-		verbose "-> median = $median"
-		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
-		if [ "$(isEmpty "$latestMsg")" == "true" ] || [ "$(isAssetPair "$assetPair" "$latestMsg")" == "false" ] || [ "$(isMsgExpired "$latestMsg")" == "true" ] || [ "$(isMsgStale "$latestMsg" "$median")" == "true" ]; then
-			time=$(timestampS)
-			timeHex=$(time2Hex "$time")
-			medianHex=$(price2Hex "$median" "$assetPair")
-			assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
-			hash=$(keccak256Hash "0x" "$medianHex" "$timeHex" "$assetPairHex")
-			sig=$(signMessage "$hash")
-			verbose "-> Message Signature = $sig"
-			broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
+		if [[ "${#validPrices[@]}" -eq 0 ]] || [[ "${#validSources[@]}" -eq 0 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
+			error "Failed to fetch valid prices from sources."
+			continue
 		fi
+
+		#Calculate median of prices
+		median=$(getMedian "${validPrices[@]}")
+		verbose "median => $median"
+		if [[ ! "$median" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*)$ ]]; then
+			error "Error - Failed to calculate valid median:"
+			error "Sources = ${validSources[*]}"
+			error "Prices = ${validPrices[*]}"
+			error "Invalid median = $median"
+			continue
+		fi
+
+		 #Get latest message for this asset pair
+		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
+			
+
+		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$latestMsg")" == "false" ] && [ "$(isMsgStale "$latestMsg" "$median")" == "false" ]; then
+			continue
+		fi
+
+		#Get timestamp
+		time=$(timestampS)
+		if [[ ! "$time" =~ ^[1-9]{1}[0-9]{9}$ ]]; then
+			error "Error - Got invalid timestamp"
+			error "Timestamp = $time"
+			continue
+		fi
+
+		#Convert timestamp to hex
+		timeHex=$(time2Hex "$time")
+		if [[ ! "$timeHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
+			error "Error - Failed to convert timestamp to hex"
+			error "Timestamp = $time"
+			error "Hex Timestamp = $timeHex"
+			continue
+		fi
+
+		#Convert median to hex
+		medianHex=$(price2Hex "$median" "$assetPair")
+		if [[ ! "$medianHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
+			error "Error - Failed to convert median to hex:"
+			error "Median = $median"
+			error "Hex median = $medianHex"
+			continue
+		fi
+
+		#Convert asset pair to hex
+		assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
+		if [[ ! "$assetPairHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
+			error "Error - Failed to convert asset pair to hex:"
+			error "Asset Pair = $assetPair"
+			error "Asset Pair Hex = $assetPairHex"
+			continue
+		fi
+
+		#Create hash
+		hash=$(keccak256Hash "0x" "$medianHex" "$timeHex" "$assetPairHex")
+
+		#Sign hash
+		sig=$(signMessage "$hash")
+		verbose "-> Message Signature = $sig"
+
+		#broadcast message to scuttelbot
+		broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
+	
 	done
 }
 
