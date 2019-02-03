@@ -24,6 +24,31 @@ importEthereumEnv () {
 
 	_json=$(jq -S '.ethereum' < "$_config")
 
+	#this parameter is optional
+	#not needed when using a custom endpoint
+	#not needed until infura starts enforcing api keys
+	#which is really soon...
+	INFURA_KEY="$(echo "$_json" | jq -r .infuraKey)"
+	[[ -z "$INFURA_KEY" ]] || [[ "$INFURA_KEY" =~ ^[0-9a-f]{32}$ ]] || errors+=("Error - Invalid Infura Key")
+	export INFURA_KEY
+
+	network="$(echo "$_json" | jq -r .network)"
+	case "${network,,}" in
+	ethlive|mainnet)
+		ETH_RPC_URL=https://mainnet.infura.io/v3/$INFURA_KEY
+		;;
+	ropsten|kovan|rinkeby|goerli)
+		ETH_RPC_URL=https://${network,,}.infura.io/v3/$INFURA_KEY
+		;;
+	*)
+		#custom RPC endpoint like Ganache or Testchain
+		ETH_RPC_URL=$network
+		;;
+	esac
+	#validate connection to ethereum network
+	[[ $(seth --rpc-url "$ETH_RPC_URL" block latest number) =~ ^[1-9]*[0-9]*$ ]] || errors+=("Error - Invalid Ethereum network.\nValid options are: ethlive, mainnet, ropsten, kovan, rinkeby, goerli, or a custom endpoint")
+
+
 	ETH_FROM="$(echo "$_json" | jq -r '.from')"
 	#this just checks for valid chars and length, NOT checksum!
 	[[ "$ETH_FROM" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Ethereum Address is invalid. ")
@@ -38,6 +63,7 @@ importEthereumEnv () {
 
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 
+	export ETH_RPC_URL
 	export ETH_FROM
 	export ETH_KEYSTORE
 	export ETH_PASSWORD

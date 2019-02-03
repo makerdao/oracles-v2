@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519" "@EbPRv+q8uPZBd9C+ATINR7gRKgRC4eNz3a0NGMoneak=.ed25519")
+declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519" "@EbPRv+q8uPZBd9C+ATINR7gRKgRC4eNz3a0NGMoneak=.ed25519" "@4ickOIUfHNRlHGSBX7ot0goUw0FyoJ66UU2LwXhBuw0=.ed25519")
 
 . config.sh
 . ethereum.sh
@@ -12,7 +12,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.8.9"
+	OMNIA_VERSION="0.9.0"
 
 	#Load Global configuration
   	importEnv
@@ -21,6 +21,8 @@ initEnv () {
 	echo "--------- STARTING OMNIA ---------"
   	echo "Bot started $(date)"
   	echo "Omnia Version:                     V$OMNIA_VERSION"
+  	echo "ETHEREUM"
+  	echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
 	echo "Price check interval:              $OMNIA_INTERVAL seconds"
 	echo ""
@@ -63,7 +65,7 @@ execute () {
 		#Query prices of asset pair
 		readSources "$assetPair"
 		if [[ "${#validPrices[@]}" -eq 0 ]] || [[ "${#validSources[@]}" -eq 0 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
-			error "Failed to fetch valid prices from sources."
+			error "Error - Failed to fetch valid prices from sources."
 			continue
 		fi
 
