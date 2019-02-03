@@ -32,7 +32,7 @@ timestampS () {
 }
 
 #convert price to hex with respect to that tokens decimals
-adjustDecimals () {
+adjustDecimalsLeft () {
 	local _price="$1"
 	local _assetPair="$2"
 	local _decimals
@@ -40,6 +40,17 @@ adjustDecimals () {
 	#debug
 	verbose "decimals = $_decimals"
 	bc <<<"$_price * 10 ^ $_decimals / 1"
+}
+
+#convert price to hex with respect to that tokens decimals
+adjustDecimalsRight () {
+	local _price="$1"
+	local _assetPair="$2"
+	local _decimals
+	_decimals=$(lookupTokenDecimals "$_assetPair")
+	#debug
+	verbose "decimals = $_decimals"
+	bc <<<"scale=$_decimals; $_price * 10^-$_decimals"
 }
 
 #convert price to hex
