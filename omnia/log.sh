@@ -10,7 +10,12 @@ function verbose {
  	[[ $OMNIA_VERBOSE ]] && echo "[$(date "+%D %T")] [V] $1" >&2
 }
 
-#log err console output with timestamp
+#log error console output with timestamp
 function error {
 	echo "[$(date "+%D %T")] [E] $1" >&2
+}
+
+#log debug information after error
+function debug {
+	echo "[$(date "+%D %T")] [D] $1" >&2
 }
