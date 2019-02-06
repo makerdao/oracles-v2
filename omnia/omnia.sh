@@ -12,15 +12,16 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.9.0"
+	OMNIA_VERSION="0.9.1"
 
 	#Load Global configuration
   	importEnv
 
 	echo ""
-	echo "--------- STARTING OMNIA ---------"
+	echo "------------ STARTING OMNIA -----------"
   	echo "Bot started $(date)"
   	echo "Omnia Version:                     V$OMNIA_VERSION"
+  	echo ""
   	echo "ETHEREUM"
   	echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
@@ -74,9 +75,9 @@ execute () {
 		verbose "median => $median"
 		if [[ ! "$median" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*)$ ]]; then
 			error "Error - Failed to calculate valid median:"
-			error "Sources = ${validSources[*]}"
-			error "Prices = ${validPrices[*]}"
-			error "Invalid median = $median"
+			debug "Sources = ${validSources[*]}"
+			debug "Prices = ${validPrices[*]}"
+			debug "Invalid Median = $median"
 			continue
 		fi
 
@@ -85,6 +86,7 @@ execute () {
 			
 
 		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$latestMsg")" == "false" ] && [ "$(isMsgStale "$latestMsg" "$median")" == "false" ]; then
+			#TODO make the above functions print out a message when they hit
 			continue
 		fi
 
@@ -92,7 +94,7 @@ execute () {
 		time=$(timestampS)
 		if [[ ! "$time" =~ ^[1-9]{1}[0-9]{9}$ ]]; then
 			error "Error - Got invalid timestamp"
-			error "Timestamp = $time"
+			debug "Invalid Timestamp = $time"
 			continue
 		fi
 
@@ -100,8 +102,8 @@ execute () {
 		timeHex=$(time2Hex "$time")
 		if [[ ! "$timeHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert timestamp to hex"
-			error "Timestamp = $time"
-			error "Hex Timestamp = $timeHex"
+			debug "Timestamp = $time"
+			debug "Invalid Timestamp Hex = $timeHex"
 			continue
 		fi
 
@@ -109,8 +111,8 @@ execute () {
 		medianHex=$(price2Hex "$median" "$assetPair")
 		if [[ ! "$medianHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert median to hex:"
-			error "Median = $median"
-			error "Hex median = $medianHex"
+			debug "Median = $median"
+			debug "Invalid Median Hex = $medianHex"
 			continue
 		fi
 
@@ -118,17 +120,30 @@ execute () {
 		assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
 		if [[ ! "$assetPairHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert asset pair to hex:"
-			error "Asset Pair = $assetPair"
-			error "Asset Pair Hex = $assetPairHex"
+			debug "Asset Pair = $assetPair"
+			debug "Invalid Asset Pair Hex = $assetPairHex"
 			continue
 		fi
 
 		#Create hash
 		hash=$(keccak256Hash "0x" "$medianHex" "$timeHex" "$assetPairHex")
+		if [[ ! "$hash" =~ ^(0x){1}[0-9a-fA-F]{64}$ ]]; then
+			error "Error - failed to generate valid hash"
+			debug "Median Hex = $medianHex"
+			debug "Timestamp Hex = $timeHex"
+			debug "Asset Pair Hex = $assetPairHex"
+			debug "Invalid Hash = $hash"
+			continue
+		fi
 
 		#Sign hash
 		sig=$(signMessage "$hash")
-		verbose "-> Message Signature = $sig"
+		if [[ ! "$sig" =~ ^[0-9a-f]{130}$ ]]; then
+			error "Error - Failed to generate valid signature"
+			debug "Hash = $hash"
+			debug "Invalid Signature = $sig"
+			continue
+		fi
 
 		#broadcast message to scuttelbot
 		broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
