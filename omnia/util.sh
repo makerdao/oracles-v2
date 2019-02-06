@@ -59,7 +59,7 @@ price2Hex () {
 	local _assetPair="$2"
 	local _adjustedPrice
 	#adjust price to decimals corresponding to asset pair
-	_adjustedPrice=$(adjustDecimals "$_price" "$_assetPair")
+	_adjustedPrice=$(adjustDecimalsLeft "$_price" "$_assetPair")
 	#debug
 	verbose "Adjusted Price = $_adjustedPrice"
 	#convert price to 32 byte hex
