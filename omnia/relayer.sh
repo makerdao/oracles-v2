@@ -3,14 +3,11 @@
 #pulls latest price of an asset from each feed
 pullLatestPricesOfAssetPair () {
     local _assetPair="$1"
+    local _quorum="$2"
     local _randomizedFeeds=()
-    local _quorum
 
     #randomize order of feeds
     _randomizedFeeds=( $(shuf -e "${feeds[@]}") )
-
-    #get quorum for asset pair
-    _quorum=$(pullOracleQuorum "$_assetPair")
 
     verbose "Pulling $_assetPair Messages"
     #scrape all feeds
@@ -40,12 +37,17 @@ pullLatestPricesOfAssetPair () {
 #consider renaming to pushNewOraclePrice
 updateOracle () {
     for assetPair in "${assetPairs[@]}"; do
-        local entries=()
+        local _quorum
         local _prices
         local _median
+        local entries=()
         local _sortedEntries=()
 
-        pullLatestPricesOfAssetPair "$assetPair"
+        #get quorum for asset pair
+        _quorum=$(pullOracleQuorum "$assetPair")
+        [[ -z "$_quorum" ]] || [[ "$_quorum" -le 0 ]] && error "Invalid quorum, skipping..." && continue
+
+        pullLatestPricesOfAssetPair "$assetPair" "$_quorum"
 
         #DEBUG
         echo "number of elements in entries = ${#entries[@]}"

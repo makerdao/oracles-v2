@@ -154,16 +154,16 @@ execute () {
 oracle () {
 	while true; do
 		execute
-		verbose "sleeping for $OMNIA_INTERVAL seconds"
+		verbose "Sleeping for $OMNIA_INTERVAL seconds..."
 		sleep "$OMNIA_INTERVAL"
 	done
 }
 
 relayer () {
     while true; do
-	updateOracle
-	verbose "SLEEPING FOR $OMNIA_INTERVAL seconds"
-	sleep "$OMNIA_INTERVAL"
+		updateOracle
+		verbose "Sleeping $OMNIA_INTERVAL seconds.."
+		sleep "$OMNIA_INTERVAL"
     done
 }
 

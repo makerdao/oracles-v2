@@ -23,14 +23,18 @@ pullMessages () {
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
-    "$HOME"/scuttlebot/bin.js getLatest "$_feed" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
+    local _rawMsg
+    _rawMsg=$("$HOME"/scuttlebot/bin.js getLatest "$_feed")
+    [[ $? -gt 0 ]] || [[ -z "$_rawMsg" ]] && error "Error - Error retrieving latest message" && return
+    echo "$_rawMsg" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
 }
 
 #pull previous message
 pullPreviousFeedMsg () {
-    #trim quotes from prev key
     local _prev
+    #trim quotes from prev key
     _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
+    [[ -z "$_prev" ]] || [[ "$_prev" =~ ^(%){1}[0-9a-zA-Z+/]{43}$ ]] && error "Error - Invalid previous msg id" && return
     "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
 }
 
@@ -43,6 +47,8 @@ pullLatestFeedMsgOfType () {
     #get latest message from feed
     _msg=$( pullLatestFeedMsg "$_feed" )
     verbose "latest message = $_msg"
+    [[ -z "$_msg" ]] && return 
+
     #if message does not contain a price, get the previous message until we find one that does
     while (( _counter < 10 )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
         #clear previous key

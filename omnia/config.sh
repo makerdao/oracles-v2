@@ -12,6 +12,9 @@ importEnv () {
 		exit 1
 	fi
 	verbose "Importing configuration from $config..."
+
+	#check if config file is valid json
+
 	importEthereumEnv $config
 	importOptionsEnv $config
 	importAssetPairsEnv $config
