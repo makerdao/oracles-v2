@@ -81,23 +81,25 @@ broadcastPriceMsg () {
     local _jqArgs=()
     local _json
 
-    #generate JSON for transpose of sources with prices  
+    #generate JSON for transpose of sources with prices
+    verbose Constructing message...  
     _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add')
     [[ $? -gt 0 ]] && error "Error - failed to transpose sources with prices" && return
 
-    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $_version" "--arg median $_median" "--arg medianHex $_medianHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
+    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg median $_median" "--arg medianHex $_medianHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
 
     #debug
-    verbose "${_jqArgs[@]}"
+    verbose "${_jqArgs[*]}"
 
     #generate JSON msg
-    _json=$(jq -ne ${_jqArgs[@]} '{assetPair: $assetPair, version: $version, median: $median | tonumber, medianHex: $medianHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}')
+    # shellcheck disable=2068
+    _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, median: $median | tonumber, medianHex: $medianHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}')
     [[ $? -gt 0 ]] && error "Error - failed to generate JSON msg" && return
     
     #debug
     verbose "$_json"
 
     #publish msg to scuttlebot
-    log "Submitting new price message..."
-    echo "$_json" | "$HOME"/scuttlebot/bin.js publish
+    log "Publishing new price message..."
+    echo "$_json" | "$HOME"/scuttlebot/bin.js publish .
 }

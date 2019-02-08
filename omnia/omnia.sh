@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519" "@EbPRv+q8uPZBd9C+ATINR7gRKgRC4eNz3a0NGMoneak=.ed25519" "@4ickOIUfHNRlHGSBX7ot0goUw0FyoJ66UU2LwXhBuw0=.ed25519")
 
+# shellcheck source=./config.sh
 . config.sh
 . ethereum.sh
 . log.sh
@@ -12,7 +13,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.9.1"
+	OMNIA_VERSION="0.9.2"
 
 	#Load Global configuration
   	importEnv
@@ -138,7 +139,7 @@ execute () {
 
 		#Sign hash
 		sig=$(signMessage "$hash")
-		if [[ ! "$sig" =~ ^[0-9a-f]{130}$ ]]; then
+		if [[ ! "$sig" =~ ^(0x){1}[0-9a-f]{130}$ ]]; then
 			error "Error - Failed to generate valid signature"
 			debug "Hash = $hash"
 			debug "Invalid Signature = $sig"
