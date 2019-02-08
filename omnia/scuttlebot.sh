@@ -26,7 +26,7 @@ pullLatestFeedMsg () {
     local _rawMsg
     _rawMsg=$("$HOME"/scuttlebot/bin.js getLatest "$_feed")
     [[ $? -gt 0 ]] || [[ -z "$_rawMsg" ]] && error "Error - Error retrieving latest message" && return
-    echo "$_rawMsg" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, time0x: .value.content.time0x, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.median, price0x: .value.content.median0x, signature: .value.content.signature}' 
+    echo "$_rawMsg" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, timeHex: .value.content.timeHex, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.price, priceHex: .value.content.priceHex, signature: .value.content.signature}' 
 }
 
 #pull previous message
@@ -35,7 +35,7 @@ pullPreviousFeedMsg () {
     #trim quotes from prev key
     _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
     [[ -z "$_prev" ]] || [[ "$_prev" =~ ^(%){1}[0-9a-zA-Z+/]{43}$ ]] && error "Error - Invalid previous msg id" && return
-    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, time0x: .content.time0x, previous: .previous, type: .content.type, price: .content.median, price0x: .content.median0x, signature: .content.signature}'
+    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, timeHex: .content.timeHex, previous: .previous, type: .content.type, price: .content.price, priceHex: .content.priceHex, signature: .content.signature}'
 }
 
 #pull latest message of type _ from feed
@@ -71,8 +71,8 @@ pullLatestFeedMsgOfType () {
 #publish price  to scuttlebot
 broadcastPriceMsg () {
     local _assetPair="$1"
-    local _median="$2"
-    local _medianHex="$3"
+    local _price="$2"
+    local _priceHex="$3"
     local _time="$4"
     local _timeHex="$5"
     local _hash="$6"
@@ -86,14 +86,14 @@ broadcastPriceMsg () {
     _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add')
     [[ $? -gt 0 ]] && error "Error - failed to transpose sources with prices" && return
 
-    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg median $_median" "--arg medianHex $_medianHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
+    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
 
     #debug
     verbose "${_jqArgs[*]}"
 
     #generate JSON msg
     # shellcheck disable=2068
-    _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, median: $median | tonumber, medianHex: $medianHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}')
+    _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}')
     [[ $? -gt 0 ]] && error "Error - failed to generate JSON msg" && return
     
     #debug

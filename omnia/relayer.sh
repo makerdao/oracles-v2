@@ -101,8 +101,8 @@ generateCalldata () {
         allR+=( "${_sig:0:64}" )
         allS+=( "${_sig:64:64}" )
         allV+=( "$(seth --to-word "0x$_v" )" )
-        allPrices+=( "$( echo "$msg" | jq -r '.price0x' )" )
-        allTimes+=( "$( echo "$msg" | jq -r '.time0x' )" )
+        allPrices+=( "$( echo "$msg" | jq -r '.priceHex' )" )
+        allTimes+=( "$( echo "$msg" | jq -r '.timeHex' )" )
     done
     #DEBUG
     verbose "allPrices = ${allPrices[*]}"
