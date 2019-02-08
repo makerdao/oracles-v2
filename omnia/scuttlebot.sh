@@ -76,12 +76,28 @@ broadcastPriceMsg () {
     local _time="$4"
     local _timeHex="$5"
     local _hash="$6"
-    local _sig="$7"
-    cmd="$HOME/scuttlebot/bin.js publish --type $_assetPair --version $OMNIA_VERSION --median $_median --median0x $_medianHex --time $_time --time0x $_timeHex --hash ${_hash:2} --signature ${_sig:2}"
-    for index in ${!validSources[*]}; do
-        cmd+=" --${validSources[index]} ${validPrices[index]}"
-    done
+    local _signature="$7"
+    local _sourcePrices
+    local _jqArgs=()
+    local _json
+
+    #generate JSON for transpose of sources with prices  
+    _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add')
+    [[ $? -gt 0 ]] && error "Error - failed to transpose sources with prices" && return
+
+    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $_version" "--arg median $_median" "--arg medianHex $_medianHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
+
+    #debug
+    verbose "${_jqArgs[@]}"
+
+    #generate JSON msg
+    _json=$(jq -ne ${_jqArgs[@]} '{assetPair: $assetPair, version: $version, median: $median | tonumber, medianHex: $medianHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}')
+    [[ $? -gt 0 ]] && error "Error - failed to generate JSON msg" && return
+    
+    #debug
+    verbose "$_json"
+
+    #publish msg to scuttlebot
     log "Submitting new price message..."
-    verbose "$cmd"
-    verbose "$(eval "$cmd")"
+    echo "$_json" | "$HOME"/scuttlebot/bin.js publish
 }

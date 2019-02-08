@@ -29,7 +29,7 @@ pushOraclePrice () {
     #TODO - calculate and use custom gas price
     _oracleContract=$(lookupOracleContract "$_assetPair")
     verbose "Sending tx..."
-    tx=$(seth --rpc-url "$ETH_RPC_URL" send "$_oracleContract" 'poke(uint256[] calldata,uint256[] calldata,uint8[] calldata,bytes32[] calldata,bytes32[] calldata)' \
+    tx=$(seth --rpc-url "$ETH_RPC_URL" send "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
         "[$(join "${allPrices[@]}")]" \
         "[$(join "${allTimes[@]}")]" \
         "[$(join "${allV[@]}")]" \
