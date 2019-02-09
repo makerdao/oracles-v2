@@ -24,12 +24,16 @@ Each feed runs a broadcaster which pulls prices through Setzer, signs them with 
 The relayer monitors the gossiped messages, checks for liveness, and homogenizes the pricing data and signatures into a single ethereum transaction.
 
 ## [Live Kovan Oracles]     
-      ETHUSD = 0x9Fe0D478D0E290d50EF8DFc08760C4ad9D2C7AE9    
-      BTCUSD = 0x51322A569233db3506892881eE7710f511db96A1     
-      MKRUSD = 0x55ea960cf38f9dd50591bd618ffbe55474419001     
-      REPUSD = 0x89Ed12730F870a94a37E2D4004706D50456E11b2     
-      DGXUSD = 0xa541D04193bCCF9c3B62ef34ebc3AA19d00BB69F     
-      POLYUSD = 0x5BEBd4d264A33370046EC77b614926d44189Dcfd     
+      ETHUSD = 0xF0c26dBB0Fb1f19793307d4E6182697a4b0F1e8F
+      BTCUSD = 0x0f09d65E705a59E675fD7d59246bCB8C9A48a55C     
+      MKRUSD = 0x999D31266049E636713B9726E350D82caC3DD278
+      REPUSD = 0xEfA5F53c62531Cb29b8A8E298687A422b8793D72
+      DGXUSD = 0x5a77A06A3B4c54C01A946De0D2Aee9aDeDdC3DB8
+      POLYUSD = 0x004978Fa622C7Bd04c798c3beD445cE3b0b66877
+
+## [Live Mainnet Oracles]
+      BTCUSD = 0x064409168198A7E9108036D072eF59F923dEDC9A
+
 
 ## Query Oracle Contracts
 
