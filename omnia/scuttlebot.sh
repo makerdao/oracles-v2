@@ -25,7 +25,7 @@ pullLatestFeedMsg () {
 	local _feed="$1"
     local _rawMsg
     _rawMsg=$("$HOME"/scuttlebot/bin.js getLatest "$_feed")
-    [[ $? -gt 0 ]] || [[ -z "$_rawMsg" ]] && error "Error - Error retrieving latest message" && return
+    [[ $? -gt 0 ]] || [[ -z "$_rawMsg" ]] && error "Error - Failed to retrieve latest message" && return
     echo "$_rawMsg" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, timeHex: .value.content.timeHex, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.price, priceHex: .value.content.priceHex, signature: .value.content.signature}' 
 }
 
