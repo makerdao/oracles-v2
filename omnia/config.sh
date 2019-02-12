@@ -11,22 +11,22 @@ importEnv () {
 		error "Please create /etc/omnia.conf or put it in the working directory."
 		exit 1
 	fi
-	#verbose "Importing configuration from $config..."
+	echo "Importing configuration from $config..."
 
 	#check if config file is valid json
 
 	importMode $config
-	#importEthereumEnv $config
+	importEthereumEnv $config
 	importAssetPairsEnv $config
 	importOptionsEnv $config
-	#importScuttlebotEnv
+	importScuttlebotEnv
 	[[ "$OMNIA_MODE" == "RELAYER" ]] && importFeeds $config
 }
 
 importMode () {
 	local _config="$1"
 	OMNIA_MODE="$(jq -r '.mode' < "$_config" | tr '[:lower:]' '[:upper:]')"
-	[[ "$OMNIA_MODE" =~ ^(FEED|RELAYER){1}$ ]] || error "Error - Invalid Mode param, valid values are FEED or RELAYER"
+	[[ "$OMNIA_MODE" =~ ^(FEED|RELAYER){1}$ ]] || { error "Error - Invalid Mode param, valid values are 'FEED' and 'RELAYER'"; exit 1; }
 	export OMNIA_MODE
 }
 
@@ -67,17 +67,17 @@ importEthereumEnv () {
 
 	ETH_FROM="$(echo "$_json" | jq -r '.from')"
 	#this just checks for valid chars and length, NOT checksum!
-	[[ "$ETH_FROM" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Ethereum Address is invalid. ")
+	[[ "$ETH_FROM" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Ethereum Address is invalid.")
 	export ETH_FROM
 
 	ETH_KEYSTORE="$(echo "$_json" | jq -r '.keystore')"
 	#validate path exists
-	[[ -d "$ETH_KEYSTORE" ]] || errors+=("Error - Ethereum Keystore Path is invalid, directory does not exist. ")
+	[[ -d "$ETH_KEYSTORE" ]] || errors+=("Error - Ethereum Keystore Path is invalid, directory does not exist.")
 	export ETH_KEYSTORE
 
 	ETH_PASSWORD="$(echo "$_json" | jq -r '.password')"
 	#validate file exists
-	[[ -f "$ETH_PASSWORD" ]] || errors+=("Error - Ethereum Password Path is invalid, file does not exist. ")
+	[[ -f "$ETH_PASSWORD" ]] || errors+=("Error - Ethereum Password Path is invalid, file does not exist.")
 	export ETH_PASSWORD
 
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
@@ -86,30 +86,79 @@ importEthereumEnv () {
 importAssetPairsEnv () {
 	local _config="$1"
 	local _json
-	local decimals
+	local _decimals
+	local _contract
+	local _msgExpiration
 	declare -gA assetInfo
 
 	_json="$(jq -S '.pairs' < "$_config")"
 
 	#create array of asset pairs
 	readarray -t assetPairs < <(echo "$_json" | jq -r 'keys | .[]')
-	#echo "${assetPairs[@]}"
+
+	[[ ${#assetPairs[@]} -eq 0 ]] && { error "Error - Config must have at least 1 asset pair"; exit 1; }
+
+	[[ $OMNIA_MODE == "FEED" ]] && importAssetPairsFeed
+	[[ $OMNIA_MODE == "RELAYER" ]] && importAssetPairsRelayer
+}
+
+importAssetPairsFeed () {
+	local _decimals
+	local _msgSpread
+	local _msgExpiration
+
+	#verify config is complete
+	jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .msgSpread)"' "$_config"
+	[[ $? -gt 0 ]]
+
+	#Write values as comma seperated list to associative array
+	while IFS="=" read -r assetPair info; do
+		assetInfo[$assetPair]="$info"
+	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .msgSpread)"' "$_config")
+
+	#Verify values
+	for assetPair in "${!assetInfo[@]}"; do
+		_decimals=$(getTokenDecimals "$assetPair")
+		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid decimals field, must be positive integer.")
+		
+		_msgExpiration=$(getMsgExpiration "$assetPair")
+		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid msgExpiration field, must be positive integer.")
+		
+		_msgSpread=$(getMsgSpread "$assetPair")
+		[[ "$_msgSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid msgSpread field, must be positive integer or float.")
+	done
+	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+}
+
+importAssetPairsRelayer () {
+	local _decimals
+	local _oracle
+	local _msgExpiration
+	local _oracleSpread
+	local _oracleExpiration
+
+	jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .oracle),\(.[$assetPair] | .oracleExpiration),\(.[$assetPair] | .oracleSpread)"' "$_config"
+	[[ $? -gt 0 ]]
 
 	while IFS="=" read -r assetPair info; do
 		assetInfo[$assetPair]="$info"
-	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .oracle)"' "$_config")
-	
-	for asset in "${!assetInfo[@]}"; do
-		decimals=$(cut -d ',' -f1 <<<"${assetInfo[$asset]}")
-		[[ -z "$decimals" ]] && errors+=("Error - Asset Pair param $asset is missing decimals field. ")
-		[[ "$decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $asset has invalid decimals field, must be positive integer. ")
+	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .oracle),\(.[$assetPair] | .oracleExpiration),\(.[$assetPair] | .oracleSpread)"' "$_config")
+
+	for assetPair in "${!assetInfo[@]}"; do
+		_decimals=$(getTokenDecimals "$assetPair")
+		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid decimals field, must be positive integer.")
 		
-		if [[ "$OMNIA_MODE" == "RELAYER" ]]; then
-			local contract
-			contract=$(cut -d ',' -f2 <<<"${assetInfo[$asset]}")
-			[[ -z "$contract" ]] && errors+=("Error - Asset Pair param $asset is missing contract field. ")
-			[[ "$contract" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Asset Pair param $asset has invalid contract field, must be ethereum address prefixed with 0x. ")
-		fi
+		_msgExpiration=$(getMsgExpiration "$assetPair")
+		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid msgExpiration field, must be positive integer.")
+		
+		_oracle=$(getOracleContract "$assetPair")
+		[[ "$_oracle" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid oracle field, must be ethereum address prefixed with 0x.")
+		
+		_oracleExpiration=$(getOracleExpiration "$assetPair")
+		[[ "$_oracleExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid oracleExpiration field, must be positive integer") 
+
+		_oracleSpread=$(getOracleSpread "$assetPair")
+		[[ "$_oracleSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid oracleSpread field, must be positive integer or float")
 	done
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
@@ -120,7 +169,7 @@ importFeeds () {
 
 	readarray -t feeds < <(jq -r '.feeds[]' < "$_config")
 	for feed in "${feeds[@]}"; do
-		[[ $feed =~ ^(@){1}[a-zA-Z0-9+]{43}(=.ed25519){1}$ ]] || error "Error - Invalid feed address: $feed"
+		[[ $feed =~ ^(@){1}[a-zA-Z0-9+]{43}(=.ed25519){1}$ ]] || { error "Error - Invalid feed address: $feed"; exit 1; }
 	done
 }
 
@@ -131,32 +180,12 @@ importOptionsEnv () {
 	_json=$(jq -S '.options' < "$_config")
 
 	OMNIA_INTERVAL="$(echo "$_json" | jq -S '.interval')"
-	[[ "$OMNIA_INTERVAL" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Interval param is invalid, must be positive whole number. ")
+	[[ "$OMNIA_INTERVAL" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Interval param is invalid, must be positive whole number.")
 	export OMNIA_INTERVAL
-
-	OMNIA_MSG_EXPIRY_INTERVAL="$(echo "$_json" | jq -S '.msgExpiration')"
-	[[ "$OMNIA_MSG_EXPIRY_INTERVAL" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Msg expiration param is invalid, must be positive whole number. ")
-	export OMNIA_MSG_EXPIRY_INTERVAL
-
-	if [[ "$OMNIA_MODE" = "FEED" ]]; then
-		OMNIA_MSG_SPREAD="$(echo "$_json" | jq -S '.msgSpread')"
-		[[ "$OMNIA_MSG_SPREAD" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Msg spread param is invalid, must be positive. ")
-		export OMNIA_MSG_SPREAD
-	fi
-
-	if [[ "$OMNIA_MODE" == "RELAYER" ]]; then
-		OMNIA_ORACLE_EXPIRY_INTERVAL="$(echo "$_json" | jq -S '.oracleExpiration')"
-		[[ "$OMNIA_MSG_EXPIRY_INTERVAL" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Msg expiration param is invalid, must be positive whole number. ")
-		export OMNIA_ORACLE_EXPIRY_INTERVAL
-
-		OMNIA_ORACLE_SPREAD="$(echo "$_json" | jq -S '.oracleSpread')"
-		[[ "$OMNIA_ORACLE_SPREAD" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Oracle spread param is invalid, must be positive. ")
-		export OMNIA_ORACLE_SPREAD
-	fi
 
 	OMNIA_VERBOSE="$(echo "$_json" | jq -S '.verbose')"
 	OMNIA_VERBOSE=$(echo "$OMNIA_VERBOSE" | tr '[:upper:]' '[:lower:]')
-	[[ "$OMNIA_VERBOSE" =~ ^(true|false)$ ]] || errors+=("Error - Verbose param is invalid, must be true or false. ")
+	[[ "$OMNIA_VERBOSE" =~ ^(true|false)$ ]] || errors+=("Error - Verbose param is invalid, must be true or false.")
 	export OMNIA_VERBOSE
 	
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
@@ -164,9 +193,6 @@ importOptionsEnv () {
 
 importScuttlebotEnv () {
 	SCUTTLEBOT_FEED_ID=$(getFeedId)
-	[[ $SCUTTLEBOT_FEED_ID ]] || errors+=("Could not get scuttlebot feed id, make sure scuttlebot server is running ")
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ $SCUTTLEBOT_FEED_ID ]] || { error "Could not get scuttlebot feed id, make sure scuttlebot server is running"; exit 1; }
 	export SCUTTLEBOT_FEED_ID
 }
-
-importEnv

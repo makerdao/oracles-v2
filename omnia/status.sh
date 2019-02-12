@@ -25,12 +25,15 @@ isExpired () {
 
 #is last scuttlebot message published expired 
 isMsgExpired () {
-	local _msg="$1"
+	local _assetPair="$1"
+	local _msg="$2"
 	local _curTime
 	local _lastTime
+	local _expirationInterval
 	_curTime=$(timestampS)
 	_lastTime=$(echo "$_msg" | jq '.time')
-	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_MSG_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
+	_expirationInterval=$(getMsgExpiration "$_assetPair")
+	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && echo true || echo false
 }
 
 #is last price update to Oracle expired
@@ -38,9 +41,11 @@ isOracleExpired () {
 	local _assetPair="$1"
 	local _curTime
 	local _lastTime
+	local _expirationInterval
 	_curTime=$(timestampS)
 	_lastTime=$(pullOracleTime "$_assetPair")
-	[ "$(isExpired "$_curTime" "$_lastTime" "$OMNIA_ORACLE_EXPIRY_INTERVAL")" == "true" ] && echo true || echo false
+	_expirationInterval=$(getOracleExpiration "$_assetPair")
+	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && echo true || echo false
 }
 
 #is spread greater than specified spread limit
@@ -62,11 +67,14 @@ isStale () {
 
 #is spread between existing Scuttlebot price greatner than spread limit
 isMsgStale () {
-	local _oldPriceMsg="$1"
-	local _newPrice="$2"
+	local _assetPair="$1"
+	local _oldPriceMsg="$2"
+	local _newPrice="$3"
 	local _oldPrice
+	local _spreadLimit
+	_spreadLimit=$(getMsgSpread "$_assetPair")
 	_oldPrice=$(echo "$_oldPriceMsg" | jq '.price')
-	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_MSG_SPREAD")" == "true" ] && echo true || echo false
+	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
 
 #is spread between existing Oracle price greater than spread limit
@@ -74,8 +82,10 @@ isOracleStale () {
 	local _assetPair="$1"
 	local _newPrice="$2"
 	local _oldPrice
+	local _spreadLimit
+	_spreadLimit=$(getOracleSpread "$_assetPair")
 	_oldPrice=$(pullOraclePrice "$_assetPair")
-	[ "$(isStale "$_oldPrice" "$_newPrice" "$OMNIA_ORACLE_SPREAD")" == "true" ] && echo true || echo false
+	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
 
 #is timestamp of message more recent than timestamp of last Oracle update

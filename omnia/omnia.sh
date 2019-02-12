@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9pDFHSTfy2CY0PsO0hIpnY1BYgcpdGL2YWXHc73lI=.ed25519" "@lplSEbzl8cEDE7HTLQ2Fk2TasjZhEXbEzGzKBFQvVvc=.ed25519" "@EbPRv+q8uPZBd9C+ATINR7gRKgRC4eNz3a0NGMoneak=.ed25519" "@4ickOIUfHNRlHGSBX7ot0goUw0FyoJ66UU2LwXhBuw0=.ed25519")
 
 # shellcheck source=./config.sh
 . config.sh
@@ -13,7 +12,7 @@ declare -a feeds=("@SoGPH4un5Voz98oAZIbo4hYftc4slv4A+OHXPGCFHpA=.ed25519" "@aS9p
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.9.2"
+	OMNIA_VERSION="0.9.3"
 
 	#Load Global configuration
   	importEnv
@@ -22,27 +21,31 @@ initEnv () {
 	echo "------------ STARTING OMNIA -----------"
   	echo "Bot started $(date)"
   	echo "Omnia Version:                     V$OMNIA_VERSION"
+  	echo "Mode:                              $OMNIA_MODE"
+  	echo "Verbose Mode:                      $OMNIA_VERBOSE"
+  	echo "Interval:                          $OMNIA_INTERVAL seconds"
   	echo ""
   	echo "ETHEREUM"
   	echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
-	echo "Price check interval:              $OMNIA_INTERVAL seconds"
 	echo ""
 	echo "SCUTTLEBOT"
 	echo "Feed address:                      $SCUTTLEBOT_FEED_ID"
-	echo "Spread to update:                  $OMNIA_MSG_SPREAD %"
-	echo "Price expiration interval:         $OMNIA_MSG_EXPIRY_INTERVAL seconds"
+	echo "   Peers:"
+	for feed in "${feeds[@]}"; do
+		printf '                      %s\n' "$feed"
+	done
 	echo ""
 	echo "ORACLE"
-	for assetPair in "${assetPairs[@]}"
-	do
-		printf '%s Oracle Address:             %s\n' "$assetPair" "$(lookupOracleContract "$assetPair")"
+	for assetPair in "${assetPairs[@]}"; do
+		printf '   %s\n' "$assetPair" 
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Address:             %s\n' "$(getOracleContract "$assetPair")"
+		[[ $OMNIA_MODE == "FEED" ]] && printf '      Message Spread:             %s \%\n' "$(getMsgSpread "$assetPair")"
+		printf '      Message Expiration:         %s seconds\n' "$(getMsgExpiration "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Spread:              %s %\n' "$(getOracleSpread "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Expiration:          %s seconds\n' "$(getOracleExpiration "$assetPair")"
 	done
-	echo "Spread to update:                  $OMNIA_ORACLE_SPREAD %"
-	echo "Price expiration interval          $OMNIA_ORACLE_EXPIRY_INTERVAL seconds"
 	echo ""
-	echo "Verbose Mode:                      $OMNIA_VERBOSE"
-	echo "Relayer Mode:                      $OMNIA_RELAYER"
 	echo "------- INITIALIZATION COMPLETE -------"
 	echo ""
 }
@@ -86,7 +89,7 @@ execute () {
 		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 			
 
-		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$latestMsg")" == "false" ] && [ "$(isMsgStale "$latestMsg" "$median")" == "false" ]; then
+		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] && [ "$(isMsgStale "assetPair" "$latestMsg" "$median")" == "false" ]; then
 			#TODO make the above functions print out a message when they hit
 			continue
 		fi
@@ -169,4 +172,5 @@ relayer () {
 }
 
 initEnv
-[ "$OMNIA_RELAYER" == "true" ] && relayer || oracle
+[ "$OMNIA_MODE" == "RELAYER" ] && relayer
+[ "$OMNIA_MODE" == "FEED" ] && oracle

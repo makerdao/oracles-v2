@@ -47,7 +47,7 @@ pullLatestFeedMsgOfType () {
     #get latest message from feed
     _msg=$( pullLatestFeedMsg "$_feed" )
     verbose "latest message = $_msg"
-    [[ -z "$_msg" ]] && return 
+    [[ -z "$_msg" ]] && return
 
     #if message does not contain a price, get the previous message until we find one that does
     while (( _counter < 10 )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
