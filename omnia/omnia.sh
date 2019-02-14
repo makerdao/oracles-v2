@@ -17,8 +17,21 @@ initEnv () {
 	#Load Global configuration
   	importEnv
 
-	echo ""
-	echo "------------ STARTING OMNIA -----------"
+  	if [[ $OMNIA_MODE == "FEED" ]]; then
+	  	echo ""
+	  	echo ""
+		echo "  /\$\$\$\$\$\$                          /\$\$                                "          
+		echo " /\$\$__  \$\$                        |__/                                    "          
+		echo "| \$\$  \ \$\$ /\$\$\$\$\$\$/\$\$\$\$  /\$\$\$\$\$\$\$  /\$\$  /\$\$\$\$\$\$  "
+		echo "| \$\$  | \$\$| \$\$_  \$\$_  \$\$| \$\$__  \$\$| \$\$ |____  \$\$            "
+		echo "| \$\$  | \$\$| \$\$ \ \$\$ \ \$\$| \$\$  \ \$\$| \$\$  /\$\$\$\$\$\$\$       "
+		echo "| \$\$  | \$\$| \$\$ | \$\$ | \$\$| \$\$  | \$\$| \$\$ /\$\$__  \$\$          "
+		echo "|  \$\$\$\$\$\$/| \$\$ | \$\$ | \$\$| \$\$  | \$\$| \$\$|  \$\$\$\$\$\$\$     "
+		echo " \______/ |__/ |__/ |__/|__/  |__/|__/ \_______/                              "
+		echo ""
+		echo ""
+	fi
+	echo "-------------------- STARTING OMNIA --------------------"
   	echo "Bot started $(date)"
   	echo "Omnia Version:                     V$OMNIA_VERSION"
   	echo "Mode:                              $OMNIA_MODE"
@@ -33,7 +46,7 @@ initEnv () {
 	echo "Feed address:                      $SCUTTLEBOT_FEED_ID"
 	[[ $OMNIA_MODE == "RELAYER" ]] && echo "   Peers:"
 	for feed in "${feeds[@]}"; do
-		printf '                      %s\n' "$feed"
+		printf '                                  %s\n' "$feed"
 	done
 	echo ""
 	echo "ORACLE"
@@ -47,7 +60,7 @@ initEnv () {
 		printf '      Decimals:                   %s\n' "$(getTokenDecimals "$assetPair")"
 	done
 	echo ""
-	echo "------- INITIALIZATION COMPLETE -------"
+	echo "--------------- INITIALIZATION COMPLETE ----------------"
 	echo ""
 }
 
@@ -89,7 +102,6 @@ execute () {
 		 #Get latest message for this asset pair
 		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 			
-
 		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] && [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]; then
 			#TODO make the above functions print out a message when they hit
 			continue
@@ -156,7 +168,7 @@ execute () {
 	done
 }
 
-oracle () {
+runFeed () {
 	while true; do
 		execute
 		verbose "Sleeping for $OMNIA_INTERVAL seconds..."
@@ -164,7 +176,7 @@ oracle () {
 	done
 }
 
-relayer () {
+runRelayer () {
     while true; do
 		updateOracle
 		verbose "Sleeping $OMNIA_INTERVAL seconds.."
@@ -173,5 +185,5 @@ relayer () {
 }
 
 initEnv
-[ "$OMNIA_MODE" == "RELAYER" ] && relayer
-[ "$OMNIA_MODE" == "FEED" ] && oracle
+[ "$OMNIA_MODE" == "RELAYER" ] && runRelayer
+[ "$OMNIA_MODE" == "FEED" ] && runFeed

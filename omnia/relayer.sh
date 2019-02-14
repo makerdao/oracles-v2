@@ -1,40 +1,5 @@
 #!/usr/bin/env bash
 
-#pulls latest price of an asset from each feed
-pullLatestPricesOfAssetPair () {
-    local _assetPair="$1"
-    local _quorum="$2"
-    local _randomizedFeeds=()
-
-    #randomize order of feeds
-    _randomizedFeeds=( $(shuf -e "${feeds[@]}") )
-
-    verbose "Pulling $_assetPair Messages"
-    #scrape all feeds
-    for feed in "${_randomizedFeeds[@]}"; do
-        #stop collecting messages once quorum has been achieved
-        [ "${#entries[@]}" -eq "$_quorum" ] && verbose "Collected enough messages for quorum" && return
- 
-        verbose "Working with feed: $feed"
-        #grab latest price msg of asset from feed
-        priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
-
-        #DEBUG
-        verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
-        [ -n "${priceEntry}" ] && ( verbose "price msg contains data" || error "Error: price msg is empty, skipping..." )
-        [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "message is of type $_assetPair" || error "Error: Could not find recent message of type $_assetPair, skipping..." )
-        [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is expired, skipping..." || verbose "msg timestamp is valid" ) 
-        [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is newer than last Oracle update" || verbose "Message is older than last Oracle update, skipping...")
-
-        #verify price msg is valid and not expired
-        if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
-            verbose "Adding message from $feed to catalogue"
-            entries+=( "$priceEntry" )
-        fi
-    done
-}
-
-#consider renaming to pushNewOraclePrice
 updateOracle () {
     for assetPair in "${assetPairs[@]}"; do
         local _quorum
@@ -79,6 +44,40 @@ updateOracle () {
             verbose "sorted messages = ${_sortedEntries[*]}"
             generateCalldata "${_sortedEntries[@]}"
             pushOraclePrice "$assetPair"
+        fi
+    done
+}
+
+#pulls latest price of an asset from each feed
+pullLatestPricesOfAssetPair () {
+    local _assetPair="$1"
+    local _quorum="$2"
+    local _randomizedFeeds=()
+
+    #randomize order of feeds
+    _randomizedFeeds=( $(shuf -e "${feeds[@]}") )
+
+    verbose "Pulling $_assetPair Messages"
+    #scrape all feeds
+    for feed in "${_randomizedFeeds[@]}"; do
+        #stop collecting messages once quorum has been achieved
+        [ "${#entries[@]}" -eq "$_quorum" ] && verbose "Collected enough messages for quorum" && return
+ 
+        verbose "Working with feed: $feed"
+        #grab latest price msg of asset from feed
+        priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
+
+        #DEBUG
+        verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
+        [ -n "${priceEntry}" ] && ( verbose "price msg contains data" || error "Error: price msg is empty, skipping..." )
+        [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "message is of type $_assetPair" || error "Error: Could not find recent message of type $_assetPair, skipping..." )
+        [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is expired, skipping..." || verbose "msg timestamp is valid" ) 
+        [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is newer than last Oracle update" || verbose "Message is older than last Oracle update, skipping...")
+
+        #verify price msg is valid and not expired
+        if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
+            verbose "Adding message from $feed to catalogue"
+            entries+=( "$priceEntry" )
         fi
     done
 }

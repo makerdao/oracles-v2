@@ -86,10 +86,6 @@ importEthereumEnv () {
 importAssetPairsEnv () {
 	local _config="$1"
 	local _json
-	local _decimals
-	local _contract
-	local _msgExpiration
-	declare -gA assetInfo
 
 	_json="$(jq -S '.pairs' < "$_config")"
 
@@ -103,13 +99,10 @@ importAssetPairsEnv () {
 }
 
 importAssetPairsFeed () {
+	declare -gA assetInfo
 	local _decimals
-	local _msgSpread
 	local _msgExpiration
-
-	#verify config is complete
-	jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .msgSpread)"' "$_config"
-	[[ $? -gt 0 ]]
+	local _msgSpread
 
 	#Write values as comma seperated list to associative array
 	while IFS="=" read -r assetPair info; do
@@ -119,26 +112,24 @@ importAssetPairsFeed () {
 	#Verify values
 	for assetPair in "${!assetInfo[@]}"; do
 		_decimals=$(getTokenDecimals "$assetPair")
-		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid decimals field, must be positive integer.")
+		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing decimals field, must be positive integer.")
 		
 		_msgExpiration=$(getMsgExpiration "$assetPair")
-		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid msgExpiration field, must be positive integer.")
+		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgExpiration field, must be positive integer.")
 		
 		_msgSpread=$(getMsgSpread "$assetPair")
-		[[ "$_msgSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid msgSpread field, must be positive integer or float.")
+		[[ "$_msgSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgSpread field, must be positive integer or float.")
 	done
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importAssetPairsRelayer () {
+	declare -gA assetInfo
 	local _decimals
-	local _oracle
 	local _msgExpiration
-	local _oracleSpread
+	local _oracle
 	local _oracleExpiration
-
-	jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .oracle),\(.[$assetPair] | .oracleExpiration),\(.[$assetPair] | .oracleSpread)"' "$_config"
-	[[ $? -gt 0 ]]
+	local _oracleSpread
 
 	while IFS="=" read -r assetPair info; do
 		assetInfo[$assetPair]="$info"
@@ -146,19 +137,19 @@ importAssetPairsRelayer () {
 
 	for assetPair in "${!assetInfo[@]}"; do
 		_decimals=$(getTokenDecimals "$assetPair")
-		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid decimals field, must be positive integer.")
+		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing decimals field, must be positive integer.")
 		
 		_msgExpiration=$(getMsgExpiration "$assetPair")
-		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid msgExpiration field, must be positive integer.")
+		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgExpiration field, must be positive integer.")
 		
 		_oracle=$(getOracleContract "$assetPair")
-		[[ "$_oracle" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid oracle field, must be ethereum address prefixed with 0x.")
+		[[ "$_oracle" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracle field, must be ethereum address prefixed with 0x.")
 		
 		_oracleExpiration=$(getOracleExpiration "$assetPair")
-		[[ "$_oracleExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid oracleExpiration field, must be positive integer") 
+		[[ "$_oracleExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracleExpiration field, must be positive integer") 
 
 		_oracleSpread=$(getOracleSpread "$assetPair")
-		[[ "$_oracleSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid oracleSpread field, must be positive integer or float")
+		[[ "$_oracleSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracleSpread field, must be positive integer or float")
 	done
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
