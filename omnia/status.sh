@@ -56,10 +56,9 @@ isStale () {
 	local _spread
 	_spread=$(setzer spread "$_oldPrice" "$_newPrice")
 	log "Old Price = ${_oldPrice}   New Price = ${_newPrice}"
-	log "-> spread = $_spread"
+	log "-> spread = ${_spread#-}"
 	test=$(bc <<< "${_spread#-} >= ${_spreadLimit}")
 	#DEBUG
-	verbose "spread = ${_spread#-}"
 	verbose "spread limit = ${_spreadLimit}"
 
 	[[ ${test} -ne 0 ]] && log "Spread is greater than ${_spreadLimit}" && echo true || echo false
@@ -72,8 +71,8 @@ isMsgStale () {
 	local _newPrice="$3"
 	local _oldPrice
 	local _spreadLimit
-	_spreadLimit=$(getMsgSpread "$_assetPair")
 	_oldPrice=$(echo "$_oldPriceMsg" | jq '.price')
+	_spreadLimit=$(getMsgSpread "$_assetPair")
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
 

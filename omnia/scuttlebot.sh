@@ -82,7 +82,7 @@ broadcastPriceMsg () {
     local _json
 
     #generate JSON for transpose of sources with prices
-    verbose Constructing message...  
+    verbose "Constructing message..."
     _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add')
     [[ $? -gt 0 ]] && error "Error - failed to transpose sources with prices" && return
 

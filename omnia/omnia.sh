@@ -90,7 +90,7 @@ execute () {
 		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 			
 
-		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] && [ "$(isMsgStale "assetPair" "$latestMsg" "$median")" == "false" ]; then
+		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] && [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]; then
 			#TODO make the above functions print out a message when they hit
 			continue
 		fi
