@@ -55,10 +55,10 @@ pullLatestFeedMsgOfType () {
         local _key=""
         #get key of previous message
         _key=$( echo "$_msg" | jq '.previous' )
+         #stop looking if no more messages
+        [[ $_key == "null" ]] && break
         #clear previous message
         _msg=""
-        #stop looking if no more messages
-        [[ $_key == "null" ]] && break
         #grab previous message
         _msg=$( pullPreviousFeedMsg "$_key" )
         verbose "previous message = $_msg"
@@ -81,24 +81,24 @@ broadcastPriceMsg () {
     local _jqArgs=()
     local _json
 
-    #generate JSON for transpose of sources with prices
     verbose "Constructing message..."
-    _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add')
-    [[ $? -gt 0 ]] && error "Error - failed to transpose sources with prices" && return
-
+    #generate JSON for transpose of sources with prices
+    if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
+        error "Error - failed to transpose sources with prices"
+        return
+    fi
+    #compose jq message arguments
     _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
-
     #debug
     verbose "${_jqArgs[*]}"
-
     #generate JSON msg
     # shellcheck disable=2068
-    _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}')
-    [[ $? -gt 0 ]] && error "Error - failed to generate JSON msg" && return
-    
+    if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}'); then
+        error "Error - failed to generate JSON msg"
+        return
+    fi
     #debug
     verbose "$_json"
-
     #publish msg to scuttlebot
     log "Publishing new price message..."
     echo "$_json" | "$HOME"/scuttlebot/bin.js publish .

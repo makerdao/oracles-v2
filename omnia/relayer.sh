@@ -69,10 +69,10 @@ pullLatestPricesOfAssetPair () {
 
         #DEBUG
         verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
-        [ -n "${priceEntry}" ] && ( verbose "price msg contains data" || error "Error: price msg is empty, skipping..." )
-        [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "message is of type $_assetPair" || error "Error: Could not find recent message of type $_assetPair, skipping..." )
-        [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is expired, skipping..." || verbose "msg timestamp is valid" ) 
-        [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ] && ( verbose "msg timestamp is newer than last Oracle update" || verbose "Message is older than last Oracle update, skipping...")
+        [ -n "${priceEntry}" ] && ( verbose "Price msg contains data" || error "Error: price msg is empty, skipping..." )
+        [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && verbose "message is of type $_assetPair" || error "Error: Could not find recent message of type $_assetPair, skipping..."
+        [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "true" ] && verbose "msg timestamp is expired, skipping..." || verbose "msg timestamp is valid" 
+        [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ] && verbose "msg timestamp is newer than last Oracle update" || verbose "Message is older than last Oracle update, skipping..."
 
         #verify price msg is valid and not expired
         if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then

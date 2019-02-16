@@ -17,21 +17,19 @@ initEnv () {
 	#Load Global configuration
   	importEnv
 
-  	if [[ $OMNIA_MODE == "FEED" ]]; then
-	  	echo ""
-	  	echo ""
-		echo "  /\$\$\$\$\$\$                          /\$\$                                "          
-		echo " /\$\$__  \$\$                        |__/                                    "          
-		echo "| \$\$  \ \$\$ /\$\$\$\$\$\$/\$\$\$\$  /\$\$\$\$\$\$\$  /\$\$  /\$\$\$\$\$\$  "
-		echo "| \$\$  | \$\$| \$\$_  \$\$_  \$\$| \$\$__  \$\$| \$\$ |____  \$\$            "
-		echo "| \$\$  | \$\$| \$\$ \ \$\$ \ \$\$| \$\$  \ \$\$| \$\$  /\$\$\$\$\$\$\$       "
-		echo "| \$\$  | \$\$| \$\$ | \$\$ | \$\$| \$\$  | \$\$| \$\$ /\$\$__  \$\$          "
-		echo "|  \$\$\$\$\$\$/| \$\$ | \$\$ | \$\$| \$\$  | \$\$| \$\$|  \$\$\$\$\$\$\$     "
-		echo " \______/ |__/ |__/ |__/|__/  |__/|__/ \_______/                              "
-		echo ""
-		echo ""
-	fi
-	echo "-------------------- STARTING OMNIA --------------------"
+	echo ""
+  	echo ""
+	echo "  /\$\$\$\$\$\$                          /\$\$                                "          
+	echo " /\$\$__  \$\$                        |__/                                    "          
+	echo "| \$\$  \ \$\$ /\$\$\$\$\$\$/\$\$\$\$  /\$\$\$\$\$\$\$  /\$\$  /\$\$\$\$\$\$  "
+	echo "| \$\$  | \$\$| \$\$_  \$\$_  \$\$| \$\$__  \$\$| \$\$ |____  \$\$            "
+	echo "| \$\$  | \$\$| \$\$ \ \$\$ \ \$\$| \$\$  \ \$\$| \$\$  /\$\$\$\$\$\$\$       "
+	echo "| \$\$  | \$\$| \$\$ | \$\$ | \$\$| \$\$  | \$\$| \$\$ /\$\$__  \$\$          "
+	echo "|  \$\$\$\$\$\$/| \$\$ | \$\$ | \$\$| \$\$  | \$\$| \$\$|  \$\$\$\$\$\$\$     "
+	echo " \______/ |__/ |__/ |__/|__/  |__/|__/ \_______/                              "
+	echo ""
+	echo ""
+	echo "------------------------------- STARTING OMNIA -------------------------------"
   	echo "Bot started $(date)"
   	echo "Omnia Version:                     V$OMNIA_VERSION"
   	echo "Mode:                              $OMNIA_MODE"
@@ -46,21 +44,21 @@ initEnv () {
 	echo "Feed address:                      $SCUTTLEBOT_FEED_ID"
 	[[ $OMNIA_MODE == "RELAYER" ]] && echo "   Peers:"
 	for feed in "${feeds[@]}"; do
-		printf '                                  %s\n' "$feed"
+		printf '                                   %s\n' "$feed"
 	done
 	echo ""
 	echo "ORACLE"
 	for assetPair in "${assetPairs[@]}"; do
 		printf '   %s\n' "$assetPair" 
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Address:             %s\n' "$(getOracleContract "$assetPair")"
-		[[ $OMNIA_MODE == "FEED" ]] && printf '      Message Spread:             %s %% \n' "$(getMsgSpread "$assetPair")"
-		printf '      Message Expiration:         %s seconds\n' "$(getMsgExpiration "$assetPair")"
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Spread:              %s %% \n' "$(getOracleSpread "$assetPair")"
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Expiration:          %s seconds\n' "$(getOracleExpiration "$assetPair")"
-		printf '      Decimals:                   %s\n' "$(getTokenDecimals "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Address:              %s\n' "$(getOracleContract "$assetPair")"
+		[[ $OMNIA_MODE == "FEED" ]] && printf '      Message Spread:              %s %% \n' "$(getMsgSpread "$assetPair")"
+		printf '      Message Expiration:          %s seconds\n' "$(getMsgExpiration "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Spread:               %s %% \n' "$(getOracleSpread "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Expiration:           %s seconds\n' "$(getOracleExpiration "$assetPair")"
+		printf '      Decimals:                    %s\n' "$(getTokenDecimals "$assetPair")"
 	done
 	echo ""
-	echo "--------------- INITIALIZATION COMPLETE ----------------"
+	echo "-------------------------- INITIALIZATION COMPLETE ---------------------------"
 	echo ""
 }
 
