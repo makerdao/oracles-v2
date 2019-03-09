@@ -17,10 +17,8 @@ pullOracleQuorum () {
 pullOraclePrice () {
 	local _assetPair="$1"
 	local _address
-	local _currentPrice
 	_address=$(getOracleContract "$_assetPair")
-	_currentPrice=$(seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "peek()(uint256)")")
-	adjustDecimalsRight "$_currentPrice" "$_assetPair"
+	seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "peek()(uint256)")"
 }
 
 pushOraclePrice () {

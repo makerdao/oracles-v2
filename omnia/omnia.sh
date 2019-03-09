@@ -12,7 +12,7 @@
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.9.3"
+	OMNIA_VERSION="0.9.4"
 
 	#Load Global configuration
   	importEnv
@@ -37,7 +37,7 @@ initEnv () {
   	echo "Interval:                          $OMNIA_INTERVAL seconds"
   	echo ""
   	echo "ETHEREUM"
-  	echo "Network:                           $ETH_RPC_URL"
+  	[[ $OMNIA_MODE == "RELAYER" ]] && echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
 	echo ""
 	echo "SCUTTLEBOT"
@@ -51,11 +51,10 @@ initEnv () {
 	for assetPair in "${assetPairs[@]}"; do
 		printf '   %s\n' "$assetPair" 
 		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Address:              %s\n' "$(getOracleContract "$assetPair")"
-		[[ $OMNIA_MODE == "FEED" ]] && printf '      Message Spread:              %s %% \n' "$(getMsgSpread "$assetPair")"
 		printf '      Message Expiration:          %s seconds\n' "$(getMsgExpiration "$assetPair")"
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Spread:               %s %% \n' "$(getOracleSpread "$assetPair")"
+		[[ $OMNIA_MODE == "FEED" ]] && printf '      Message Spread:              %s %% \n' "$(getMsgSpread "$assetPair")"
 		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Expiration:           %s seconds\n' "$(getOracleExpiration "$assetPair")"
-		printf '      Decimals:                    %s\n' "$(getTokenDecimals "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Spread:               %s %% \n' "$(getOracleSpread "$assetPair")"
 	done
 	echo ""
 	echo "-------------------------- INITIALIZATION COMPLETE ---------------------------"
@@ -123,7 +122,7 @@ execute () {
 		fi
 
 		#Convert median to hex
-		medianHex=$(price2Hex "$median" "$assetPair")
+		medianHex=$(price2Hex "$median")
 		if [[ ! "$medianHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert median to hex:"
 			debug "Median = $median"

@@ -33,7 +33,7 @@ isMsgExpired () {
 	_curTime=$(timestampS)
 	_lastTime=$(echo "$_msg" | jq '.time')
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
-	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && echo true || echo false
+	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && verbose "Message timestamp is expired, skipping..." && echo true || echo false
 }
 
 #is last price update to Oracle expired
@@ -104,14 +104,9 @@ isQuorum () {
 	local _numFeeds="$2"
 
 	local _quorum
-	#get min number of feeds requored for quorum from Oracle contract
-	#note we cant trust users not to run modified clients
-	#so whether quorum is achieved is reinforced in the contract
+	#get min number of feeds required for quorum from Oracle contract
 	_quorum=$(pullOracleQuorum "$_assetPair")
 	verbose "quorum for $_assetPair = $_quorum feeds"
-
-	#DEBUG
-	verbose "number of feeds counted = $_numFeeds"
 
 	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && verbose "Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
 }

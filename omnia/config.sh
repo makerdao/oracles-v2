@@ -14,6 +14,8 @@ importEnv () {
 	echo "Importing configuration from $config..."
 
 	#check if config file is valid json
+	jq '.' < "$config" > /dev/null 2>&1
+    [[ $? -ne 0 ]] && error "Error - Config is not valid JSON" && exit 1;
 
 	importMode $config
 	importEthereumEnv $config
@@ -100,20 +102,16 @@ importAssetPairsEnv () {
 
 importAssetPairsFeed () {
 	declare -gA assetInfo
-	local _decimals
 	local _msgExpiration
 	local _msgSpread
 
 	#Write values as comma seperated list to associative array
 	while IFS="=" read -r assetPair info; do
 		assetInfo[$assetPair]="$info"
-	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .msgSpread)"' "$_config")
+	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .msgSpread)"' "$_config")
 
 	#Verify values
 	for assetPair in "${!assetInfo[@]}"; do
-		_decimals=$(getTokenDecimals "$assetPair")
-		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing decimals field, must be positive integer.")
-		
 		_msgExpiration=$(getMsgExpiration "$assetPair")
 		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgExpiration field, must be positive integer.")
 		
@@ -125,7 +123,6 @@ importAssetPairsFeed () {
 
 importAssetPairsRelayer () {
 	declare -gA assetInfo
-	local _decimals
 	local _msgExpiration
 	local _oracle
 	local _oracleExpiration
@@ -133,12 +130,9 @@ importAssetPairsRelayer () {
 
 	while IFS="=" read -r assetPair info; do
 		assetInfo[$assetPair]="$info"
-	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .decimals),\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .oracle),\(.[$assetPair] | .oracleExpiration),\(.[$assetPair] | .oracleSpread)"' "$_config")
+	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .oracle),\(.[$assetPair] | .oracleExpiration),\(.[$assetPair] | .oracleSpread)"' "$_config")
 
 	for assetPair in "${!assetInfo[@]}"; do
-		_decimals=$(getTokenDecimals "$assetPair")
-		[[ "$_decimals" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing decimals field, must be positive integer.")
-		
 		_msgExpiration=$(getMsgExpiration "$assetPair")
 		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgExpiration field, must be positive integer.")
 		
