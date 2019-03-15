@@ -12,7 +12,7 @@
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.9.4"
+	OMNIA_VERSION="0.9.5"
 
 	#Load Global configuration
   	importEnv

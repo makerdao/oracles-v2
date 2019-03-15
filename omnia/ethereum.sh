@@ -18,7 +18,9 @@ pullOraclePrice () {
 	local _assetPair="$1"
 	local _address
 	_address=$(getOracleContract "$_assetPair")
-	seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "peek()(uint256)")"
+	rawStorage=$(seth --rpc-url "$ETH_RPC_URL" storage "$_address" 0x1)
+	[[ "${#rawStorage}" -ne 66 ]] || echo "oracle contract storage query failed"
+	seth --from-wei "$(seth --to-dec "${rawStorage:34:32}")"
 }
 
 pushOraclePrice () {
