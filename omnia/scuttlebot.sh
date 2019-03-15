@@ -50,7 +50,7 @@ pullLatestFeedMsgOfType () {
     [[ -z "$_msg" ]] && return
 
     #if message does not contain a price, get the previous message until we find one that does
-    while (( _counter < 10 )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
+    while (( _counter < 15 )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
         #clear previous key
         local _key=""
         #get key of previous message

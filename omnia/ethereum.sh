@@ -17,10 +17,11 @@ pullOracleQuorum () {
 pullOraclePrice () {
 	local _assetPair="$1"
 	local _address
+	local _rawStorage
 	_address=$(getOracleContract "$_assetPair")
-	rawStorage=$(seth --rpc-url "$ETH_RPC_URL" storage "$_address" 0x1)
-	[[ "${#rawStorage}" -ne 66 ]] || echo "oracle contract storage query failed"
-	seth --from-wei "$(seth --to-dec "${rawStorage:34:32}")"
+	_rawStorage=$(seth --rpc-url "$ETH_RPC_URL" storage "$_address" 0x1)
+	[[ "${#_rawStorage}" -ne 66 ]] && error "oracle contract storage query failed" && return
+	seth --from-wei "$(seth --to-dec "${_rawStorage:34:32}")"
 }
 
 pushOraclePrice () {
@@ -36,6 +37,6 @@ pushOraclePrice () {
         "[$(join "${allR[@]}")]" \
         "[$(join "${allS[@]}")]")
     echo "TX: $tx"
-    echo SUCCESS: "$(timeout 45 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
+    echo SUCCESS: "$(timeout 20 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
     echo GAS USED: "$(seth --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
 }

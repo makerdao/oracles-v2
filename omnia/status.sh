@@ -45,6 +45,8 @@ isOracleExpired () {
 	_curTime=$(timestampS)
 	_lastTime=$(pullOracleTime "$_assetPair")
 	_expirationInterval=$(getOracleExpiration "$_assetPair")
+	#todo find better regex that doesn't break in 2033
+	[[ "$_expirationInterval" =~ ^[0-9]{10}$ ]] || echo false
 	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && echo true || echo false
 }
 
@@ -60,7 +62,6 @@ isStale () {
 	test=$(bc <<< "${_spread#-} >= ${_spreadLimit}")
 	#DEBUG
 	verbose "spread limit = ${_spreadLimit}"
-
 	[[ ${test} -ne 0 ]] && log "Spread is greater than ${_spreadLimit}" && echo true || echo false
 }
 
@@ -84,6 +85,7 @@ isOracleStale () {
 	local _spreadLimit
 	_spreadLimit=$(getOracleSpread "$_assetPair")
 	_oldPrice=$(pullOraclePrice "$_assetPair")
+	[[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || echo false
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
 
@@ -102,11 +104,9 @@ isMsgNew () {
 isQuorum () {
 	local _assetPair="$1"
 	local _numFeeds="$2"
-
 	local _quorum
 	#get min number of feeds required for quorum from Oracle contract
 	_quorum=$(pullOracleQuorum "$_assetPair")
 	verbose "quorum for $_assetPair = $_quorum feeds"
-
 	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && verbose "Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
 }
