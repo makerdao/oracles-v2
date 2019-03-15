@@ -27,11 +27,13 @@ isExpired () {
 isMsgExpired () {
 	local _assetPair="$1"
 	local _msg="$2"
-	local _curTime
 	local _lastTime
+	local _curTime
 	local _expirationInterval
-	_curTime=$(timestampS)
 	_lastTime=$(echo "$_msg" | jq '.time')
+	#todo find better regex that doesn't break in 2033
+	[[ "$_lastTime" =~ ^[0-9]{10}$ ]] || echo false && return 1
+	_curTime=$(timestampS)
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
 	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && verbose "Message timestamp is expired, skipping..." && echo true || echo false
 }
@@ -39,14 +41,14 @@ isMsgExpired () {
 #is last price update to Oracle expired
 isOracleExpired () {
 	local _assetPair="$1"
-	local _curTime
 	local _lastTime
+	local _curTime
 	local _expirationInterval
-	_curTime=$(timestampS)
 	_lastTime=$(pullOracleTime "$_assetPair")
-	_expirationInterval=$(getOracleExpiration "$_assetPair")
 	#todo find better regex that doesn't break in 2033
-	[[ "$_expirationInterval" =~ ^[0-9]{10}$ ]] || echo false
+	[[ "$_lastTime" =~ ^[0-9]{10}$ ]] || echo false && return 1
+	_curTime=$(timestampS)
+	_expirationInterval=$(getOracleExpiration "$_assetPair")
 	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && echo true || echo false
 }
 
@@ -73,6 +75,7 @@ isMsgStale () {
 	local _oldPrice
 	local _spreadLimit
 	_oldPrice=$(echo "$_oldPriceMsg" | jq '.price')
+	[[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || echo false && return 1
 	_spreadLimit=$(getMsgSpread "$_assetPair")
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
@@ -85,7 +88,7 @@ isOracleStale () {
 	local _spreadLimit
 	_spreadLimit=$(getOracleSpread "$_assetPair")
 	_oldPrice=$(pullOraclePrice "$_assetPair")
-	[[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || echo false
+	[[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || echo false && return 1
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
 
