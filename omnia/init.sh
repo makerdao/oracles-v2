@@ -29,4 +29,4 @@ if ! [[ -z $PIDS_OMNIA ]]; then
     sleep 3
 fi
 echo "Launching Omnia..."
-nohup "$HOME"/omnia/omnia.sh >"$HOME"/logs/omnia.log &
+nohup "$HOME"/oracles-v2/omnia/omnia.sh >"$HOME"/logs/omnia.log &
