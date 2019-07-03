@@ -31,8 +31,10 @@ isMsgExpired () {
 	local _curTime
 	local _expirationInterval
 	_lastTime=$(echo "$_msg" | jq '.time')
-	#todo find better regex that doesn't break in 2033
-	[[ "$_lastTime" =~ ^[0-9]{10}$ ]] || ( echo false && return 1 )
+	if [[ "$_lastTime" =~ ^[0-9]{10}|[0]{1}$ ]]; then
+		echo false
+		return 1
+	fi
 	_curTime=$(timestampS)
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
 	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && verbose "Message timestamp is expired, skipping..." && echo true || echo false
@@ -45,8 +47,10 @@ isOracleExpired () {
 	local _curTime
 	local _expirationInterval
 	_lastTime=$(pullOracleTime "$_assetPair")
-	#todo find better regex that doesn't break in 2033
-	[[ "$_lastTime" =~ ^[0-9]{10}$ ]] || ( echo false && return 1 )
+	if [[ "$_lastTime" =~ ^[0-9]{10}|[0]{1}$ ]]; then
+		echo false
+		return 1
+	fi
 	_curTime=$(timestampS)
 	_expirationInterval=$(getOracleExpiration "$_assetPair")
 	[ "$(isExpired "$_curTime" "$_lastTime" "$_expirationInterval")" == "true" ] && echo true || echo false
@@ -75,7 +79,10 @@ isMsgStale () {
 	local _oldPrice
 	local _spreadLimit
 	_oldPrice=$(echo "$_oldPriceMsg" | jq '.price')
-	[[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || ( echo false && return 1 )
+	if [[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]]; then
+		echo false
+		return 1
+	fi
 	_spreadLimit=$(getMsgSpread "$_assetPair")
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
@@ -88,7 +95,10 @@ isOracleStale () {
 	local _spreadLimit
 	_spreadLimit=$(getOracleSpread "$_assetPair")
 	_oldPrice=$(pullOraclePrice "$_assetPair")
-	[[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || ( echo false && return 1 )
+	if [[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*|[0]{1})$ ]]; then
+		echo false
+		return 1
+	fi
 	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
 }
 
@@ -99,8 +109,10 @@ isMsgNew () {
 	local _oracleTime
 	local _msgTime
 	_oracleTime=$(pullOracleTime "$_assetPair")
-	#todo find better regex that doesn't break in 2033
-	[[ "$_oracleTime" =~ ^[0-9]{10}$ ]] || ( echo false && return 1 )
+	if [[ "$_oracleTime" =~ ^[0-9]{10}|[0]{1}$ ]]; then
+		echo false
+		return 1
+	fi
 	_msgTime=$(echo "$_msg" | jq '.time')
 	[ "$_oracleTime" -gt "$_msgTime" ] && verbose "Message is older than last Oracle update, skipping..." && echo false || echo true
 }
@@ -112,6 +124,5 @@ isQuorum () {
 	local _quorum
 	#get min number of feeds required for quorum from Oracle contract
 	_quorum=$(pullOracleQuorum "$_assetPair")
-	verbose "quorum for $_assetPair = $_quorum feeds"
 	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && verbose "Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
 }

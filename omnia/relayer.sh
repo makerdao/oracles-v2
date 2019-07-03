@@ -25,9 +25,9 @@ updateOracle () {
         log "median = $_median"
 
         #DEBUG
-        [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$ ]] && verbose "Median is valid" || error "median is invalid"
-        [[ "$(isOracleStale "$assetPair" "$_median")" == "true" ]] && verbose "oracle price is stale" || verbose "oracle price is fresh"
-        [[ "$(isOracleExpired "$assetPair" )" == "true" ]] && verbose "Oracle price is expired" || verbose "Oracle price is recent"
+        [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$ ]] && debug "Median is valid" || error "median is invalid"
+        [[ "$(isOracleStale "$assetPair" "$_median")" == "true" ]] && debug "oracle price is stale" || debug "oracle price is fresh"
+        [[ "$(isOracleExpired "$assetPair" )" == "true" ]] && debug "Oracle price is expired" || debug "Oracle price is recent"
 
         if [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$  && ( "$(isOracleStale "$assetPair" "$_median")" == "true" || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
             local allPrices=()
@@ -64,8 +64,8 @@ pullLatestPricesOfAssetPair () {
 
         #verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
 
-        #verify price msg is valid and not expired
-        if [ -n "${priceEntry}" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
+        #verify price msg is valid and not expired\
+        if [ -n "${priceEntry}" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
             verbose "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
         fi
@@ -94,9 +94,9 @@ generateCalldata () {
         allTimes+=( "$( echo "$msg" | jq -r '.timeHex' )" )
     done
     #DEBUG
-    verbose "allPrices = ${allPrices[*]}"
-    verbose "allTimes = ${allTimes[*]}"
-    verbose "allR = ${allR[*]}"
-    verbose "allS = ${allS[*]}"
-    verbose "allV = ${allV[*]}"
+    debug "allPrices = ${allPrices[*]}"
+    debug "allTimes = ${allTimes[*]}"
+    debug "allR = ${allR[*]}"
+    debug "allS = ${allS[*]}"
+    debug "allV = ${allV[*]}"
 }
