@@ -4,11 +4,11 @@ importEnv () {
 	local config
 	if [[ -e /etc/omnia.conf ]]; then
 		config="/etc/omnia.conf"
-	elif [[ -e ./omnia.conf ]]; then 
-		config="./omnia.conf"
+	elif [[ -e ./config/omnia.conf ]]; then 
+		config="./config/omnia.conf"
 	else
 		error "Error Could not find omnia.conf config file to load parameters."
-		error "Please create /etc/omnia.conf or put it in the working directory."
+		error "Please create /etc/omnia.conf or put it in the config directory."
 		exit 1
 	fi
 	echo "Importing configuration from $config..."

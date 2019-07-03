@@ -64,7 +64,7 @@ pullLatestPricesOfAssetPair () {
 
         #verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
 
-        #verify price msg is valid and not expired\
+        #verify price msg is valid and not expired
         if [ -n "${priceEntry}" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
             verbose "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
