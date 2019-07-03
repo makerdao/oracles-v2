@@ -107,7 +107,7 @@ isMsgNew () {
 	local _oracleTime
 	local _msgTime
 	_oracleTime=$(pullOracleTime "$_assetPair")
-	if [[ "$_oracleTime" =~ ^[0-9]{10}|[0]{1}$ ]]; then
+	if ! [[ "$_oracleTime" =~ ^[0-9]{10}|[0]{1}$ ]]; then
 		echo false
 		return 1
 	fi
