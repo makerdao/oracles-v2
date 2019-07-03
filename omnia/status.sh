@@ -66,8 +66,6 @@ isStale () {
 	log "Old Price = ${_oldPrice}   New Price = ${_newPrice}"
 	log "-> spread = ${_spread#-}"
 	test=$(bc <<< "${_spread#-} >= ${_spreadLimit}")
-	#DEBUG
-	verbose "spread limit = ${_spreadLimit}"
 	[[ ${test} -ne 0 ]] && log "Spread is greater than ${_spreadLimit}" && echo true || echo false
 }
 
