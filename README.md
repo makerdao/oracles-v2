@@ -50,9 +50,11 @@ The relayer monitors the gossiped messages, checks for liveness, and homogenizes
 
 ## Query Oracle Contracts
 	 
-Query Oracle price (returns decimal value)
-	     rawStorage=$(seth storage <ORACLE_CONTRACT> 0x1)
-	     seth --from-wei $(seth --to-dec ${rawStorage:34:32})
+Query Oracle price   
+```
+rawStorage=$(seth storage <ORACLE_CONTRACT> 0x1)
+seth --from-wei $(seth --to-dec ${rawStorage:34:32})
+```
 	    
 ## Installation Instructions
 
