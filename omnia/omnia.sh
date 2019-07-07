@@ -89,18 +89,17 @@ execute () {
 		median=$(getMedian "${validPrices[@]}")
 		verbose "median => $median"
 		if [[ ! "$median" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*)$ ]]; then
-			error "Error - Failed to calculate valid median:"
+			error "Error - Failed to calculate valid median: ($median)"
 			debug "Sources = ${validSources[*]}"
 			debug "Prices = ${validPrices[*]}"
-			debug "Invalid Median = $median"
 			continue
 		fi
 
-		 #Get latest message for this asset pair
+		 #Get latest message for asset pair
 		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 			
+
 		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] && [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]; then
-			#TODO make the above functions print out a message when they hit
 			continue
 		fi
 

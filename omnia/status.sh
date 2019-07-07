@@ -19,7 +19,7 @@ isExpired () {
 	local _expiryInterval="$2"
 	local _curTime
 	_curTime=$(timestampS)
-	if ! [[ "$_curTime" =~ ^[0-9]{10}$ ]]; then
+	if ! [[ "$_curTime" =~ ^[1-9]{1}[0-9]{9}$ ]]; then
 		error "Error - Invalid current timestamp ($_curTime)"
 		echo false
 		return 1
