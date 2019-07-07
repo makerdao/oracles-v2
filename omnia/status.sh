@@ -117,7 +117,7 @@ isOracleStale () {
 		return 1
 	fi
 	_oldPrice=$(pullOraclePrice "$_assetPair")
-	if ! [[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*|[0]{1})$ ]]; then
+	if ! [[ "$_oldPrice" =~ ^([1-9][0-9]*([.][0-9]+)?|[.][0-9]*[1-9][0-9]*|[0]{1})$ ]]; then
 		error "Error - Invalid Oracle price ($_oldPrice)"
 		echo false
 		return 1
