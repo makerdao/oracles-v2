@@ -31,7 +31,7 @@ updateOracle () {
             local allS=()
             local allV=()
             sortMsgs "${entries[@]}"
-            verbose "sorted messages = ${_sortedEntries[*]}"
+            log "sorted messages = ${_sortedEntries[*]}"
             generateCalldata "${_sortedEntries[@]}"
             pushOraclePrice "$assetPair"
         fi
@@ -47,19 +47,19 @@ pullLatestPricesOfAssetPair () {
     #randomize order of feeds
     _randomizedFeeds=( $(shuf -e "${feeds[@]}") )
 
-    verbose "Pulling $_assetPair Messages"
+    log "Pulling $_assetPair Messages"
     #scrape all feeds
     for feed in "${_randomizedFeeds[@]}"; do
         #stop collecting messages once quorum has been achieved
-        [ "${#entries[@]}" -eq "$_quorum" ] && verbose "Collected enough messages for quorum" && return
+        [ "${#entries[@]}" -eq "$_quorum" ] && log "Collected enough messages for quorum" && return
  
-        verbose "Working with feed: $feed"
+        log "Working with feed: $feed"
         #grab latest price msg of asset from feed
         priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
 
         #verify price msg is valid and not expired
         if [ -n "${priceEntry}" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
-            verbose "Adding message from $feed to catalogue"
+            log "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
         fi
     done
@@ -87,9 +87,9 @@ generateCalldata () {
         allTimes+=( "$( echo "$msg" | jq -r '.timeHex' )" )
     done
     #DEBUG
-    debug "allPrices = ${allPrices[*]}"
-    debug "allTimes = ${allTimes[*]}"
-    debug "allR = ${allR[*]}"
-    debug "allS = ${allS[*]}"
-    debug "allV = ${allV[*]}"
+    log "allPrices = ${allPrices[*]}"
+    log "allTimes = ${allTimes[*]}"
+    log "allR = ${allR[*]}"
+    log "allS = ${allS[*]}"
+    log "allV = ${allV[*]}"
 }
