@@ -24,7 +24,7 @@ updateOracle () {
         _median=$(getMedian "${_prices[@]}")
         log "-> median = $_median"
 
-        if [[ "$(isPriceValid "$_median")" == "true" && ( "$(isOracleStale "$assetPair" "$_median")" == "true" || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
+        if [[ ( "$(isPriceValid "$_median")" == "true" ) && ( "$(isOracleStale "$assetPair" "$_median")" == "true" || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
             local allPrices=()
             local allTimes=()
             local allR=()
@@ -56,8 +56,6 @@ pullLatestPricesOfAssetPair () {
         verbose "Working with feed: $feed"
         #grab latest price msg of asset from feed
         priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
-
-        #verbose "$_assetPair price msg from feed ($feed) = $priceEntry"
 
         #verify price msg is valid and not expired
         if [ -n "${priceEntry}" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then

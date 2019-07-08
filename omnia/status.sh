@@ -13,6 +13,17 @@ isAssetPair () {
 	[ "$(echo "$_msg" | jq --arg _assetPair "$_assetPair" '.type == $_assetPair')" == "true" ] && echo true || echo false
 }
 
+#is a price valid
+isPriceValid () {
+	local _price="$1"
+	if ! [[ -n "$_price" && "$_price" =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
+		error "Error - Invalid price ($_price)"
+		echo false
+		return 1
+	fi
+	echo true
+}
+
 #has interval elapsed
 isExpired () {
 	local _lastTime="$1"
@@ -79,7 +90,7 @@ isStale () {
 	fi
 	log "-> spread = ${_spread#-}"
 	test=$(bc <<< "${_spread#-} >= ${_spreadLimit}")
-	[[ ${test} -ne 0 ]] && log "Spread is greater than ${_spreadLimit}" && echo true || echo false
+	[[ ${test} -ne 0 ]] && log "Price is stale, spread is greater than ${_spreadLimit}" && echo true || echo false
 }
 
 #is spread between existing Scuttlebot price greatner than spread limit
