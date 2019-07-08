@@ -2,7 +2,7 @@
 
 ## Summary
 
-Oracle client written in bash that utilizes secure scuttlebutt for offline message passing along with signed price data to validate identity and authenticity on-chain.
+Oracle client written in bash that utilizes secure scuttlebutt for offchain message passing along with signed price data to validate identity and authenticity on-chain.
 
 ## Design Goals
 
