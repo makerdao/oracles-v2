@@ -72,7 +72,7 @@ isStale () {
 	local _spread
 	log "Old Price = ${_oldPrice}   New Price = ${_newPrice}"
 	_spread=$(setzer spread "$_oldPrice" "$_newPrice")
-	if ! [[ "$_spread" =~ ^([1-9][0-9]*([.][0-9]+)?|[.][0-9]*[1-9][0-9]*|[0]{1})$ ]]; then
+	if ! [[ "$_spread" =~ ^([-]?[1-9][0-9]*([.][0-9]+)?|[-]?[.][0-9]*[1-9][0-9]*|[0]{1})$ ]]; then
 		error "Error - Invalid spread ($_spread)"
 		echo false
 		return 1
