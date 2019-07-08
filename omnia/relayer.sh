@@ -22,14 +22,9 @@ updateOracle () {
         _prices=$(extractPrices "${entries[@]}")
 
         _median=$(getMedian "${_prices[@]}")
-        log "median = $_median"
+        log "-> median = $_median"
 
-        #DEBUG
-        [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$ ]] && debug "Median is valid" || error "median is invalid"
-        [[ "$(isOracleStale "$assetPair" "$_median")" == "true" ]] && debug "oracle price is stale" || debug "oracle price is fresh"
-        [[ "$(isOracleExpired "$assetPair" )" == "true" ]] && debug "Oracle price is expired" || debug "Oracle price is recent"
-
-        if [[ -n "$_median" && "$_median" =~ ^[+-]?[0-9]+\.?[0-9]*$  && ( "$(isOracleStale "$assetPair" "$_median")" == "true" || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
+        if [[ "$(isPriceValid "$_median")" == "true" && ( "$(isOracleStale "$assetPair" "$_median")" == "true" || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
             local allPrices=()
             local allTimes=()
             local allR=()
