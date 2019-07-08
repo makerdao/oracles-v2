@@ -3,7 +3,12 @@
 #is message empty
 isEmpty () {
 	local _msg="$1"
-	[ -z "$_msg" ] && verbose "Cannot find recent message" && echo true || echo false
+	if [ -z "$_msg" ]; then 
+		verbose "Cannot find recent message"
+		echo true
+	else 
+		echo false
+	fi
 }
 
 #is message of type asset
@@ -19,9 +24,9 @@ isPriceValid () {
 	if ! [[ -n "$_price" && "$_price" =~ ^[+-]?[0-9]+\.?[0-9]*$ ]]; then
 		error "Error - Invalid price ($_price)"
 		echo false
-		return 1
+	else
+		echo true
 	fi
-	echo true
 }
 
 #has interval elapsed
@@ -29,15 +34,22 @@ isExpired () {
 	local _lastTime="$1"
 	local _expiryInterval="$2"
 	local _curTime
+	local _expiryTime
+	local _expirationDif
 	_curTime=$(timestampS)
 	if ! [[ "$_curTime" =~ ^[1-9]{1}[0-9]{9}$ ]]; then
 		error "Error - Invalid current timestamp ($_curTime)"
 		echo false
 		return 1
 	fi
-	local _expiryTime=$(( _curTime - _expiryInterval ))
-	local _expirationDif=$(( _expiryTime - _lastTime ))
-	[ "$_lastTime" -lt "$_expiryTime" ] && log "Previous price posted at t = $_lastTime is expired by $_expirationDif seconds" && echo true || echo false
+	_expiryTime=$(( _curTime - _expiryInterval ))
+	_expirationDif=$(( _expiryTime - _lastTime ))
+	if [ "$_lastTime" -lt "$_expiryTime" ]; then
+		log "Previous price posted at t = $_lastTime is expired by $_expirationDif seconds"
+		echo true
+	else
+		echo false
+	fi
 }
 
 #is last scuttlebot message published expired 
@@ -52,7 +64,12 @@ isMsgExpired () {
 		return 1
 	fi
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
-	[ "$(isExpired "$_lastTime" "$_expirationInterval")" == "true" ] && verbose "Message timestamp is expired, skipping..." && echo true || echo false
+	if [ "$(isExpired "$_lastTime" "$_expirationInterval")" == "true" ]; then
+		log "Message timestamp is expired, skipping..."
+		echo true
+	else
+		echo false
+	fi
 }
 
 #is last price update to Oracle expired
@@ -90,7 +107,12 @@ isStale () {
 	fi
 	log "-> spread = ${_spread#-}"
 	test=$(bc <<< "${_spread#-} >= ${_spreadLimit}")
-	[[ ${test} -ne 0 ]] && log "Price is stale, spread is greater than ${_spreadLimit}" && echo true || echo false
+	if [[ ${test} -ne 0 ]]; then
+		log "Price is stale, spread is greater than ${_spreadLimit}"
+		echo true
+	else
+		echo false
+	fi
 }
 
 #is spread between existing Scuttlebot price greatner than spread limit
@@ -154,7 +176,12 @@ isMsgNew () {
 		echo false
 		return 1
 	fi
-	[ "$_oracleTime" -gt "$_msgTime" ] && verbose "Message is older than last Oracle update, skipping..." && echo false || echo true
+	if [ "$_oracleTime" -gt "$_msgTime" ]; then
+		log "Message is older than last Oracle update, skipping..."
+		echo false
+	else
+		echo true
+	fi
 }
 
 #are there enough feed messages to establish quorum
@@ -169,5 +196,10 @@ isQuorum () {
 		echo false
 		return 1
 	fi
-	[ "$_numFeeds" -ge "$_quorum" ] && echo true || ( echo false && verbose "Could not reach quorum ($_quorum), only $_numFeeds feeds reporting." )
+	if [ "$_numFeeds" -ge "$_quorum" ]; then
+		echo true
+	else
+		log "Could not reach quorum ($_quorum), only $_numFeeds feeds reporting."
+		echo false
+	fi
 }

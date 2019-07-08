@@ -10,7 +10,7 @@ updateOracle () {
 
         #get quorum for asset pair
         _quorum=$(pullOracleQuorum "$assetPair")
-        [[ -z "$_quorum" ]] || [[ "$_quorum" -le 0 ]] && error "Error - Invalid quorum, skipping..." && continue
+        if [[ -z "$_quorum" ]] || [[ "$_quorum" -le 0 ]]; then error "Error - Invalid quorum, skipping..."; continue; fi
 
         pullLatestPricesOfAssetPair "$assetPair" "$_quorum"
 
@@ -31,7 +31,7 @@ updateOracle () {
             local allS=()
             local allV=()
             sortMsgs "${entries[@]}"
-            log "sorted messages = ${_sortedEntries[*]}"
+            verbose "sorted messages = ${_sortedEntries[*]}"
             generateCalldata "${_sortedEntries[@]}"
             pushOraclePrice "$assetPair"
         fi
@@ -51,7 +51,7 @@ pullLatestPricesOfAssetPair () {
     #scrape all feeds
     for feed in "${_randomizedFeeds[@]}"; do
         #stop collecting messages once quorum has been achieved
-        [ "${#entries[@]}" -eq "$_quorum" ] && log "Collected enough messages for quorum" && return
+        if [ "${#entries[@]}" -eq "$_quorum" ]; then log "Collected enough messages for quorum"; return; fi
  
         log "Working with feed: $feed"
         #grab latest price msg of asset from feed
@@ -86,10 +86,9 @@ generateCalldata () {
         allPrices+=( "$( echo "$msg" | jq -r '.priceHex' )" )
         allTimes+=( "$( echo "$msg" | jq -r '.timeHex' )" )
     done
-    #DEBUG
-    log "allPrices = ${allPrices[*]}"
-    log "allTimes = ${allTimes[*]}"
-    log "allR = ${allR[*]}"
-    log "allS = ${allS[*]}"
-    log "allV = ${allV[*]}"
+    verbose "allPrices = ${allPrices[*]}"
+    verbose "allTimes = ${allTimes[*]}"
+    verbose "allR = ${allR[*]}"
+    verbose "allS = ${allS[*]}"
+    verbose "allV = ${allV[*]}"
 }

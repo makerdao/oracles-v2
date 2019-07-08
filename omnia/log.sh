@@ -8,6 +8,7 @@ function log {
 #log verbose console output with timestamp
 function verbose {
  	[[ $OMNIA_VERBOSE == "true" ]] && echo "[$(date "+%D %T")] [V] $1" >&2
+ 	return 0
 }
 
 #log error console output with timestamp
