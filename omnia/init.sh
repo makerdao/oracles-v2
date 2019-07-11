@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 timestamp=$(date "+%m-%d-%y+%H:%M:%S")
-if [ -f "$HOME"/logs/scuttlebot.log ]; then
+if [ -f "$HOME"/logs/ssb-server.log ]; then
     echo "Archiving Scuttlebot logs"
     mkdir -p "$HOME"/logs/archives/"$timestamp"
-    cp "$HOME"/logs/scuttlebot.log "$HOME"/logs/archives/"$timestamp"/scuttlebot.log
+    cp "$HOME"/logs/ssb-server.log "$HOME"/logs/archives/"$timestamp"/ssb-server.log
 fi
-PID_SCUT=$(ps aux | grep scuttlebot | grep -v grep | awk '{print $2}')
+PID_SCUT=$(ps aux | grep ssb-server | grep -v grep | awk '{print $2}')
 if ! [[ -z $PID_SCUT ]]; then
     echo "Scuttlebot is still running, killing existing instance"
     kill "$PID_SCUT"
     sleep 3
 fi
 echo "Launching Scuttlebot Server..."
-nohup "$HOME"/scuttlebot/bin.js server >"$HOME"/logs/scuttlebot.log &
+nohup "$HOME"/ssb-server/bin.js server >"$HOME"/logs/ssb-server.log &
 
 sleep 2
 if [ -f "$HOME"/logs/omnia.log ]; then

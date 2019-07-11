@@ -3,7 +3,7 @@
 #get id of scuttlebot peer
 getFeedId () {
 	local _id
-	_id=$("$HOME"/scuttlebot/bin.js whoami 2> /dev/null | jq '.id')
+	_id=$("$HOME"/ssb-server/bin.js whoami 2> /dev/null | jq '.id')
 	sed -e 's/^"//' -e 's/"$//' <<<"$_id"
 }
 
@@ -17,14 +17,14 @@ pullMessages () {
     local _after=$2
     local _limit=$3
     #TODO pass args into jq
-    "$HOME"/scuttlebot/bin.js logt --type "$_type" | jq -S 'select(.value.content.time >= 1536082440) | {author: .value.author, time: .value.timestamp, price: .value.content.median}' | jq -s 'group_by(.author)'
+    "$HOME"/ssb-server/bin.js logt --type "$_type" | jq -S 'select(.value.content.time >= 1536082440) | {author: .value.author, time: .value.timestamp, price: .value.content.median}' | jq -s 'group_by(.author)'
 }
 
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
     local _rawMsg
-    _rawMsg=$("$HOME"/scuttlebot/bin.js getLatest "$_feed")
+    _rawMsg=$("$HOME"/ssb-server/bin.js getLatest "$_feed")
     [[ $? -gt 0 ]] || [[ -z "$_rawMsg" ]] && error "Error - Failed to retrieve latest message" && return
     echo "$_rawMsg" | jq -S '{author: .value.author, version: .value.content.version, time: .value.content.time, timeHex: .value.content.timeHex, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.price, priceHex: .value.content.priceHex, signature: .value.content.signature}' 
 }
@@ -35,7 +35,7 @@ pullPreviousFeedMsg () {
     #trim quotes from prev key
     _prev=$(sed -e 's/^"//' -e 's/"$//' <<<"$@")
     [[ -z "$_prev" ]] || [[ "$_prev" =~ ^(%){1}[0-9a-zA-Z+/]{43}$ ]] && error "Error - Invalid previous msg id" && return
-    "$HOME"/scuttlebot/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, timeHex: .content.timeHex, previous: .previous, type: .content.type, price: .content.price, priceHex: .content.priceHex, signature: .content.signature}'
+    "$HOME"/ssb-server/bin.js get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, timeHex: .content.timeHex, previous: .previous, type: .content.type, price: .content.price, priceHex: .content.priceHex, signature: .content.signature}'
 }
 
 #pull latest message of type _ from feed
@@ -101,5 +101,5 @@ broadcastPriceMsg () {
     verbose "$_json"
     #publish msg to scuttlebot
     log "Publishing new price message..."
-    echo "$_json" | "$HOME"/scuttlebot/bin.js publish .
+    echo "$_json" | "$HOME"/ssb-server/bin.js publish .
 }

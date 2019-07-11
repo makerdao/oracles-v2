@@ -53,7 +53,7 @@ pullLatestPricesOfAssetPair () {
         #stop collecting messages once quorum has been achieved
         if [ "${#entries[@]}" -eq "$_quorum" ]; then log "Collected enough messages for quorum"; return; fi
  
-        log "Working with feed: $feed"
+        log "Polling feed: $feed"
         #grab latest price msg of asset from feed
         priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
 
