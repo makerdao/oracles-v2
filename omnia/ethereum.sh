@@ -53,6 +53,6 @@ pushOraclePrice () {
         "[$(join "${allR[@]}")]" \
         "[$(join "${allS[@]}")]")
     echo "TX: $tx"
-    echo SUCCESS: "$(timeout 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
+    echo SUCCESS: "$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
     echo GAS USED: "$(seth --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
 }

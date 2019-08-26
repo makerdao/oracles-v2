@@ -1,0 +1,4 @@
+[
+  { "ssb-server": "15.1.0" },
+  { "node-gyp-build": "4.1.0" }
+]

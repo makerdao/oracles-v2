@@ -2,9 +2,11 @@
 
 importEnv () {
 	local config
-	if [[ -e /etc/omnia.conf ]]; then
+	if [[ -f "$OMNIA_CONFIG" ]]; then
+		config="$OMNIA_CONFIG"
+	elif [[ -f /etc/omnia.conf ]]; then
 		config="/etc/omnia.conf"
-	elif [[ -e ./config/omnia.conf ]]; then 
+	elif [[ -f ./config/omnia.conf ]]; then 
 		config="./config/omnia.conf"
 	else
 		error "Error Could not find omnia.conf config file to load parameters."
@@ -14,8 +16,7 @@ importEnv () {
 	echo "Importing configuration from $config..."
 
 	#check if config file is valid json
-	jq '.' < "$config" > /dev/null 2>&1
-    [[ $? -ne 0 ]] && error "Error - Config is not valid JSON" && exit 1;
+	jq -e . "$config" >/dev/null 2>&1 || { error "Error - Config is not valid JSON"; exit 1; }
 
 	importMode $config
 	importEthereumEnv $config
@@ -67,17 +68,17 @@ importEthereumEnv () {
 	[[ "$OMNIA_MODE" == "RELAYER" ]] && importNetwork "$_json"
 
 
-	ETH_FROM="$(echo "$_json" | jq -r '.from')"
+	ETH_FROM="${ETH_FROM-$(jq -r '.from' <<<"$_json")}"
 	#this just checks for valid chars and length, NOT checksum!
 	[[ "$ETH_FROM" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Ethereum Address is invalid.")
 	export ETH_FROM
 
-	ETH_KEYSTORE="$(echo "$_json" | jq -r '.keystore')"
+	ETH_KEYSTORE="${ETH_KEYSTORE-$(jq -r '.keystore' <<<"$_json")}"
 	#validate path exists
 	[[ -d "$ETH_KEYSTORE" ]] || errors+=("Error - Ethereum Keystore Path is invalid, directory does not exist.")
 	export ETH_KEYSTORE
 
-	ETH_PASSWORD="$(echo "$_json" | jq -r '.password')"
+	ETH_PASSWORD="${ETH_PASSWORD-$(jq -r '.password' <<<"$_json")}"
 	#validate file exists
 	[[ -f "$ETH_PASSWORD" ]] || errors+=("Error - Ethereum Password Path is invalid, file does not exist.")
 	export ETH_PASSWORD

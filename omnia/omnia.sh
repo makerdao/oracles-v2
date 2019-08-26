@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ -n $OMNIA_DEBUG ]]; then
+	set -x
+fi
+
 # shellcheck source=./config.sh
 . config.sh
 . ethereum.sh
@@ -12,7 +16,7 @@
 
 #initialize environment
 initEnv () {
-	OMNIA_VERSION="0.9.7"
+	OMNIA_VERSION="$(cat ./version)"
 
 	#Load Global configuration
   	importEnv
