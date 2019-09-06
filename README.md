@@ -71,7 +71,17 @@ Get the Scuttlbot private network keys from an admin and put it in a file called
 Then run the followig to install Omnia:
 
 ```
-nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/master --arg ssb-caps ./secret-ssb-caps.json
+nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/master \
+  --arg ssb-caps ./secret-ssb-caps.json
+```
+
+### Installing as `systemd` service
+
+```
+nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
+  --arg ssb-caps ./secret-ssb-caps.json \
+  -A install-omnia-service
+  -c install-omnia-service
 ```
 
 ## Development

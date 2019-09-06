@@ -31,4 +31,5 @@ let
 in rec {
   ssb-server = ssb-server' ssb-config;
   omnia = callPackage ./omnia { inherit ssb-server setzer-mcd; };
+  install-omnia-service = callPackage ./systemd { inherit ssb-server omnia; };
 }
