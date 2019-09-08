@@ -16,7 +16,7 @@ getPriceFromSource () {
 	local _assetPair=$1
 	local _source=$2
 	local _price
-	_price=$(timeout 5 setzer price "${_assetPair,,}"-"$_source" 2> /dev/null)
+	_price=$(timeout 5 setzer price "${_assetPair,,}" "$_source" 2> /dev/null)
 	if [[ $_price =~ ^[+-]?[0-9]+\.?[0-9]*$  ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
