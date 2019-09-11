@@ -12,7 +12,7 @@ if ! [[ -z $PID_SCUT ]]; then
     sleep 3
 fi
 echo "Launching Scuttlebot Server..."
-nohup "$HOME"/ssb-server/bin.js server >"$HOME"/logs/ssb-server.log &
+nohup "$HOME"/ssb-server/bin.js server >"$HOME"/logs/ssb-server.log 2>&1 &
 
 sleep 2
 if [ -f "$HOME"/logs/omnia.log ]; then
@@ -29,4 +29,4 @@ if ! [[ -z $PIDS_OMNIA ]]; then
     sleep 3
 fi
 echo "Launching Omnia..."
-nohup "$HOME"/oracles-v2/omnia/omnia.sh >"$HOME"/logs/omnia.log &
+nohup "$HOME"/oracles-v2/omnia/omnia.sh >"$HOME"/logs/omnia.log 2>&1 &
