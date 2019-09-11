@@ -5,7 +5,7 @@ if [ -f "$HOME"/logs/ssb-server.log ]; then
     mkdir -p "$HOME"/logs/archives/"$timestamp"
     cp "$HOME"/logs/ssb-server.log "$HOME"/logs/archives/"$timestamp"/ssb-server.log
 fi
-PID_SCUT=$(ps aux | grep ssb-server | grep -v grep | awk '{print $2}')
+PID_SCUT=$(ps aux | grep ssb-server/bin.js | grep -v grep | awk '{print $2}')
 if ! [[ -z $PID_SCUT ]]; then
     echo "Scuttlebot is still running, killing existing instance"
     kill "$PID_SCUT"
