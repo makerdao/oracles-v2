@@ -20,7 +20,7 @@ if [ -f "$HOME"/logs/omnia.log ]; then
     mkdir -p "$HOME"/logs/archives/"$timestamp"
     cp "$HOME"/logs/omnia.log "$HOME"/logs/archives/"$timestamp"/omnia.log
 fi
-PIDS_OMNIA=$(ps aux | grep omnia | grep -v grep | awk '{print $2}')
+PIDS_OMNIA=$(ps aux | grep omnia/omnia.sh | grep -v grep | awk '{print $2}')
 if ! [[ -z $PIDS_OMNIA ]]; then
     echo "Omnia is still running, killing existing instance"
     for PID in "${PIDS_OMNIA[@]}"; do
