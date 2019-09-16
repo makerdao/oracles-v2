@@ -62,3 +62,43 @@ seth --from-wei $(seth --to-dec ${rawStorage:34:32})
 https://docs.google.com/document/d/1onYu0_1j3fDtInay85hie92O_-zptGkGFgI0OePI86c/edit?usp=sharing
 
 If you run into any problems with the installation instructions please contact @Nik on chat.makerdao.com
+
+## Install with Nix
+
+Get the Scuttlbot private network keys from an admin and put it in a file called
+`secret-ssb-caps.json`.
+
+Then run the followig to install Omnia:
+
+```
+nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/master --arg ssb-caps ./secret-ssb-caps.json
+```
+
+## Development
+
+To build from inside this repo, clone and run:
+
+```
+nix-build --arg ssb-caps ./secret-ssb-caps.json
+```
+
+You can then run `omnia` from `./result/bin/omnia`.
+
+To get a development environment with all dependencies run:
+
+```
+nix-shell --arg ssb-caps ./secret-ssb-caps.json
+cd omnia
+./omnia.sh
+```
+
+Now you can start editing the `omnia` scripts and run them directly.
+
+### Update dependencies
+
+To update NodeJS dependencies edit the `nix/node-packages.json` file and run:
+
+```
+nix-shell
+updateNodePackages
+```
