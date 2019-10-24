@@ -22,9 +22,18 @@ let
 
   # Wrap `ssb-server` with an immutable config.
   ssb-server' = ssb-config:
-    writeScriptBin "ssb-server" ''
+    runCommand "ssb-server" { nativeBuildInputs = [ gron coreutils ]; } ''
+      conf=$(
+        gron ${ssb-config} \
+          | sed -n '/{};$/d;s/^json\.\(.*\) = \(.*\);/--\1 "\2"/p' \
+          | tr "\n" " "
+      )
+      mkdir -p $out/bin
+      cat > $out/bin/ssb-server <<EOF
       #!${bash}/bin/bash -e
-      exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "$@" -- --config "${ssb-config}"
+      exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "\$@" -- $conf
+      EOF
+      chmod +x $out/bin/ssb-server
     '';
 
   setzer-mcd = callPackage setzer-mcdSrc {};
