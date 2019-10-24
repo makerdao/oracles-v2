@@ -5,23 +5,49 @@
     mode = mkOption {
       type = types.str;
       description = ''
-        Omnia operational mode (feed or relayer).
+        Omnia operational mode (feed or relayer)
       '';
       default = "feed";
     };
 
-    interval = mkOption {
-      type = types.int;
+    options = {
+      verbose = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Enable verbose output.
+        '';
+      };
+
+      debug = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Enable debug output
+        '';
+      };
+
+      interval = mkOption {
+        type = types.int;
+        description = ''
+          Pooling interval
+        '';
+        default = 60;
+      };
+    };
+
+    feeds = mkOption {
+      type = types.listOf types.str;
       description = ''
-        Pooling interval.
+        Scuttlebot feeds
       '';
-      default = 60;
+      default = [];
     };
 
     pairs = mkOption {
-      type = types.attrs;
+      type = with types; attrsOf attrs;
       description = ''
-        Trading pairs.
+        Trading pairs
       '';
       default = {
         "BATUSD" = {
@@ -63,49 +89,51 @@
       };
     };
 
-    from = mkOption {
-      type = types.str;
-      example = "0x0000000000000000000000000000000000000000";
-      description = ''
-        Ethereum address to use
-      '';
-    };
+    ethereum = {
+      from = mkOption {
+        type = types.str;
+        example = "0x0000000000000000000000000000000000000000";
+        description = ''
+          Ethereum address to use
+        '';
+      };
 
-    keystore = mkOption {
-      type = types.path;
-      description = ''
-        Ethereum keystore directory
-      '';
-    };
+      keystore = mkOption {
+        type = types.path;
+        description = ''
+          Ethereum keystore directory
+        '';
+      };
 
-    password = mkOption {
-      type = types.path;
-      description = ''
-        Ethereum private key password
-      '';
-    };
-
-    verbose = mkOption {
-      type = types.bool;
-      default = true;
-      description = ''
-        Verbose output.
-      '';
-    };
-
-    debug = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Debug output.
-      '';
+      password = mkOption {
+        type = types.path;
+        description = ''
+          Ethereum private key password
+        '';
+      };
     };
 
     ssbConfig = mkOption {
-      type = types.attrs;
+      type = with types; attrs;
       description = ''
         Scuttlebot config
       '';
+    };
+
+    ssbInitSecret = mkOption {
+      type = with types; nullOr path;
+      description = ''
+        Scuttlebot secret, if null will generate one
+      '';
+      default = null;
+    };
+
+    ssbInitGossip = mkOption {
+      type = with types; nullOr path;
+      description = ''
+        gossip.json file to init scuttlebot with
+      '';
+      default = null;
     };
   };
 
