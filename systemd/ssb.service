@@ -7,7 +7,7 @@ After=network.target
 Environment="PATH=/home/$USER/.nix-profile/bin"
 User=$USER
 Group=$USER
-ExecStart=$SSB_PATH server
+ExecStart=$SSB_PATH start
 Restart=always
 RestartSec=5
 
