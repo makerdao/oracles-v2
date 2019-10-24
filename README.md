@@ -80,7 +80,7 @@ nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/master \
 ```
 nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
   --arg ssb-caps ./secret-ssb-caps.json \
-  -A install-omnia-service
+  install-omnia-service \
   -c install-omnia-service
 ```
 
