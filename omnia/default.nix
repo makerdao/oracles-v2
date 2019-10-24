@@ -29,7 +29,10 @@ stdenv.mkDerivation rec {
 
     chmod +x $out/bin/omnia
 
-    wrapProgram "$out/bin/omnia" --set PATH "${path}" ${locales}
+    wrapProgram "$out/bin/omnia" \
+      --argv0 omnia \
+      --set PATH "${path}" \
+      ${locales}
   '';
 
   meta = with lib; {

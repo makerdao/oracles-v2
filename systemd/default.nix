@@ -1,14 +1,14 @@
 { stdenv, lib, makeWrapper, shellcheck
-, glibcLocales, coreutils, gettext, omnia, ssb-server
+, glibcLocales, coreutils, gettext, jq, omnia, ssb-server
 }:
 
 stdenv.mkDerivation rec {
-  name = "install-omnia-service-${version}";
+  name = "install-omnia-${version}";
   version = lib.fileContents ../omnia/version;
   src = ./.;
 
   passthru.runtimeDeps =  [
-    coreutils gettext
+    coreutils gettext jq
   ];
   nativeBuildInputs = [ makeWrapper shellcheck ];
 
@@ -19,18 +19,19 @@ stdenv.mkDerivation rec {
       "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
   in ''
     mkdir -p $out/bin
-    cp -t $out/bin *.service install-omnia-service
+    cp -t $out/bin *.service install-omnia
 
-    wrapProgram "$out/bin/install-omnia-service" \
-      --set PATH "${path}" \
+    wrapProgram "$out/bin/install-omnia" \
+      --prefix PATH : "${path}" \
       --set OMNIA_PATH "${omnia}/bin/omnia" \
+      --set OMNIA_LIB_PATH "${omnia}/lib" \
       --set SSB_PATH "${ssb-server}/bin/ssb-server" \
       ${locales}
   '';
 
   doCheck = true;
   checkPhase = ''
-    shellcheck -x install-omnia-service
+    shellcheck -x install-omnia
   '';
 
   meta = with lib; {

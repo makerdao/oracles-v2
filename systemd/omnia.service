@@ -6,6 +6,7 @@ Wants=ssb.service
 
 [Service]
 Environment="PATH=/home/$USER/.nix-profile/bin"
+Environment="OMNIA_CONFIG=$OMNIA_CONFIG"
 User=$USER
 Group=$USER
 ExecStart=$OMNIA_PATH

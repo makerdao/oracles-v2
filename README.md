@@ -65,23 +65,32 @@ If you run into any problems with the installation instructions please contact @
 
 ## Install with Nix
 
-Get the Scuttlbot private network keys from an admin and put it in a file called
-`secret-ssb-caps.json`.
+Get the Scuttlbot private network keys (caps) from an admin and put it in a file
+(e.g. called `secret-ssb-caps.json`). The file should have the JSON format:
+`{ "shs": "<BASE64>", "sign": "<BASE64>" }`.
 
-Then run the followig to install Omnia:
+Then run the following to make the `omnia`, `ssb-server` and `install-omnia`
+commands available in your user environment:
 
 ```
 nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/master \
   --arg ssb-caps ./secret-ssb-caps.json
 ```
 
-### Installing as `systemd` service
+You can use the `install-omnia` command to install Omnia as a `systemd` service,
+update your `/etc/omnia.conf` and migrate a Scuttlbot secret.
+
+```
+install-omnia help
+```
+
+A one-liner for installing an Omnia feed as a `systemd` service:
 
 ```
 nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
   --arg ssb-caps ./secret-ssb-caps.json \
-  install-omnia-service \
-  -c install-omnia-service
+  install-omnia \
+  -c install-omnia feed
 ```
 
 ## Development
