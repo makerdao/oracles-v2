@@ -1,4 +1,6 @@
-{ pkgs, config, lib, ... }: with lib; {
+{ pkgs, config, lib, ... }: with lib; let
+  defaultFeedConfig = lib.importJSON ../omnia/config/feed.conf;
+in {
   options.services.omnia = {
     enable = mkEnableOption "omnia";
 
@@ -7,7 +9,7 @@
       description = ''
         Omnia operational mode (feed or relayer)
       '';
-      default = "feed";
+      default = defaultFeedConfig.mode;
     };
 
     options = {
@@ -32,7 +34,7 @@
         description = ''
           Pooling interval
         '';
-        default = 60;
+        default = defaultFeedConfig.options.interval;
       };
     };
 
@@ -49,44 +51,7 @@
       description = ''
         Trading pairs
       '';
-      default = {
-        "BATUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "BTCUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "DGDUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "ETHUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "GNTUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "MKRUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "OMGUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "REPUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-        "ZRXUSD" = {
-          "msgExpiration" = 1800;
-          "msgSpread" = 0.5;
-        };
-      };
+      default = defaultFeedConfig.pairs;
     };
 
     ethereum = {
