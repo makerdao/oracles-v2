@@ -89,7 +89,6 @@ A one-liner for installing an Omnia feed as a `systemd` service:
 ```
 nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
   --arg ssb-caps ./secret-ssb-caps.json \
-  install-omnia \
   -c install-omnia feed
 ```
 

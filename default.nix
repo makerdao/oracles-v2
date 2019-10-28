@@ -10,8 +10,8 @@
 
 , ssb-caps ? null
 , ssb-config ? with pkgs; writeText "ssb-config" (builtins.toJSON ({
-    port = 8007;
-    ws = { port = 8988; };
+    connections.incoming.net = [ { port = 8007; scope = "public"; transform = "shs"; } ];
+    connections.incoming.ws = [ { port = 8988; scope = "public"; transform = "shs"; } ];
   } // lib.optionalAttrs (ssb-caps != null) { caps = lib.importJSON ssb-caps; }))
 }: with pkgs;
 
@@ -22,18 +22,10 @@ let
 
   # Wrap `ssb-server` with an immutable config.
   ssb-server' = ssb-config:
-    runCommand "ssb-server" { nativeBuildInputs = [ gron coreutils ]; } ''
-      conf=$(
-        gron ${ssb-config} \
-          | sed -n '/{};$/d;s/^json\.\(.*\) = \(.*\);/--\1 "\2"/p' \
-          | tr "\n" " "
-      )
-      mkdir -p $out/bin
-      cat > $out/bin/ssb-server <<EOF
+    writeScriptBin "ssb-server" ''
       #!${bash}/bin/bash -e
-      exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "\$@" -- $conf
-      EOF
-      chmod +x $out/bin/ssb-server
+      export ssb_config="${ssb-config}"
+      exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "$@"
     '';
 
   setzer-mcd = callPackage setzer-mcdSrc {};
