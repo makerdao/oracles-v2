@@ -6,6 +6,22 @@
   writeJSON = name: attrs: writeText name (toJSON attrs);
 
   cfg = config.services.omnia;
+  ssbIncomingPorts = (
+    if (cfg.ssbConfig ? connections)
+    then (
+      if (cfg.ssbConfig.connections ? incoming
+        && cfg.ssbConfig.connections.incoming ? net)
+      then map
+        (x: if (x ? port) then x.port else 8008)
+        cfg.ssbConfig.connections.incoming.net
+      else [8008]
+    )
+    else (
+      if (cfg.ssbConfig ? port)
+      then [cfg.ssbConfig.port]
+      else [8008]
+    )
+  );
 
   ssb-config = writeJSON "ssb-config" cfg.ssbConfig;
   omnia-config = writeJSON "omnia.conf" {
@@ -25,6 +41,8 @@ in {
       ssb-server
       omnia
     ];
+
+    networking.firewall.allowedTCPPorts = ssbIncomingPorts;
 
     systemd.services.ssb-server = {
       enable = true;
