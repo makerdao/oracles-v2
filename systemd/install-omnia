@@ -26,7 +26,7 @@ EOF
 subst() {
   local name;name="$1.service"
   local target;target="$TARGET_DIR"/"$name"
-  local restart;restart=$([[ -e "$target" ]] && echo 1)
+  local restart;restart=$(if [[ -e "$target" ]]; then echo 1; fi)
 
   # shellcheck disable=SC2016
   envsubst '$USER $OMNIA_PATH $SSB_PATH $OMNIA_CONFIG' < "$2" \
