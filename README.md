@@ -92,6 +92,12 @@ nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
   -c install-omnia feed
 ```
 
+It is also possible to set the whole Scuttlbot config by using `--arg ssb-config
+ssb-config.json` instead of `ssb-caps`. Make sure you set the `caps` property in your
+`ssb-config.json` instead.
+
+More details about the [Scuttlbot config](https://github.com/ssbc/ssb-config#configuration).
+
 ## Development
 
 To build from inside this repo, clone and run:

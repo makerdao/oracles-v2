@@ -10,8 +10,12 @@
 
 , ssb-caps ? null
 , ssb-config ? with pkgs; writeText "ssb-config" (builtins.toJSON ({
-    connections.incoming.net = [ { port = 8007; scope = "public"; transform = "shs"; } ];
-    connections.incoming.ws = [ { port = 8988; scope = "public"; transform = "shs"; } ];
+    connections.incoming.net = [
+      { port = 8007; scope = ["public" "local"]; transform = "shs"; }
+    ];
+    connections.incoming.ws = [
+      { port = 8988; scope = ["public" "local"]; transform = "shs"; }
+    ];
   } // lib.optionalAttrs (ssb-caps != null) { caps = lib.importJSON ssb-caps; }))
 }: with pkgs;
 
