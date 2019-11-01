@@ -3,7 +3,7 @@
 , nodepkgs ? import ./nix/nodepkgs.nix { inherit pkgs; }
 
 , setzer-mcdSrc ? fetchGit {
-    url = "git@github.com:makerdao/setzer-mcd";
+    url = "https://github.com/makerdao/setzer-mcd";
     ref = "master";
     rev = "c528da640393a3d79ef314a7f86ae363d503a240";
   }

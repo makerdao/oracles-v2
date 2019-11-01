@@ -65,6 +65,12 @@ If you run into any problems with the installation instructions please contact @
 
 ## Install with Nix
 
+Add dapptools build caches:
+
+```sh
+nix run nixpkgs.cachix -c cachix use dapp
+```
+
 Get the Scuttlbot private network keys (caps) from an admin and put it in a file
 (e.g. called `secret-ssb-caps.json`). The file should have the JSON format:
 `{ "shs": "<BASE64>", "sign": "<BASE64>" }`.
