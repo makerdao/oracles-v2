@@ -37,7 +37,7 @@ importNetwork () {
 	local _json="$1"
 	#this parameter is not needed when using a custom rpc node
 	INFURA_KEY="$(echo "$_json" | jq -r .infuraKey)"
-	[[ -z "$INFURA_KEY" ]] || [[ "$INFURA_KEY" =~ ^[0-9a-f]{32}$ ]] || errors+=("Error - Invalid Infura Key")
+	#[[ -z "$INFURA_KEY" ]] || [[ "$INFURA_KEY" =~ ^[0-9a-f]{32}$ ]] || errors+=("Error - Invalid Infura Key")
 	export INFURA_KEY
 
 	network="$(echo "$_json" | jq -r .network)"
