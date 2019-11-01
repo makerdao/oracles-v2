@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+SCRIPT_DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
+TARGET_DIR=${TARGET_DIR:-/etc/systemd/system}
+SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
+OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
+OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia}
+
+usage() {
+  cat >&2 <<EOF
+Usage: install-omnia COMMAND OPTIONS...
+
+Commands:
+  relayer       Install Omnia service with default relayer config
+  feed          Install Omnia service with default feed config
+  help          Print this message
+
+Options:
+  --ssb-secret SECRET_FILE        Install Scuttlbot secret
+  --ssb-gossip GOSSIP_JSON_FILE   Install Scuttlbot gossip.json file
+EOF
+  exit 1
+}
+
+subst() {
+  local name;name="$1.service"
+  local target;target="$TARGET_DIR"/"$name"
+  local restart;restart=$(if [[ -e "$target" ]]; then echo 1; fi)
+
+  # shellcheck disable=SC2016
+  envsubst '$USER $OMNIA_PATH $SSB_PATH $OMNIA_CONFIG' < "$2" \
+    | sudo tee "$target" >/dev/null
+
+  echo >&2 "$name -> $target"
+
+  systemdCmd+="systemctl enable $name   # Enable auto-start of $1 service at boot
+"
+  if [[ -n "$restart" ]]; then
+    systemdCmd+="systemctl restart $name  # Restart $1 service now
+"
+  else
+    systemdCmd+="systemctl start $name    # Start $1 service now
+"
+  fi
+}
+
+copyConf() {
+  local savedFrom
+  local updatedConf
+
+  if [[ -f "/etc/omnia.conf" ]]; then
+    savedFrom=$(jq .ethereum "/etc/omnia.conf")
+  fi
+
+  sudo cp -v "$OMNIA_LIB_PATH/config/$1" "/etc/omnia.conf"
+  sudo chmod u+w "/etc/omnia.conf"
+
+  if [[ -n "$savedFrom" ]]; then
+    updatedConf=$(jq ".ethereum = $savedFrom" "/etc/omnia.conf")
+    sudo tee "/etc/omnia.conf" <<<"$updatedConf" >/dev/null
+  fi
+}
+
+installConfigs() {
+  copyConf "$installType.conf"
+}
+
+installServices() {
+  subst ssb-server "$SCRIPT_DIR"/ssb-server.service
+
+  OMNIA_CONFIG="/etc/omnia.conf" \
+    subst omnia "$SCRIPT_DIR"/omnia.service
+}
+
+
+case "$1" in
+  feed)
+    installType="feed"
+    ;;
+  relayer)
+    installType="relayer"
+    ;;
+  help|--help|-h)
+    usage
+    ;;
+  *)
+    echo >&2 "\"$1\" is not a valid command"
+    usage
+    ;;
+esac
+
+shift
+
+while [[ -n "$1" ]]; do
+  case "$1" in
+    --ssb-secret)
+      installSsbSecret="$2";shift
+      ;;
+    --ssb-gossip)
+      installSsbGossip="$2";shift
+      ;;
+    --help|-h)
+      usage
+      ;;
+    *)
+      echo >&2 "\"$1\" is not a valid option"
+      usage
+      ;;
+  esac
+  shift
+done
+
+installConfigs
+
+if [[ -n "$installSsbSecret" ]]; then
+  mkdir -p "$HOME/.ssb"
+  cp -iv "$installSsbSecret" "$HOME/.ssb/secret"
+  chmod 600 "$HOME/.ssb/secret"
+fi
+
+if [[ -n "$installSsbGossip" ]]; then
+  mkdir -p "$HOME/.ssb"
+  cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"
+fi
+
+installServices
+echo >&2 "To (re)start Omnia now (and auto-start on reboot) run:"
+echo     "systemctl daemon-reload  # Reload systemd services"
+echo -n  "$systemdCmd"

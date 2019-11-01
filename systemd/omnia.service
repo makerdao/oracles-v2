@@ -1,0 +1,17 @@
+[Unit]
+Description=Omnia
+Requires=network.target
+After=network.target
+Wants=ssb.service
+
+[Service]
+Environment="PATH=/home/$USER/.nix-profile/bin"
+Environment="OMNIA_CONFIG=$OMNIA_CONFIG"
+User=$USER
+Group=$USER
+ExecStart=$OMNIA_PATH
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -10,8 +10,12 @@
 
 , ssb-caps ? null
 , ssb-config ? with pkgs; writeText "ssb-config" (builtins.toJSON ({
-    port = 8007;
-    ws = { port = 8988; };
+    connections.incoming.net = [
+      { port = 8007; scope = ["public" "local"]; transform = "shs"; }
+    ];
+    connections.incoming.ws = [
+      { port = 8988; scope = ["public" "local"]; transform = "shs"; }
+    ];
   } // lib.optionalAttrs (ssb-caps != null) { caps = lib.importJSON ssb-caps; }))
 }: with pkgs;
 
@@ -24,11 +28,13 @@ let
   ssb-server' = ssb-config:
     writeScriptBin "ssb-server" ''
       #!${bash}/bin/bash -e
-      exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "$@" -- --config "${ssb-config}"
+      export ssb_config="${ssb-config}"
+      exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "$@"
     '';
 
   setzer-mcd = callPackage setzer-mcdSrc {};
 in rec {
   ssb-server = ssb-server' ssb-config;
   omnia = callPackage ./omnia { inherit ssb-server setzer-mcd; };
+  install-omnia = callPackage ./systemd { inherit ssb-server omnia; };
 }
