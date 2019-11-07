@@ -9,17 +9,29 @@
   }
 
 , ssb-caps ? null
-, ssb-config ? with pkgs; writeText "ssb-config" (builtins.toJSON ({
-    connections.incoming.net = [
-      { port = 8007; scope = ["public" "local"]; transform = "shs"; }
-    ];
-    connections.incoming.ws = [
-      { port = 8988; scope = ["public" "local"]; transform = "shs"; }
-    ];
-  } // lib.optionalAttrs (ssb-caps != null) { caps = lib.importJSON ssb-caps; }))
+, ssb-config ? null
 }: with pkgs;
 
 let
+  ssb-config' =
+    if (ssb-config != null)
+    then ssb-config
+    else (
+      if (ssb-caps != null)
+      then writeText
+        "ssb-config"
+        (builtins.toJSON {
+          connections.incoming.net = [
+            { port = 8007; scope = ["public" "local"]; transform = "shs"; }
+          ];
+          connections.incoming.ws = [
+            { port = 8988; scope = ["public" "local"]; transform = "shs"; }
+          ];
+          caps = lib.importJSON ssb-caps;
+        })
+      else null
+    );
+
   ssb-server = nodepkgs."ssb-server-15.1.0".override {
     buildInputs = [ gnumake nodepkgs."node-gyp-build-4.1.0" ];
   };
@@ -28,7 +40,8 @@ let
   ssb-server' = ssb-config:
     writeScriptBin "ssb-server" ''
       #!${bash}/bin/bash -e
-      export ssb_config="${ssb-config}"
+      ${lib.optionalString (ssb-config' != null)
+        "export ssb_config=\"${ssb-config'}\""}
       exec -a "ssb-server" "${ssb-server}/bin/ssb-server" "$@"
     '';
 
