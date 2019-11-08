@@ -52,15 +52,16 @@ isExpired () {
 	fi
 }
 
-#is last scuttlebot message published expired 
+#is last scuttlebot message published expired
 isMsgExpired () {
 	local _assetPair="$1"
 	local _msg="$2"
 	local _lastTime
 	local _expirationInterval
 	_lastTime=$(echo "$_msg" | jq '.time')
-	if [[ "$_lastTime" =~ ^[0-9]{10}$ ]]; then
-		echo false
+	if ! [[ "$_lastTime" =~ ^[1-9]{1}[0-9]{9}$ ]]; then
+		error "Invalid message timestamp ($_lastTime)"
+		echo true
 		return 1
 	fi
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
