@@ -17,6 +17,9 @@ Commands:
   help          Print this message
 
 Options:
+  --from ADDRESS                  Set Ethereum address to use for signing
+  --keystore PATH                 Set Ethereum keystore path
+  --password PATH                 Set Ethereum keystore password file path
   --ssb-secret SECRET_FILE        Install Scuttlbot secret
   --ssb-gossip GOSSIP_JSON_FILE   Install Scuttlbot gossip.json file
 EOF
@@ -57,10 +60,15 @@ copyConf() {
   sudo chmod u+w "/etc/omnia.conf"
 
   if [[ -n "$savedFrom" ]]; then
-    updatedConf=$(jq ".ethereum = $savedFrom" "/etc/omnia.conf")
-    sudo tee "/etc/omnia.conf" <<<"$updatedConf" >/dev/null
+    configUpdates=( ".ethereum = $savedFrom" "${configUpdates[@]}" )
   fi
+
+  for i in "${!configUpdates[@]}"; do
+    updatedConf=$(jq "${configUpdates[$i]}" "/etc/omnia.conf")
+    sudo tee "/etc/omnia.conf" <<<"$updatedConf" >/dev/null
+  done
 }
+declare -a configUpdates
 
 installConfigs() {
   copyConf "$installType.conf"
@@ -94,6 +102,15 @@ shift
 
 while [[ -n "$1" ]]; do
   case "$1" in
+    --from)
+      configUpdates+=( ".ethereum.from = \"$2\"" );shift
+      ;;
+    --keystore)
+      configUpdates+=( ".ethereum.keystore = \"$2\"" );shift
+      ;;
+    --password)
+      configUpdates+=( ".ethereum.password = \"$2\"" );shift
+      ;;
     --ssb-secret)
       installSsbSecret="$2";shift
       ;;
