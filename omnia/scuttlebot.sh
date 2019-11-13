@@ -15,19 +15,6 @@ getFeedId () {
 	ssb-server whoami 2> /dev/null | jq -r '.id'
 }
 
-#not functional yet
-#not needed until we start having watchdog peers policing Oracle activity
-pullMessages () {
-    #this id used for pulling all messages from all feeds with in-bounds timestamp
-    #returns an array of objects containg only relevant info
-    #breaks up that array into nested subarrays by feed
-    local _type=$1
-    local _after=$2
-    local _limit=$3
-    #TODO pass args into jq
-    ssb-server logt --type "$_type" | jq -S 'select(.value.content.time >= 1536082440) | {author: .value.author, time: .value.timestamp, price: .value.content.median}' | jq -s 'group_by(.author)'
-}
-
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
