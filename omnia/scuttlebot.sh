@@ -31,6 +31,15 @@ pullPreviousFeedMsg () {
     ssb-server get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, timeHex: .content.timeHex, previous: .previous, type: .content.type, price: .content.price, priceHex: .content.priceHex, signature: .content.signature}'
 }
 
+#optimized message search algorithm
+pullLatestFeedMsgOfTypeOptimized () {
+    local _feed=$1
+    local _assetPair=$2
+    local _msg
+    _msg=$(ssb-server createUserStream --id "$_feed" --reverse --limit "$OMNIA_MSG_LIMIT" --fillCache 1 | jq --arg pair "$_assetPair" 'select(.value.content.type == $pair) | {author: .value.author, version: .value.content.version, time: .value.content.time, timeHex: .value.content.timeHex, msgID: .key, previous: .value.previous, type: .value.content.type, price: .value.content.price, priceHex: .value.content.priceHex, signature: .value.content.signature}' | jq -s 'max_by(.time)')
+    #error handling
+}
+
 #pull latest message of type _ from feed
 pullLatestFeedMsgOfType () {
 	local _feed=$1
@@ -43,7 +52,7 @@ pullLatestFeedMsgOfType () {
     [[ -z "$_msg" ]] && return
 
     #if message does not contain a price, get the previous message until we find one that does
-    while (( _counter < 20 )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
+    while (( _counter < OMNIA_MSG_LIMIT )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
         #clear previous key
         local _key=""
         #get key of previous message
