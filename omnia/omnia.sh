@@ -100,10 +100,13 @@ execute () {
 		fi
 
 		 #Get latest message for asset pair
-		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
-			
+		latestMsg=$(pullLatestFeedMsgOfTypeOptimized "$SCUTTLEBOT_FEED_ID" "$assetPair")
 
-		if [ "$(isEmpty "$latestMsg")" == "false" ] && [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] && [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] && [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]; then
+		if [ "$(isEmpty "$latestMsg")" == "false" ] \
+		&& [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] \
+		&& [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] \
+		&& [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]
+		then
 			continue
 		fi
 

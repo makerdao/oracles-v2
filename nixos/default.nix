@@ -36,6 +36,14 @@ in {
         '';
         default = defaultFeedConfig.options.interval;
       };
+
+      msgLimit = mkOption {
+        type = types.int;
+        description = ''
+          message look back limit
+        '';
+        default = defaultFeedConfig.options.msgLimit;
+      };
     };
 
     feeds = mkOption {
