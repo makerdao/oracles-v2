@@ -55,7 +55,7 @@ pullLatestPricesOfAssetPair () {
  
         log "Polling feed: $feed"
         #grab latest price msg of asset from feed
-        priceEntry=$(pullLatestFeedMsgOfTypeOptimized "$feed" "$_assetPair")
+        priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
 
         #verify price msg is valid and not expired
         if [ -n "$priceEntry" ] \

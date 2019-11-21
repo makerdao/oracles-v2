@@ -32,7 +32,7 @@ pullPreviousFeedMsg () {
 }
 
 #optimized message search algorithm
-pullLatestFeedMsgOfTypeOptimized () {
+pullLatestFeedMsgOfType () {
 	local	_feed=$1
 	local	_assetPair=$2
 	ssb-server createUserStream \
@@ -55,36 +55,6 @@ pullLatestFeedMsgOfTypeOptimized () {
 		}
 	'
 	#error handling
-}
-
-#pull latest message of type _ from feed
-pullLatestFeedMsgOfType () {
-	local _feed=$1
-	local _assetPair=$2
-    local _counter=0
-    local _msg
-    #get latest message from feed
-    _msg=$( pullLatestFeedMsg "$_feed" )
-    verbose "latest message = $_msg"
-    [[ -z "$_msg" ]] && return
-
-    #if message does not contain a price, get the previous message until we find one that does
-    while (( _counter < OMNIA_MSG_LIMIT )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
-        #clear previous key
-        local _key=""
-        #get key of previous message
-        _key=$( echo "$_msg" | jq -r '.previous' )
-         #stop looking if no more messages
-        [[ $_key == "null" ]] && break
-        #clear previous message
-        _msg=""
-        #grab previous message
-        _msg=$( pullPreviousFeedMsg "$_key" )
-        verbose "previous message = $_msg"
-        #increment message counter
-        _counter=$(( _counter + 1 ))
-    done
-	echo "$_msg"
 }
 
 #publish price  to scuttlebot

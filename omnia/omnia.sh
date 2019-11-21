@@ -100,7 +100,7 @@ execute () {
 		fi
 
 		 #Get latest message for asset pair
-		latestMsg=$(pullLatestFeedMsgOfTypeOptimized "$SCUTTLEBOT_FEED_ID" "$assetPair")
+		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 
 		if [ "$(isEmpty "$latestMsg")" == "false" ] \
 		&& [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] \
