@@ -166,8 +166,12 @@ importOptionsEnv () {
 	_json=$(jq -S '.options' < "$_config")
 
 	OMNIA_INTERVAL="$(echo "$_json" | jq -S '.interval')"
-	[[ "$OMNIA_INTERVAL" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Interval param is invalid, must be positive whole number.")
+	[[ "$OMNIA_INTERVAL" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Interval param is invalid, must be positive integer.")
 	export OMNIA_INTERVAL
+
+	OMNIA_MSG_LIMIT="$(echo "$_json" | jq -S '.msgLimit')"
+	[[ "$OMNIA_MSG_LIMIT" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Msg Limit param is invalid, must be positive integer.")
+	export OMNIA_MSG_LIMIT
 
 	OMNIA_VERBOSE="$(echo "$_json" | jq -S '.verbose')"
 	OMNIA_VERBOSE=$(echo "$OMNIA_VERBOSE" | tr '[:upper:]' '[:lower:]')

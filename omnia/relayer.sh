@@ -58,7 +58,11 @@ pullLatestPricesOfAssetPair () {
         priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
 
         #verify price msg is valid and not expired
-        if [ -n "${priceEntry}" ] && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]; then
+        if [ -n "$priceEntry" ] \
+        && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] \
+        && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] \
+        && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]
+        then
             log "Adding message from $feed to catalogue"
             entries+=( "$priceEntry" )
         fi

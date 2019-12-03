@@ -15,19 +15,6 @@ getFeedId () {
 	ssb-server whoami 2> /dev/null | jq -r '.id'
 }
 
-#not functional yet
-#not needed until we start having watchdog peers policing Oracle activity
-pullMessages () {
-    #this id used for pulling all messages from all feeds with in-bounds timestamp
-    #returns an array of objects containg only relevant info
-    #breaks up that array into nested subarrays by feed
-    local _type=$1
-    local _after=$2
-    local _limit=$3
-    #TODO pass args into jq
-    ssb-server logt --type "$_type" | jq -S 'select(.value.content.time >= 1536082440) | {author: .value.author, time: .value.timestamp, price: .value.content.median}' | jq -s 'group_by(.author)'
-}
-
 #pull latest message from feed
 pullLatestFeedMsg () {
 	local _feed="$1"
@@ -44,34 +31,30 @@ pullPreviousFeedMsg () {
     ssb-server get "$_prev" | jq -S '{author: .author, version: .content.version, time: .content.time, timeHex: .content.timeHex, previous: .previous, type: .content.type, price: .content.price, priceHex: .content.priceHex, signature: .content.signature}'
 }
 
-#pull latest message of type _ from feed
+#optimized message search algorithm
 pullLatestFeedMsgOfType () {
-	local _feed=$1
-	local _assetPair=$2
-    local _counter=0
-    local _msg
-    #get latest message from feed
-    _msg=$( pullLatestFeedMsg "$_feed" )
-    verbose "latest message = $_msg"
-    [[ -z "$_msg" ]] && return
-
-    #if message does not contain a price, get the previous message until we find one that does
-    while (( _counter < 20 )) && [[ $(isAssetPair "$_assetPair" "$_msg") == "false" ]]; do
-        #clear previous key
-        local _key=""
-        #get key of previous message
-        _key=$( echo "$_msg" | jq -r '.previous' )
-         #stop looking if no more messages
-        [[ $_key == "null" ]] && break
-        #clear previous message
-        _msg=""
-        #grab previous message
-        _msg=$( pullPreviousFeedMsg "$_key" )
-        verbose "previous message = $_msg"
-        #increment message counter
-        _counter=$(( _counter + 1 ))
-    done
-	echo "$_msg"
+	local	_feed=$1
+	local	_assetPair=$2
+	ssb-server createUserStream \
+		--id "$_feed" --limit "$OMNIA_MSG_LIMIT" \
+		--reverse --fillCache 1 \
+	| jq -s --arg pair "$_assetPair" '
+		[.[] | select(.value.content.type == $pair)]
+		| max_by(.value.content.time)
+		| {
+			author: .value.author,
+			version: .value.content.version,
+			time: .value.content.time,
+			timeHex: .value.content.timeHex,
+			msgID: .key,
+			previous: .value.previous,
+			type: .value.content.type,
+			price: .value.content.price,
+			priceHex: .value.content.priceHex,
+			signature: .value.content.signature
+		}
+	'
+	#error handling
 }
 
 #publish price  to scuttlebot
