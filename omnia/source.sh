@@ -1,23 +1,37 @@
 #!/usr/bin/env bash
 
-#read price data of asset
-readSources () {
-	local _assetPair="$1"
-	mapfile -t _sources < <(setzer sources "${_assetPair,,}")
-	if [[ "${#_sources[@]}" -ne 0 ]]; then
-		for source in "${_sources[@]}"; do
-			getPriceFromSource "$_assetPair" "$source"
-		done
-	fi
-}
-
-#pull price data of asset from source
-getPriceFromSource () {
+mapSetzer() {
 	local _assetPair=$1
 	local _source=$2
+	echo $_source $(setzer price $_assetPair $_source)
+}
+export -f mapSetzer
+
+#read price data of asset
+readSources () {
+	local _assetPair="${1,,}"
+	local _prices
 	local _price
-	_price=$(timeout -s9 5 setzer price "${_assetPair,,}" "$_source" 2> /dev/null)
-	if [[ $_price =~ ^[+-]?[0-9]+\.?[0-9]*$  ]]; then
+	local _source
+
+	mapfile -t _prices < <(
+		setzer sources "$_assetPair" \
+		| parallel -j0 --termseq KILL --timeout 5 \
+			mapSetzer "$_assetPair" \
+			2>/dev/null
+	)
+
+	for i in "${!_prices[@]}"; do
+		_source=${_prices[$i]% *}
+		_price=${_prices[$i]#* }
+		addPriceFromSource $_source $_price
+	done
+}
+
+addPriceFromSource () {
+	local _source=$1
+	local _price=$2
+	if [[ $_price =~ ^[+-]?[0-9]+(\.[0-9]+)?$  ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
 		verbose "$_source => $_price"
