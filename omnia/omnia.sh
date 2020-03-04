@@ -92,7 +92,7 @@ execute () {
 		#Calculate median of prices
 		median=$(getMedian "${validPrices[@]}")
 		verbose "median => $median"
-		if [[ ! "$median" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*)$ ]]; then
+		if [[ ! "$median" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9]+[0-9]*)$ ]]; then
 			error "Error - Failed to calculate valid median: ($median)"
 			debug "Sources = ${validSources[*]}"
 			debug "Prices = ${validPrices[*]}"
