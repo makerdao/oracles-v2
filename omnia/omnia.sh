@@ -84,8 +84,8 @@ execute () {
 		log "Querying ${assetPair^^} prices..."
 		#Query prices of asset pair
 		readSources "$assetPair"
-		if [[ "${#validPrices[@]}" -eq 0 ]] || [[ "${#validSources[@]}" -eq 0 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
-			error "Error - Failed to fetch valid prices from sources."
+		if [[ "${#validPrices[@]}" -lt 2 ]] || [[ "${#validSources[@]}" -lt 2 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
+			error "Error - Failed to fetch sufficient valid prices from sources."
 			continue
 		fi
 
