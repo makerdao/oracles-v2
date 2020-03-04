@@ -17,39 +17,40 @@ Goals of this new architecture are:
 ## Architecture
 Currently two main modules:
 
-[broadcaster]
-Each feed runs a broadcaster which pulls prices through Setzer, signs them with an ethereum private key, and broadcasts them as a message to the secure scuttlebutt network.
+[Feed]
+Each Feed runs a Feed client which pulls prices through Setzer, signs them with an ethereum private key, and broadcasts them as a message to the secure scuttlebutt network.
 
-[relayer]
+[Relayer]
 The relayer monitors the gossiped messages, checks for liveness, and homogenizes the pricing data and signatures into a single ethereum transaction.
 
 ## [Live Kovan Oracles]
-      BATUSD = 0xbfbc7ce472a1cda4778cd4e0c718f31089d03449
-      BNBUSD = 0x138c8bDc7D368764a5f6602df83c8D58c0af718d
-      BTCUSD = 0x697d49b2f7b8D50B53884F9EE64443493fdE3Faf
-      DGDUSd = 0xd961f51b334ac4d4b470cc638a2db85b97492bf6
-      DGXUSD = 0x2b623531Efe868d26878bD94e286B3F6636638BC
-      ETHUSD = 0x61232e4719f0709064a97c180c2d8802b742ed08
-      GNTUSD = 0x99144c8d95ace864a95486e0ff64b99ba5093599
-      MKRUSD = 0x851ebf5f4d71e7fc1704aed691cae89bfa05d5e1
-      OMGUSD = 0x15f9921118bf2f12f2728e914fba27478cda0def
-      REPUSD = 0xd739c99eb2b09d7aa22cb91bf850ed08caf275be
-      USDCUSD = 0xc6768fb775eE8a67C53239875DE6afC68B077E4F
-      ZRXUSD = 0xccddfff846a07ed8b730241da8c36cdc077074af   
+      BATUSD = 0xAb7366b12C982ca2DE162F35571b4d21E38a16FB
+      BTCUSD = 0xf8A9Faa25186B14EbF02e7Cd16e39152b85aEEcd
+      ETHUSD = 0x0E30F0FC91FDbc4594b1e2E5d64E6F1f94cAB23D
 
 ## [Live Mainnet Oracles]
-      BATUSD = 0x082C9B03a7F54aEb2c64c98f76Ee3379b9Acc306
-      BTCUSD = 0x064409168198A7E9108036D072eF59F923dEDC9A
-      ETHUSD = 0x15D786B4e2A1e05AF579107834202E37C51A6CE6
+      BATUSD = 0x18B4633D6E39870f398597f3c1bA8c4A41294966
+      BTCUSD = 0xe0F30cb149fAADC7247E953746Be9BbBB6B5751f
+      ETHUSD = 0x64DE91F5A373Cd4c28de3600cB34C7C6cE410C85
 
 ## Query Oracle Contracts
 	 
-Query Oracle price   
+Query Oracle price Offchain   
 ```
 rawStorage=$(seth storage <ORACLE_CONTRACT> 0x1)
 seth --from-wei $(seth --to-dec ${rawStorage:34:32})
 ```
-	    
+
+Query Oracle Price Onchain
+
+```
+seth --from-wei $(seth --to-dec $(seth call <ORACLE_CONTRACT> "read()(uint256)"))
+```
+This will require the address you are submitting the query from to be whitelisted in the Oracle smart contract.
+To get whitelisted on a Kovan Oracle please send an email to nik@makerdao.com.
+To get whitelisted on a Mainnet Oracle please submit a proposal in the Oracle section of the Maker Forum forum.makerdao.com
+Your proposal will need to be ratified by MKR Governance to be enacted. Details of the proposal format can be found inside the Forum.
+
 ## Installation Instructions
 
 *Currently Maker Internal only
@@ -92,11 +93,11 @@ nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
   -c install-omnia feed
 ```
 
-It is also possible to set the whole Scuttlbot config by using `--arg ssb-config
+It is also possible to set the whole Scuttlebot config by using `--arg ssb-config
 ssb-config.json` instead of `ssb-caps`. Make sure you set the `caps` property in your
 `ssb-config.json` instead.
 
-More details about the [Scuttlbot config](https://github.com/ssbc/ssb-config#configuration).
+More details about the [Scuttlebot config](https://github.com/ssbc/ssb-config#configuration).
 
 ## Development
 
