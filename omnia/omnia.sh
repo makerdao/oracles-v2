@@ -92,7 +92,7 @@ execute () {
 		#Calculate median of prices
 		median=$(getMedian "${validPrices[@]}")
 		verbose "median => $median"
-		if [ "$(isPriceValid $"median")" == "false" ]; then
+		if [ "$(isPriceValid "$median")" == "false" ]; then
 			error "Error - Failed to calculate valid median: ($median)"
 			debug "Sources = ${validSources[*]}"
 			debug "Prices = ${validPrices[*]}"
