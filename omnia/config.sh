@@ -49,7 +49,7 @@ importNetwork () {
 		ETH_RPC_URL=https://${network,,}.infura.io/v3/$INFURA_KEY
 		;;
 	*)
-		#custom RPC endpoint like Ganache or Testchain
+		#custom RPC endpoint like Local Node, Ganache or Testchain
 		ETH_RPC_URL=$network
 		;;
 	esac
