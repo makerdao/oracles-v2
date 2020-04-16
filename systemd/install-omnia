@@ -20,6 +20,7 @@ Options:
   --from ADDRESS                  Set Ethereum address to use for signing
   --keystore PATH                 Set Ethereum keystore path
   --password PATH                 Set Ethereum keystore password file path
+  --cmc-api-key CMC_API_KEY       Set Coin Market Cap API key
   --ssb-secret SECRET_FILE        Install Scuttlbot secret
   --ssb-gossip GOSSIP_JSON_FILE   Install Scuttlbot gossip.json file
 EOF
@@ -53,14 +54,14 @@ copyConf() {
   local updatedConf
 
   if [[ -f "/etc/omnia.conf" ]]; then
-    savedFrom=$(jq .ethereum "/etc/omnia.conf")
+    savedFrom=$(jq '{ethereum,services}' "/etc/omnia.conf")
   fi
 
   sudo cp -v "$OMNIA_LIB_PATH/config/$1" "/etc/omnia.conf"
   sudo chmod u+w "/etc/omnia.conf"
 
   if [[ -n "$savedFrom" ]]; then
-    configUpdates=( ".ethereum = $savedFrom" "${configUpdates[@]}" )
+    configUpdates=( ". * $savedFrom" "${configUpdates[@]}" )
   fi
 
   for i in "${!configUpdates[@]}"; do
@@ -110,6 +111,9 @@ while [[ -n "$1" ]]; do
       ;;
     --password)
       configUpdates+=( ".ethereum.password = \"$2\"" );shift
+      ;;
+    --cmc-api-key)
+      configUpdates+=( ".services.cmcApiKey = \"$2\"" );shift
       ;;
     --ssb-secret)
       installSsbSecret="$2";shift
