@@ -22,6 +22,7 @@ importEnv () {
 	importEthereumEnv $config
 	importAssetPairsEnv $config
 	importOptionsEnv $config
+	importServicesEnv $config
 	importScuttlebotEnv
 	[[ "$OMNIA_MODE" == "RELAYER" ]] && importFeeds $config
 }
@@ -179,6 +180,18 @@ importOptionsEnv () {
 	export OMNIA_VERBOSE
 	
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+}
+
+importServicesEnv () {
+	local _config="$1"
+	local _json
+
+	_json=$(jq -S '.services' < "$_config")
+	#extract cmc key
+	CMC_API_KEY="${CMC_API_KEY-$(jq -r '.cmcApiKey' <<<"$_json")}"
+	#validate cmc key
+	[[ "$CMC_API_KEY" =~ ^[0-9a-f]{8}(-){1}[0-9a-f]{4}(-){1}[0-9a-f]{4}(-){1}[0-9a-f]{4}(-){1}[0-9a-f]{12}$ ]] || errors+=("Error - Coinmarketcap API Key is invalid.")
+	export CMC_API_KEY
 }
 
 importScuttlebotEnv () {
