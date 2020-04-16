@@ -185,13 +185,11 @@ importOptionsEnv () {
 
 importServicesEnv () {
 	local _config="$1"
-	local _json
 
-	_json=$(jq -S '.services' < "$_config")
 	#extract cmc key
-	CMC_API_KEY="${CMC_API_KEY-$(jq -r '.cmcApiKey' <<<"$_json")}"
+	CMC_API_KEY="${CMC_API_KEY:-$(jq -r '.services.cmcApiKey' "$_config")}"
 	#validate cmc key
-	[[ "$CMC_API_KEY" =~ ^[0-9a-f]{8}(-){1}[0-9a-f]{4}(-){1}[0-9a-f]{4}(-){1}[0-9a-f]{4}(-){1}[0-9a-f]{12}$ ]] || errors+=("Error - Coinmarketcap API Key is invalid.")
+	[[ "$CMC_API_KEY" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || errors+=("Error - Coinmarketcap API Key is invalid.")
 	export CMC_API_KEY
 
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
