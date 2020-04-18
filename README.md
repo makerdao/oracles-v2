@@ -34,7 +34,7 @@ The relayer monitors the gossiped messages, checks for liveness, and homogenizes
       ETHUSD = 0x64DE91F5A373Cd4c28de3600cB34C7C6cE410C85
 
 ## Query Oracle Contracts
-	 
+
 Query Oracle price Offchain   
 ```
 rawStorage=$(seth storage <ORACLE_CONTRACT> 0x1)
@@ -63,7 +63,7 @@ If you run into any problems with the installation instructions please contact @
 Add Maker build cache:
 
 ```sh
-nix run nixpkgs.cachix -c cachix use maker
+nix run -f https://cachix.org/api/v1/install cachix -c cachix use maker
 ```
 
 Get the Scuttlbot private network keys (caps) from an admin and put it in a file
@@ -74,7 +74,7 @@ Then run the following to make the `omnia`, `ssb-server` and `install-omnia`
 commands available in your user environment:
 
 ```
-nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/master \
+nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/stable \
   --arg ssb-caps ./secret-ssb-caps.json
 ```
 
@@ -88,7 +88,7 @@ install-omnia help
 A one-liner for installing/updating an Omnia feed as a `systemd` service:
 
 ```
-nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
+nix run -f https://github.com/makerdao/oracles-v2/tarball/stable \
   --arg ssb-caps ./secret-ssb-caps.json \
   -c install-omnia feed
 ```
