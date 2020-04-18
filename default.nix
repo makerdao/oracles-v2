@@ -1,12 +1,8 @@
-{ pkgsSrc ? (import ./nix/pkgs.nix {}).pkgsSrc
-, pkgs ? (import ./nix/pkgs.nix { inherit pkgsSrc; }).pkgs
-, nodepkgs ? import ./nix/nodepkgs.nix { inherit pkgs; }
+let srcs = (import <nixpkgs> {}).callPackage ./nix/srcs.nix {}; in
 
-, setzer-mcdSrc ? fetchGit {
-    url = "https://github.com/makerdao/setzer-mcd";
-    ref = "master";
-    rev = "c528da640393a3d79ef314a7f86ae363d503a240";
-  }
+{ pkgs ? srcs.makerpkgs.pkgs
+, nodepkgs ? import ./nix/nodepkgs.nix { inherit pkgs; }
+, setzer-mcdSrc ? srcs.setzer-mcd
 
 , ssb-caps ? null
 , ssb-config ? null

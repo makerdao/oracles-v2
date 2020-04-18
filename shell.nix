@@ -1,9 +1,10 @@
-{ pkgsSrc ? (import ./nix/pkgs.nix {}).pkgsSrc
-, pkgs ? (import ./nix/pkgs.nix { inherit pkgsSrc; }).pkgs
+let srcs = (import <nixpkgs> {}).callPackage ./nix/srcs.nix {}; in
+
+{ pkgs ? srcs.makerpkgs.pkgs
 , ssb-caps ? null
 }@args: with pkgs; let
   inherit (import ./. args) omnia ssb-server;
-in pkgs.mkShell rec {
+in mkShell rec {
   name = "oracle-shell";
   buildInputs = omnia.runtimeDeps ++ [ nodePackages.node2nix ];
 

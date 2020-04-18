@@ -22,6 +22,7 @@ importEnv () {
 	importEthereumEnv $config
 	importAssetPairsEnv $config
 	importOptionsEnv $config
+	importServicesEnv $config
 	importScuttlebotEnv
 	[[ "$OMNIA_MODE" == "RELAYER" ]] && importFeeds $config
 }
@@ -157,6 +158,7 @@ importFeeds () {
 	for feed in "${feeds[@]}"; do
 		[[ $feed =~ ^(@){1}[a-zA-Z0-9+/]{43}(=.ed25519){1}$ ]] || { error "Error - Invalid feed address: $feed"; exit 1; }
 	done
+	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importOptionsEnv () {
@@ -178,6 +180,18 @@ importOptionsEnv () {
 	[[ "$OMNIA_VERBOSE" =~ ^(true|false)$ ]] || errors+=("Error - Verbose param is invalid, must be true or false.")
 	export OMNIA_VERBOSE
 	
+	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+}
+
+importServicesEnv () {
+	local _config="$1"
+
+	#extract cmc key
+	CMC_API_KEY="${CMC_API_KEY:-$(jq -r '.services.cmcApiKey' "$_config")}"
+	#validate cmc key
+	[[ "$CMC_API_KEY" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || errors+=("Error - Coinmarketcap API Key is invalid.")
+	export CMC_API_KEY
+
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 

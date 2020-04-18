@@ -60,10 +60,10 @@ If you run into any problems with the installation instructions please contact @
 
 ## Install with Nix
 
-Add dapptools build caches:
+Add Maker build cache:
 
 ```sh
-nix run nixpkgs.cachix -c cachix use dapp
+nix run nixpkgs.cachix -c cachix use maker
 ```
 
 Get the Scuttlbot private network keys (caps) from an admin and put it in a file
@@ -85,7 +85,7 @@ update your `/etc/omnia.conf` and migrate a Scuttlbot secret.
 install-omnia help
 ```
 
-A one-liner for installing an Omnia feed as a `systemd` service:
+A one-liner for installing/updating an Omnia feed as a `systemd` service:
 
 ```
 nix run -f https://github.com/makerdao/oracles-v2/tarball/master \
