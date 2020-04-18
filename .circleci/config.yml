@@ -1,0 +1,89 @@
+version: 2.1
+
+workflows:
+  version: 2
+  build-and-cache:
+    jobs:
+      #- build
+      - smoke-test
+      #    requires:
+      #      - build
+      #- cache:
+      #    requires:
+      #      - smoke-test
+      #    context: NIX_BUILD
+      #    filters:
+      #      branches:
+      #        only:
+      #          - master
+
+commands:
+  setup-nix:
+    description: Setup Nix
+    steps:
+      - run:
+          name: Install Nix
+          command: |
+            curl -L https://nixos.org/nix/install | sh
+  run-nix:
+    description: Source nix profile and run shell command
+    parameters:
+      name_:
+        type: string
+      command:
+        type: string
+    steps:
+      - run:
+          name: << parameters.name_ >>
+          command: |
+            . $HOME/.nix-profile/etc/profile.d/nix.sh || true
+            << parameters.command >>
+  setup-cachix:
+    description: Setup Cachix
+    steps:
+      - run-nix:
+          name_: Install dependencies
+          command: |
+            nix-env -iA nixpkgs.gitMinimal
+            nix-env -iA cachix -f https://cachix.org/api/v1/install
+      - run-nix:
+          name_: Add build caches
+          command: |
+            cachix use maker
+            cachix use dapp
+
+executors:
+  nix-executor:
+    docker:
+      - image: nixos/nix@sha256:af330838e838cedea2355e7ca267280fc9dd68615888f4e20972ec51beb101d8
+  ubuntu-executor:
+    machine:
+      image: ubuntu-1604:201903-01
+
+jobs:
+  build:
+    executor: nix-executor
+    steps:
+      - setup-cachix
+      - checkout
+      - run-nix:
+          name_: Build
+          command: nix-build --no-out-link
+  smoke-test:
+    executor: ubuntu-executor
+    steps:
+      - setup-nix
+      - setup-cachix
+      - checkout
+      - run-nix:
+          name_: Feed smoke test
+          command: |
+            nix run -f . -c install-omnia feed | sudo sh
+  cache:
+    executor: nix-executor
+    steps:
+      - setup-cachix
+      - checkout
+      - run-nix:
+          name_: Push to Cachix
+          command: nix-build --no-out-link | cachix push maker
