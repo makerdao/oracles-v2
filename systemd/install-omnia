@@ -57,7 +57,7 @@ copyConf() {
     savedFrom=$(jq '{ethereum,services} | del(.. | nulls)' "/etc/omnia.conf")
   fi
 
-  sudo cp -v "$OMNIA_LIB_PATH/config/$1" "/etc/omnia.conf"
+  sudo cp -v "$OMNIA_LIB_PATH/config/$1" "/etc/omnia.conf" >&2
   sudo chmod u+w "/etc/omnia.conf"
 
   if [[ -n "$savedFrom" ]]; then

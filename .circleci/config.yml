@@ -77,8 +77,7 @@ jobs:
       - checkout
       - run-nix:
           name_: Feed smoke test
-          command: |
-            nix run -f . -c install-omnia feed | sudo sh
+          command: smoke-tests/test.sh
   cache:
     executor: nix-executor
     steps:
