@@ -127,3 +127,28 @@ To update NodeJS dependencies edit the `nix/node-packages.json` file and run:
 nix-shell
 updateNodePackages
 ```
+
+### Staging and release process
+
+To create a release candidate for staging, typically after a PR has passed its
+smoke tests and is merged to `master`, checkout `master` and run:
+
+```
+nix-shell
+release minor
+```
+
+This should bump the version of `omnia` by Semver version level `minor`
+and add a Git tag with the resulting version and the suffix `-rc` which
+indicates a release candidate that is ready for staging.
+
+When a release candidate has been tested in staging and is deemed stable you can
+run the same command but without the Semver version level:
+
+```
+nix-shell
+release
+```
+
+This should add a Git tag to the current commit with its current version
+(without suffix) and move the `stable` tag.
