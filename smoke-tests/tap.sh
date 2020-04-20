@@ -14,12 +14,16 @@ set -eo pipefail
 
 wdir=$(mktemp -d "${TMPDIR:-/tmp}"/tapsh.XXXXXXXX)
 
-log() {
-  cat > $wdir/log
-}
+log() { cat >> $wdir/log; }
 note() { sed 's/^/# /'; }
 cleanup() { rm -rf $wdir; clear_timeout; }
 end() {
+  if command -v after >/dev/null 2>&1; then
+    { set -x
+      after || true
+      { set +x; } >/dev/null 2>&1
+    } 2>&1 | log
+  fi
   if [[ ! $plan ]]; then
     plan $test_count
   fi
@@ -127,7 +131,17 @@ got: |
 $(sed 's/^/  /' <<<"$input")
 expect: $1
 EOF
+  }
 }
+no_match() {
+  local input="$(cat)"
+  local m="$(grep -o "$1" <<<"$input")"
+  [[ ! $m ]] || { cat <<EOF
+got: |
+$(sed 's/^/  /' <<<"$input")
+expect: $1
+EOF
+  }
 }
 status() { match "^< HTTP/.* $1 " < $wdir/headers; }
 status_error() { status '[4-5][0-9][0-9]'; }
@@ -167,3 +181,10 @@ touch $wdir/output
 touch $wdir/headers
 
 echo TAP version 13
+
+if command -v before >/dev/null 2>&1; then
+  { set -x
+    before
+    { set +x; } >/dev/null 2>&1
+  } 2>&1 | log
+fi

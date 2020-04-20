@@ -76,8 +76,18 @@ jobs:
       - setup-cachix
       - checkout
       - run-nix:
+          name_: Install dependencies
+          command: |
+            nix-env -f ./smoke-tests -iA 'nodepkgs."tap-xunit-2.4.1"'
+      - run-nix:
           name_: Feed smoke test
-          command: smoke-tests/test.sh
+          command: |
+            mkdir -p test-results
+            smoke-tests/test.sh \
+              | tee >(tap-xunit > test-results/smoke-test.xml)
+      - store_test_results:
+          path: test-results
+
   cache:
     executor: nix-executor
     steps:
