@@ -3,7 +3,7 @@
 mapSetzer() {
 	local _assetPair=$1
 	local _source=$2
-	echo $_source $(setzer price $_assetPair $_source)
+	echo "$_source" "$(setzer price "$_assetPair" "$_source")"
 }
 export -f mapSetzer
 
@@ -16,7 +16,7 @@ readSources () {
 
 	mapfile -t _prices < <(
 		setzer sources "$_assetPair" \
-		| parallel -j0 --termseq KILL --timeout 5 \
+		| parallel -j0 --termseq KILL --timeout "$OMNIA_SRC_TIMEOUT" \
 			mapSetzer "$_assetPair" \
 			2>/dev/null
 	)
@@ -24,7 +24,7 @@ readSources () {
 	for i in "${!_prices[@]}"; do
 		_source=${_prices[$i]% *}
 		_price=${_prices[$i]#* }
-		addPriceFromSource $_source $_price
+		addPriceFromSource "$_source" "$_price"
 	done
 }
 

@@ -182,6 +182,12 @@ importOptionsEnv () {
 	OMNIA_VERBOSE=$(echo "$OMNIA_VERBOSE" | tr '[:upper:]' '[:lower:]')
 	[[ "$OMNIA_VERBOSE" =~ ^(true|false)$ ]] || errors+=("Error - Verbose param is invalid, must be true or false.")
 	export OMNIA_VERBOSE
+
+	if [[ "$OMNIA_MODE" == "FEED" ]]; then
+		OMNIA_SRC_TIMEOUT="$(echo "$_json" | jq -S '.srcTimeout')"
+		[[ "$OMNIA_SRC_TIMEOUT" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Src Timeout param is invalid, must be positive integer.")
+		export OMNIA_SRC_TIMEOUT
+	fi
 	
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
