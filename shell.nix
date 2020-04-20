@@ -3,7 +3,7 @@ let srcs = (import <nixpkgs> {}).callPackage ./nix/srcs.nix {}; in
 { pkgs ? srcs.makerpkgs.pkgs
 , ssb-caps ? null
 }@args: with pkgs; let
-  inherit (import ./. args) omnia ssb-server;
+  inherit (import ./. args) omnia;
 in mkShell rec {
   name = "oracle-shell";
   buildInputs = omnia.runtimeDeps ++ [
@@ -14,6 +14,8 @@ in mkShell rec {
 
   VERSION_FILE = toString ./omnia/version;
   ROOT_DIR = toString ./.;
+
+  NIX_PATH="nixpkgs=${pkgs.path}";
 
   shellHook = ''
     updateNodePackages() {

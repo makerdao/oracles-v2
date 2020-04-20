@@ -4,18 +4,18 @@ workflows:
   version: 2
   build-and-cache:
     jobs:
-      #- build
-      - smoke-test
-      #    requires:
-      #      - build
-      #- cache:
-      #    requires:
-      #      - smoke-test
-      #    context: NIX_BUILD
-      #    filters:
-      #      branches:
-      #        only:
-      #          - master
+      - build
+      - smoke-test:
+          requires:
+            - build
+      - cache:
+          requires:
+            - smoke-test
+          context: NIX_BUILD
+          filters:
+            branches:
+              only:
+                - master
 
 commands:
   setup-nix:
@@ -76,17 +76,15 @@ jobs:
       - setup-cachix
       - checkout
       - run-nix:
-          name_: Install dependencies
+          name_: Pre-fetch test dependencies
           command: |
-            nix-env -f ./smoke-tests -iA 'nodepkgs."tap-xunit-2.4.1"'
+            nix-shell smoke-tests --run true
       - run-nix:
-          name_: Feed smoke test
+          name_: Smoke test
           command: |
-            mkdir -p test-results
-            smoke-tests/test.sh \
-              | tee >(tap-xunit > test-results/smoke-test.xml)
+            nix-shell smoke-tests --run smokeTest
       - store_test_results:
-          path: test-results
+          path: smoke-tests/test-results
 
   cache:
     executor: nix-executor

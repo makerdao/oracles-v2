@@ -16,13 +16,19 @@ wdir=$(mktemp -d "${TMPDIR:-/tmp}"/tapsh.XXXXXXXX)
 
 log() { cat >> $wdir/log; }
 note() { sed 's/^/# /'; }
+run() {
+  ( set -x
+    "$@"
+    { set +x; } >/dev/null 2>&1
+  ) 2>&1 </dev/null | log
+}
 cleanup() { rm -rf $wdir; clear_timeout; }
 end() {
   if command -v after >/dev/null 2>&1; then
-    { set -x
+    ( set -x
       after || true
       { set +x; } >/dev/null 2>&1
-    } 2>&1 | log
+    ) 2>&1 </dev/null | log
   fi
   if [[ ! $plan ]]; then
     plan $test_count
