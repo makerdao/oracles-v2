@@ -1,15 +1,14 @@
 #!/bin/bash
-tpath="${0%/*}"
-rpath="$(cd $tpath; pwd)/resources"
+tpath="$(cd ${0%/*}; pwd)"
+rpath="$tpath/resources"
 
-from_addr=0x1f8fbe73820765677e68eb6e933dcb3c94c9b708
+from_addr="0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
 keystore_path="$rpath/keys"
 key_path="$rpath/key"
 cmc_api_key="9e70da6e-09fc-4167-a8f7-68f4e7e907a5"
 
-before() {
-  #nix run -f . pkgs.go-ethereum-unlimited pkgs.dapp -c dapp --testnet-launch &
-  nix run -f $tpath/.. -c install-omnia feed \
+install_feed() {
+  install-omnia feed \
     --from        "$from_addr" \
     --keystore    "$keystore_path" \
     --password    "$key_path" \
@@ -17,19 +16,38 @@ before() {
     | sudo sh
 }
 
+install_relayer() {
+  # Start geth testnet
+  rm -rf "$HOME/.dapp/testnet"
+  nohup >/dev/null 2>&1 \
+    dapp --testnet-launch &
+  sleep 2
+
+  install-omnia relayer \
+    | sudo sh
+}
+
 after() {
+  pkill dapp
   sudo systemctl stop omnia
 }
 
-. $tpath/tap.sh
+. "$tpath/tap.sh"
 
-plan 9
+plan 19
 timeout 60
+
+# Install feed
+
+feed_start=$(date +"%F %T")
+run install_feed
 
 assert "Install config" \
   test -f /etc/omnia.conf
 
 cat /etc/omnia.conf > $wdir/output
+assert "Mode is feed" \
+  json .mode <<<'"feed"'
 assert "Has set ethereum from address" \
   json .ethereum.from <<<"\"$from_addr\""
 assert "Has set ethereum keystore" \
@@ -41,14 +59,46 @@ assert "Has CMC API key" \
 
 sleep 2
 
-assert "Omnia service is active" \
+assert "Omnia feed service is active" \
   match "Active: active" < <(systemctl status omnia)
 assert "Scuttlebot service is active" \
   match "Active: active" < <(systemctl status ssb-server)
 
 sleep 5
 
-assert "Omnia service is up" \
-  no_match "Error" < <(journalctl --lines=10 -u omnia)
+assert "Omnia feed service is up" \
+  match "INITIALIZATION COMPLETE" < <(journalctl --since "$feed_start" -u omnia)
 assert "Scuttlebot service is up" \
-  no_match "Error" < <(journalctl --lines=10 -u ssb-server)
+  match "my key ID:" < <(journalctl --since "$feed_start" -u ssb-server)
+
+# Install relayer
+
+relayer_start=$(date +"%F %T")
+run install_relayer
+
+assert "Install config" \
+  test -f /etc/omnia.conf
+
+cat /etc/omnia.conf > $wdir/output
+assert "Mode is relayer" \
+  json .mode <<<'"relayer"'
+assert "Ethereum from address not overwritten" \
+  json .ethereum.from <<<"\"$from_addr\""
+assert "Ethereum keystore not overwritten" \
+  json .ethereum.keystore <<<"\"$keystore_path\""
+assert "Keystore password file not overwritten" \
+  json .ethereum.password <<<"\"$key_path\""
+
+sleep 2
+
+assert "Omnia relayer service is active" \
+  match "Active: active" < <(systemctl status omnia)
+assert "Scuttlebot service is active" \
+  match "Active: active" < <(systemctl status ssb-server)
+
+sleep 5
+
+assert "Omnia relayer service is up" \
+  match "INITIALIZATION COMPLETE" < <(journalctl --since "$relayer_start" -u omnia)
+assert "Scuttlebot service is up" \
+  match "my key ID:" < <(journalctl --since "$relayer_start" -u ssb-server)
