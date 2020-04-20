@@ -187,6 +187,18 @@ importOptionsEnv () {
 		OMNIA_SRC_TIMEOUT="$(echo "$_json" | jq -S '.srcTimeout')"
 		[[ "$OMNIA_SRC_TIMEOUT" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Src Timeout param is invalid, must be positive integer.")
 		export OMNIA_SRC_TIMEOUT
+
+		SETZER_TIMEOUT="$(echo "$_json" | jq -S '.setzerTimeout')"
+		[[ "$SETZER_TIMEOUT" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Timeout param is invalid, must be positive integer.")
+		export SETZER_TIMEOUT
+
+		SETZER_CACHE_EXPIRY="$(echo "$_json" | jq -S '.setzerCacheExpiry')"
+		[[ "$SETZER_CACHE_EXPIRY" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Cache Expiry param is invalid, must be positive integer.")
+		export SETZER_CACHE_EXPIRY
+
+		SETZER_MIN_MEDIAN="$(echo "$_json" | jq -S '.setzerMinMedian')"
+		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
+		export SETZER_MIN_MEDIAN
 	fi
 	
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
