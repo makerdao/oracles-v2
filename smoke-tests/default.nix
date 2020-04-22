@@ -1,21 +1,20 @@
 let srcs = (import <nixpkgs> {}).callPackage ../nix/srcs.nix {}; in
 
 { pkgs ? srcs.makerpkgs.pkgs
-, nodepkgs ? import ../nix/nodepkgs.nix { inherit pkgs; }
-, ssb-caps ? null
+, nodepkgs ? srcs.nodepkgs { inherit pkgs; }
 }@args:
 
 pkgs.mkShell rec {
   name = "oracle-smoke-test-shell";
-  buildInputs = with pkgs; [
-    (import ./.. args).install-omnia
+  buildInputs = with pkgs; with import ./.. args; [
+    install-omnia ssb-server
     procps go-ethereum dapp
-    nodepkgs."tap-xunit-2.4.1"
+    nodepkgs.tap-xunit
   ];
 
-  NIX_PATH="nixpkgs=${pkgs.path}";
-
   TEST_DIR = toString ./.;
+
+  NIX_PATH="nixpkgs=${pkgs.path}";
 
   shellHook = ''
     smokeTest() {

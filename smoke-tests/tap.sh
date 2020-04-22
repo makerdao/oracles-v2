@@ -108,7 +108,7 @@ assert() {
     && echo "ok $test_count - $desc> $@" \
     || { ((failed_tests+=1)); echo "not ok $test_count - $desc> $@"; if [[ $res ]]; then cat <<EOF
   ---
-$(sed 's/^/  /g' <<<"$res")
+$(sed 's/^/  /' <<<"$res")
   ...
 EOF
       fi
@@ -124,14 +124,14 @@ json() {
   local res="$(diff -u $wdir/expect-$test_count.json $wdir/got-$test_count.json)"
   [[ ! $res ]] || { cat <<EOF
 diff: |
-$(sed 's/^/  /g' <<<"$res")
+$(sed 's/^/  /' <<<"$res")
 EOF
   }
 }
 
 match() {
   local input="$(cat)"
-  local m="$(grep -o "$1" <<<"$input")"
+  local m="$(grep -Eo "$1" <<<"$input")"
   [[ $m ]] || { cat <<EOF
 got: |
 $(sed 's/^/  /' <<<"$input")

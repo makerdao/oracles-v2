@@ -28,10 +28,7 @@
     inherit (cfg) pairs mode feeds ethereum options;
   };
 
-  inherit (import ../. {
-    inherit ssb-config;
-    #inherit (import ../../nixpkgs-pin { dapptoolsOverrides = { current = ../../dapptools; }; }) pkgs;
-  }) omnia ssb-server;
+  inherit (import ../. {}) omnia ssb-server;
 
   name = "omnia";
   home = "/var/lib/${name}";
@@ -49,6 +46,10 @@ in {
       description = "Scuttlebot server";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
+
+      environment = {
+        ssb_config = ssb-config;
+      };
 
       serviceConfig = {
         Type = "simple";

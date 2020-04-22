@@ -1,0 +1,26 @@
+{
+  "connections": {
+    "incoming": {
+      "net": [
+        {
+          "port": 8007,
+          "scope": [
+            "public",
+            "local"
+          ],
+          "transform": "shs"
+        }
+      ],
+      "ws": [
+        {
+          "port": 8988,
+          "scope": [
+            "public",
+            "local"
+          ],
+          "transform": "shs"
+        }
+      ]
+    }
+  }
+}

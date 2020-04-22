@@ -1,4 +1,7 @@
-{ fetchgit }:
+{ fetchgit, lib }: let
+  inherit (lib.strings) getName removePrefix;
+  inherit (builtins) map filter listToAttrs attrValues;
+in
 
 rec {
   makerpkgs = import (fetchGit {
@@ -23,4 +26,12 @@ rec {
     rev = "e9d397fdb9a48c128abc49055840792192945e1b";
     ref = "master";
   };
+
+  nodepkgs = { pkgs ? makerpkgs.pkgs }: let
+    nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
+    shortNames = listToAttrs (map
+      (x: { name = removePrefix "node-" (getName x.name); value = x; })
+      (attrValues nodepkgs')
+    );
+  in nodepkgs' // shortNames;
 }

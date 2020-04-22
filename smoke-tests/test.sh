@@ -5,14 +5,16 @@ rpath="$tpath/resources"
 from_addr="0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
 keystore_path="$rpath/keys"
 key_path="$rpath/key"
-cmc_api_key="9e70da6e-09fc-4167-a8f7-68f4e7e907a5"
+cmc_api_key="01234567-89ab-cdef-0123-456789abcdef"
 
 install_feed() {
   install-omnia feed \
-    --from        "$from_addr" \
-    --keystore    "$keystore_path" \
-    --password    "$key_path" \
-    --cmc-api-key "$cmc_api_key" \
+    --from         "$from_addr" \
+    --keystore     "$keystore_path" \
+    --password     "$key_path" \
+    --cmc-api-key  "$cmc_api_key" \
+    --ssb-external "example.org" \
+    --ssb-caps     "$rpath/caps.json" \
     | sudo sh
 }
 
@@ -24,25 +26,37 @@ install_relayer() {
   sleep 2
 
   install-omnia relayer \
+    --ssb-external "example-2.org" \
     | sudo sh
 }
 
 after() {
   pkill dapp
-  sudo systemctl stop omnia
+  sudo systemctl stop omnia ssb-server
 }
 
 . "$tpath/tap.sh"
 
-plan 19
+plan 29
 timeout 60
 
-# Install feed
+note <<<"INSTALL FEED"
 
 feed_start=$(date +"%F %T")
 run install_feed
 
-assert "Install config" \
+assert "Scuttlbot config installed" \
+  test -f $HOME/.ssb/config
+
+cat $HOME/.ssb/config > $wdir/output
+assert "SSB external IP set" \
+  json '.connections.incoming.net[0].external' <<<'"example.org"'
+assert "SSB external IP set" \
+  json '.connections.incoming.ws[0].external' <<<'"example.org"'
+assert "SSB caps set" \
+  json .caps < "$rpath/caps.json"
+
+assert "Omnia feed config installed" \
   test -f /etc/omnia.conf
 
 cat /etc/omnia.conf > $wdir/output
@@ -71,12 +85,26 @@ assert "Omnia feed service is up" \
 assert "Scuttlebot service is up" \
   match "my key ID:" < <(journalctl --since "$feed_start" -u ssb-server)
 
-# Install relayer
+assert "SSB create invite" \
+  match '^"example.org:8007:' < <(ssb-server invite.create 1 2> >(log))
+
+note <<<"INSTALL RELAYER"
 
 relayer_start=$(date +"%F %T")
 run install_relayer
 
-assert "Install config" \
+assert "Scuttlbot config installed" \
+  test -f $HOME/.ssb/config
+
+cat $HOME/.ssb/config > $wdir/output
+assert "SSB external IP set" \
+  json '.connections.incoming.net[0].external' <<<'"example-2.org"'
+assert "SSB external IP set" \
+  json '.connections.incoming.ws[0].external' <<<'"example-2.org"'
+assert "SSB caps set" \
+  json .caps < "$rpath/caps.json"
+
+assert "Omnia relayer config installed" \
   test -f /etc/omnia.conf
 
 cat /etc/omnia.conf > $wdir/output
@@ -102,3 +130,6 @@ assert "Omnia relayer service is up" \
   match "INITIALIZATION COMPLETE" < <(journalctl --since "$relayer_start" -u omnia)
 assert "Scuttlebot service is up" \
   match "my key ID:" < <(journalctl --since "$relayer_start" -u ssb-server)
+
+assert "SSB create invite" \
+  match '^"example-2.org:8007:' < <(ssb-server invite.create 1 2> >(log))

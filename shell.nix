@@ -1,16 +1,19 @@
 let srcs = (import <nixpkgs> {}).callPackage ./nix/srcs.nix {}; in
 
 { pkgs ? srcs.makerpkgs.pkgs
-, ssb-caps ? null
-}@args: with pkgs; let
+}@args:
+
+let
   inherit (import ./. args) omnia;
-in mkShell rec {
+in
+
+pkgs.mkShell rec {
   name = "oracle-shell";
-  buildInputs = omnia.runtimeDeps ++ [
+  buildInputs = omnia.runtimeDeps ++ (with pkgs; [
     nodePackages.node2nix
     nodePackages.semver
     git
-  ];
+  ]);
 
   VERSION_FILE = toString ./omnia/version;
   ROOT_DIR = toString ./.;
