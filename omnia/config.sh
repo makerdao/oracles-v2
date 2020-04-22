@@ -26,7 +26,6 @@ importEnv () {
 	importScuttlebotEnv
 	if [[ "$OMNIA_MODE" == "RELAYER" ]]; then
 		importFeeds $config
-		importServicesEnv $config
 	fi
 }
 
