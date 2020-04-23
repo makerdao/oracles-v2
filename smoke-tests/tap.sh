@@ -14,24 +14,38 @@ set -eo pipefail
 
 wdir=$(mktemp -d "${TMPDIR:-/tmp}"/tapsh.XXXXXXXX)
 
-log() { cat >> $wdir/log; }
+log() {
+  cat > $wdir/log
+  if [[ -f $wdir/log && $(wc -c $wdir/log | cut -f1 -d' ') = 0 ]]; then
+    rm $wdir/log
+  fi
+}
 note() { sed 's/^/# /'; }
 run() {
-  ( set -x
+  { local ecode=0
+    set -x
+    "$@" || ecode=$?
+    { set +x; } >/dev/null 2>&1
+    if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
+    return $ecode
+  } 2>&1 </dev/null | log
+}
+capture() {
+  { set -x
     "$@"
     { set +x; } >/dev/null 2>&1
-  ) 2>&1 </dev/null | log
+  } 2> >(log) </dev/null
 }
 cleanup() { rm -rf $wdir; clear_timeout; }
 end() {
   if command -v after >/dev/null 2>&1; then
-    ( set -x
-      after || true
-      { set +x; } >/dev/null 2>&1
-    ) 2>&1 </dev/null | log
+    run after || { [[ -f $wdir/log ]] && note < $wdir/log; }
   fi
   if [[ ! $plan ]]; then
     plan $test_count
+  fi
+  if [[ $skipped_tests != 0 ]]; then
+    echo "# Skipped $skipped_tests tests"
   fi
   if [[ $failed_tests != 0 ]]; then
     echo "# Failed $failed_tests out of $test_count tests"
@@ -41,15 +55,9 @@ end() {
     echo "# Plan failed, ran $test_count tests, plan was $plan"
     exit_code=${exit_code:-2}
   fi
-  if [[ $exit_code ]]; then
-    {
-      echo
-      echo "STDOUT trace:"
-      cat $wdir/log
-    } | note
-  else
-    echo "# Success, ran $test_count tests!"
-    exit_code=${exit_code:-0}
+  exit_code=${exit_code:-0}
+  if [[ $exit_code = 0 ]]; then
+    echo "# Success, ran $((test_count-skipped_tests)) tests!"
   fi
   cleanup
   exit $exit_code
@@ -90,6 +98,7 @@ timeout() {
 
 test_count=0
 failed_tests=0
+skipped_tests=0
 exit_code=""
 timeoutpid=""
 
@@ -103,16 +112,31 @@ assert() {
   local desc="${1:+$1 }"; shift
   local ecode=0
   local res
-  res="$("$@")" || { ecode=$?; true; }
-  [[ $ecode == 0 && ! $res ]] \
-    && echo "ok $test_count - $desc> $@" \
-    || { ((failed_tests+=1)); echo "not ok $test_count - $desc> $@"; if [[ $res ]]; then cat <<EOF
-  ---
-$(sed 's/^/  /' <<<"$res")
-  ...
-EOF
+
+  if [[ ${desc^^} =~ ^\#\ SKIP ]]; then
+    ((skipped_tests+=1))
+  else
+    res=$("$@") || ecode=$?
+  fi
+
+  if [[ $ecode == 0 && ! $res ]]; then
+    echo "ok $test_count - $desc> $@"
+  else
+    ((failed_tests+=1))
+    echo "not ok $test_count - $desc> $@"
+    if [[ $res || -f $wdir/log ]]; then
+      echo "  ---"
+      if [[ $res ]]; then
+        sed 's/^/  /' <<<"$res"
       fi
-    }
+      if [[ -f $wdir/log ]]; then
+        echo "  stdout: |"
+        sed 's/^/    /' $wdir/log
+        rm $wdir/log
+      fi
+      echo "  ..."
+    fi
+  fi
 }
 
 output(){
@@ -135,7 +159,7 @@ match() {
   [[ $m ]] || { cat <<EOF
 got: |
 $(sed 's/^/  /' <<<"$input")
-expect: $1
+expect: '$1'
 EOF
   }
 }
@@ -145,7 +169,7 @@ no_match() {
   [[ ! $m ]] || { cat <<EOF
 got: |
 $(sed 's/^/  /' <<<"$input")
-expect: $1
+expect: '$1'
 EOF
   }
 }
@@ -189,8 +213,5 @@ touch $wdir/headers
 echo TAP version 13
 
 if command -v before >/dev/null 2>&1; then
-  { set -x
-    before
-    { set +x; } >/dev/null 2>&1
-  } 2>&1 | log
+  run before || { [[ -f $wdir/log ]] && note < $wdir/log; exit 3; }
 fi

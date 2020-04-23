@@ -37,13 +37,13 @@ after() {
 
 . "$tpath/tap.sh"
 
-plan 29
+plan 31
 timeout 60
 
 note <<<"INSTALL FEED"
 
 feed_start=$(date +"%F %T")
-run install_feed
+assert "Install feed" run install_feed
 
 assert "Scuttlbot config installed" \
   test -f $HOME/.ssb/config
@@ -74,24 +74,24 @@ assert "Has CMC API key" \
 sleep 2
 
 assert "Omnia feed service is active" \
-  match "Active: active" < <(systemctl status omnia)
+  match "Active: active" < <(capture systemctl status omnia)
 assert "Scuttlebot service is active" \
-  match "Active: active" < <(systemctl status ssb-server)
+  match "Active: active" < <(capture systemctl status ssb-server)
 
 sleep 5
 
 assert "Omnia feed service is up" \
-  match "INITIALIZATION COMPLETE" < <(journalctl --since "$feed_start" -u omnia)
+  match "INITIALIZATION COMPLETE" < <(capture journalctl --since "$feed_start" -u omnia)
 assert "Scuttlebot service is up" \
-  match "my key ID:" < <(journalctl --since "$feed_start" -u ssb-server)
+  match "my key ID:" < <(capture journalctl --since "$feed_start" -u ssb-server)
 
 assert "SSB create invite" \
-  match '^"example.org:8007:' < <(ssb-server invite.create 1 2> >(log))
+  match '^"example.org:8007:' < <(capture ssb-server invite.create 1)
 
 note <<<"INSTALL RELAYER"
 
 relayer_start=$(date +"%F %T")
-run install_relayer
+assert "Install relayer" run install_relayer
 
 assert "Scuttlbot config installed" \
   test -f $HOME/.ssb/config
@@ -120,16 +120,16 @@ assert "Keystore password file not overwritten" \
 sleep 2
 
 assert "Omnia relayer service is active" \
-  match "Active: active" < <(systemctl status omnia)
+  match "Active: active" < <(capture systemctl status omnia)
 assert "Scuttlebot service is active" \
-  match "Active: active" < <(systemctl status ssb-server)
+  match "Active: active" < <(capture systemctl status ssb-server)
 
 sleep 5
 
 assert "Omnia relayer service is up" \
-  match "INITIALIZATION COMPLETE" < <(journalctl --since "$relayer_start" -u omnia)
+  match "INITIALIZATION COMPLETE" < <(capture journalctl --since "$relayer_start" -u omnia)
 assert "Scuttlebot service is up" \
-  match "my key ID:" < <(journalctl --since "$relayer_start" -u ssb-server)
+  match "my key ID:" < <(capture journalctl --since "$relayer_start" -u ssb-server)
 
 assert "SSB create invite" \
-  match '^"example-2.org:8007:' < <(ssb-server invite.create 1 2> >(log))
+  match '^"example-2.org:8007:' < <(capture ssb-server invite.create 1)
