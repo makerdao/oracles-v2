@@ -25,7 +25,7 @@
 
   ssb-config = writeJSON "ssb-config" cfg.ssbConfig;
   omnia-config = writeJSON "omnia.conf" {
-    inherit (cfg) pairs mode feeds ethereum options;
+    inherit (cfg) pairs mode feeds ethereum options services;
   };
 
   inherit (import ../. {}) omnia ssb-server;
@@ -47,10 +47,6 @@ in {
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
 
-      environment = {
-        ssb_config = ssb-config;
-      };
-
       serviceConfig = {
         Type = "simple";
         User = name;
@@ -63,28 +59,30 @@ in {
       };
 
       preStart = ''
-          installFile() {
+          installSsbFile() {
             local from="$1"
-            local target="$2"
-            local targetDir="''${target%/*}"
+            local target="${home}/.ssb/$2"
             if [[ ! -e "$target" ]]; then
               echo >&2 "SSB Service Setup: $target not found! Initiallizing with $from -> $target"
-              mkdir -p "$targetDir"
-              chown ${name}:${name} "$targetDir"
               cp -f "$from" "$target"
-              chown ${name}:${name} "$target"
-              chmod ug+w "$target"
             else
               echo >&2 "SSB Service Setup: $target exists! Not overwriting"
             fi
           }
+
+          mkdir -p "${home}/.ssb"
         ''
         + (optionalString (cfg.ssbInitSecret != null) ''
-          installFile "${cfg.ssbInitSecret}" "${home}/.ssb/secret"
+          installSsbFile "${cfg.ssbInitSecret}" "secret"
         '')
         + (optionalString (cfg.ssbInitGossip != null) ''
-          installFile "${cfg.ssbInitGossip}" "${home}/.ssb/gossip.json"
-        '');
+          installSsbFile "${cfg.ssbInitGossip}" "gossip.json"
+        '')
+        + ''
+          ln -sf "${ssb-config}" "${home}/.ssb/config"
+          chown -R ${name}:${name} "${home}/.ssb"
+          chmod -R ug+w "${home}/.ssb"
+        '';
     };
 
     systemd.services.omnia = {
@@ -111,19 +109,14 @@ in {
       };
     };
 
-    users.extraUsers = [
-      {
-        name = name;
-        group = name;
-        home = home;
-        createHome = true;
-        shell = "${pkgs.bash}/bin/bash";
-        isSystemUser = true;
-      }
-    ];
-
-    users.extraGroups = [
-      { name = name; }
-    ];
+    users.groups."${name}" = { inherit name; };
+    users.users."${name}" = {
+      inherit name;
+      group = name;
+      home = home;
+      createHome = true;
+      shell = "${pkgs.bash}/bin/bash";
+      isSystemUser = true;
+    };
   };
 }
