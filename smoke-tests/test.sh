@@ -45,7 +45,7 @@ note <<<"INSTALL FEED"
 feed_start=$(date +"%F %T")
 assert "Install feed" run install_feed
 
-assert "Scuttlbot config installed" \
+assert "Scuttlebot config installed" \
   test -f $HOME/.ssb/config
 
 cat $HOME/.ssb/config > $wdir/output
@@ -93,7 +93,7 @@ note <<<"INSTALL RELAYER"
 relayer_start=$(date +"%F %T")
 assert "Install relayer" run install_relayer
 
-assert "Scuttlbot config installed" \
+assert "Scuttlebot config installed" \
   test -f $HOME/.ssb/config
 
 cat $HOME/.ssb/config > $wdir/output

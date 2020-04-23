@@ -22,9 +22,9 @@ Options:
   --password PATH                 Set Ethereum keystore password file path
   --cmc-api-key  CMC_API_KEY      Set Coin Market Cap API key
   --ssb-caps     CAPS_FILE        Set Scuttlbot caps from file
+  --ssb-external EXTERNAL_ADDRS   Set Scuttlbot external IP/host address
   --ssb-secret   SECRET_FILE      Install Scuttlbot secret
   --ssb-gossip   GOSSIP_JSON_FILE Install Scuttlbot gossip.json file
-  --ssb-external EXTERNAL_ADDRS   Set Scuttlbot external IP/host address
 EOF
   exit 1
 }

@@ -13,7 +13,7 @@ Goals of this new architecture are:
   4. Reduce latency to react to price changes
   5. Make it easy to on-board price feeds for new collateral types
   6. Make it easy to on-board new Oracles
- 
+
 ## Architecture
 Currently two main modules:
 
@@ -77,18 +77,27 @@ Get the Scuttlebot private network keys (caps) from an admin and put it in a fil
 (e.g. called `secret-ssb-caps.json`). The file should have the JSON format:
 `{ "shs": "<BASE64>", "sign": "<BASE64>" }`.
 
-You can use the `install-omnia` command to install Omnia as a `systemd` service,
-update your `/etc/omnia.conf` and migrate a Scuttlebot secret.
+You can use the `install-omnia` command to install Omnia as a `systemd`
+service, update your `/etc/omnia.conf`, `~/.ssb/config` and migrate a
+Scuttlebot secret and gossip log.
+
+
+To install and configure Omnia as a feed running with `systemd`:
+
+```
+install-omnia feed \
+  --from         <ETHEREUM_ADDRESS> \
+  --keystore     <KEYSTORE_PATH> \
+  --password     <PASS_FILE_PATH> \
+  --cmc-api-key  <COINMARKETCAP_API_KEY> \
+  --ssb-caps     <CAPS_JSON_PATH> \
+  --ssb-external <PUBLICLY_REACHABLE_IP>
+```
+
+For more information about the install CLI:
 
 ```
 install-omnia help
-```
-
-A one-liner for installing/updating an Omnia feed as a `systemd` service:
-
-```
-nix run -f https://github.com/makerdao/oracles-v2/tarball/stable \
-  -c install-omnia feed --ssb-caps ./secret-ssb-caps.json
 ```
 
 The installed Scuttlebot config can be found in `~/.ssb.config`, more details
