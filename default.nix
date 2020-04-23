@@ -1,4 +1,4 @@
-let srcs = (import <nixpkgs> {}).callPackage ./nix/srcs.nix {}; in
+let srcs = import ./nix/srcs.nix; in
 
 { pkgs ? srcs.makerpkgs.pkgs
 , nodepkgs ? srcs.nodepkgs { inherit pkgs; }

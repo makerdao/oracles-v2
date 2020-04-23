@@ -1,14 +1,25 @@
-{ fetchgit, lib }: let
-  inherit (lib.strings) getName removePrefix;
-  inherit (builtins) map filter listToAttrs attrValues;
+let
+  inherit (builtins) map filter listToAttrs attrValues isString;
+  inherit (import makerpkgs' {}) pkgs;
+  inherit (pkgs) fetchgit;
+  inherit (pkgs.lib.strings) removePrefix;
+
+  getName = x:
+   let
+     parse = drv: (builtins.parseDrvName drv).name;
+   in if isString x
+      then parse x
+      else x.pname or (parse x.name);
+
+  makerpkgs' = fetchGit {
+    url = "https://github.com/makerdao/makerpkgs";
+    rev = "d4b7fe56b38236566b3014d328be1bd9c7be7a2f";
+    ref = "master";
+  };
 in
 
 rec {
-  makerpkgs = import (fetchGit {
-    url = "https://github.com/makerdao/nixpkgs-pin";
-    rev = "d4b7fe56b38236566b3014d328be1bd9c7be7a2f";
-    ref = "master";
-  }) {
+  makerpkgs = import makerpkgs' {
     dapptoolsOverrides = {
       current = dapptools-seth-0_8_4-pre;
     };
