@@ -6,9 +6,9 @@ let srcs = import ./nix/srcs.nix; in
 }: with pkgs;
 
 let
-  ssb-server = nodepkgs.ssb-server.override {
+  ssb-server = lib.setPrio 10 (nodepkgs.ssb-server.override {
     buildInputs = [ gnumake nodepkgs.node-gyp-build ];
-  };
+  });
 
   setzer-mcd = callPackage setzer-mcdSrc {};
 in rec {
