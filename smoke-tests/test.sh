@@ -5,14 +5,12 @@ rpath="$tpath/resources"
 from_addr="0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
 keystore_path="$rpath/keys"
 key_path="$rpath/key"
-cmc_api_key="01234567-89ab-cdef-0123-456789abcdef"
 
 install_feed() {
   install-omnia feed \
     --from         "$from_addr" \
     --keystore     "$keystore_path" \
     --password     "$key_path" \
-    --cmc-api-key  "$cmc_api_key" \
     --ssb-external "example.org" \
     --ssb-caps     "$rpath/caps.json" \
     | sudo sh
@@ -37,7 +35,7 @@ after() {
 
 . "$tpath/tap.sh"
 
-plan 31
+plan 30
 timeout 60
 
 note <<<"INSTALL FEED"
@@ -68,8 +66,6 @@ assert "Has set ethereum keystore" \
   json .ethereum.keystore <<<"\"$keystore_path\""
 assert "Has set keystore password file" \
   json .ethereum.password <<<"\"$key_path\""
-assert "Has CMC API key" \
-  json .services.cmcApiKey <<<"\"$cmc_api_key\""
 
 sleep 2
 

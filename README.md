@@ -89,7 +89,6 @@ install-omnia feed \
   --from         <ETHEREUM_ADDRESS> \
   --keystore     <KEYSTORE_PATH> \
   --password     <PASS_FILE_PATH> \
-  --cmc-api-key  <COINMARKETCAP_API_KEY> \
   --ssb-caps     <CAPS_JSON_PATH> \
   --ssb-external <PUBLICLY_REACHABLE_IP>
 ```
