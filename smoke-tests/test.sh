@@ -24,6 +24,7 @@ install_relayer() {
   sleep 2
 
   install-omnia relayer \
+    --network      "testnet" \
     --ssb-external "example-2.org" \
     | sudo sh
 }
@@ -35,7 +36,7 @@ after() {
 
 . "$tpath/tap.sh"
 
-plan 30
+plan 31
 timeout 60
 
 note <<<"INSTALL FEED"
@@ -112,6 +113,8 @@ assert "Ethereum keystore not overwritten" \
   json .ethereum.keystore <<<"\"$keystore_path\""
 assert "Keystore password file not overwritten" \
   json .ethereum.password <<<"\"$key_path\""
+assert "Has set ethereum network" \
+  json .ethereum.network <<<'"testnet"'
 
 sleep 2
 
