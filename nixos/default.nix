@@ -79,13 +79,6 @@ in {
     };
 
     services = {
-      cmcApiKey = mkOption {
-        type = types.str;
-        description = ''
-          CoinMarketCap API key
-        '';
-        default = "";
-      };
     };
 
     feeds = mkOption {

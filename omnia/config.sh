@@ -18,14 +18,16 @@ importEnv () {
 	#check if config file is valid json
 	jq -e . "$config" >/dev/null 2>&1 || { error "Error - Config is not valid JSON"; exit 1; }
 
-	importMode $config
-	importEthereumEnv $config
-	importAssetPairsEnv $config
-	importOptionsEnv $config
-	importServicesEnv $config
+	importMode "$config"
+	importEthereumEnv "$config"
+	importAssetPairsEnv "$config"
+	importOptionsEnv "$config"
 	importScuttlebotEnv
+	if [[ "$OMNIA_MODE" == "FEED" ]]; then
+		importServicesEnv "$config"
+	fi
 	if [[ "$OMNIA_MODE" == "RELAYER" ]]; then
-		importFeeds $config
+		importFeeds "$config"
 	fi
 }
 
@@ -205,12 +207,6 @@ importOptionsEnv () {
 
 importServicesEnv () {
 	local _config="$1"
-
-	#extract cmc key
-	CMC_API_KEY="${CMC_API_KEY:-$(jq -r '.services.cmcApiKey' "$_config")}"
-	#validate cmc key
-	[[ "$CMC_API_KEY" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]] || errors+=("Error - Coinmarketcap API Key is invalid.")
-	export CMC_API_KEY
 
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
 }
