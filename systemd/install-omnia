@@ -20,9 +20,11 @@ Options:
   --from ADDRESS                  Set Ethereum address to use for signing
   --keystore PATH                 Set Ethereum keystore path
   --password PATH                 Set Ethereum keystore password file path
-  --cmc-api-key CMC_API_KEY       Set Coin Market Cap API key
-  --ssb-secret SECRET_FILE        Install Scuttlbot secret
-  --ssb-gossip GOSSIP_JSON_FILE   Install Scuttlbot gossip.json file
+  --cmc-api-key  CMC_API_KEY      Set Coin Market Cap API key
+  --ssb-caps     CAPS_FILE        Set Scuttlbot caps from file
+  --ssb-external EXTERNAL_ADDRS   Set Scuttlbot external IP/host address
+  --ssb-secret   SECRET_FILE      Install Scuttlbot secret
+  --ssb-gossip   GOSSIP_JSON_FILE Install Scuttlbot gossip.json file
 EOF
   exit 1
 }
@@ -49,7 +51,7 @@ subst() {
   fi
 }
 
-copyConf() {
+copyOmniaConf() {
   local savedFrom
   local updatedConf
 
@@ -71,8 +73,41 @@ copyConf() {
 }
 declare -a configUpdates
 
+copySsbConf() {
+  local savedFrom
+  local updatedConf
+  local confDir="$HOME/.ssb"
+  local confPath="$confDir/config"
+
+  mkdir -p "$confDir"
+
+  if [[ -f $confPath ]]; then
+    updatedConf=$(jq . "$confPath")
+  fi
+  [[ -n $updatedConf ]] || updatedConf=$(jq . "$SCRIPT_DIR/ssb-config.json")
+
+  for i in "${!ssbConfigUpdates[@]}"; do
+    updatedConf=$(jq "${ssbConfigUpdates[$i]}" <<<"$updatedConf")
+  done
+
+  tee "$confPath" <<<"$updatedConf" >/dev/null 2>&1
+  #cp -iv <(printf %s "$updatedConf") "$confPath"
+
+  if [[ -n "$installSsbSecret" ]]; then
+    cp -iv "$installSsbSecret" "$HOME/.ssb/secret"
+    chmod 600 "$HOME/.ssb/secret"
+  fi
+
+  if [[ -n "$installSsbGossip" ]]; then
+    cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"
+  fi
+
+}
+declare -a ssbConfigUpdates
+
 installConfigs() {
-  copyConf "$installType.conf"
+  copyOmniaConf "$installType.conf"
+  copySsbConf
 }
 
 installServices() {
@@ -115,6 +150,12 @@ while [[ -n "$1" ]]; do
     --cmc-api-key)
       configUpdates+=( ".services.cmcApiKey = \"$2\"" );shift
       ;;
+    --ssb-external)
+      ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );shift
+      ;;
+    --ssb-caps)
+      ssbConfigUpdates+=( ".caps = $(jq . "$2")" );shift
+      ;;
     --ssb-secret)
       installSsbSecret="$2";shift
       ;;
@@ -133,17 +174,6 @@ while [[ -n "$1" ]]; do
 done
 
 installConfigs
-
-if [[ -n "$installSsbSecret" ]]; then
-  mkdir -p "$HOME/.ssb"
-  cp -iv "$installSsbSecret" "$HOME/.ssb/secret"
-  chmod 600 "$HOME/.ssb/secret"
-fi
-
-if [[ -n "$installSsbGossip" ]]; then
-  mkdir -p "$HOME/.ssb"
-  cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"
-fi
 
 installServices
 echo >&2 "To (re)start Omnia now (and auto-start on reboot) run:"

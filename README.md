@@ -13,7 +13,7 @@ Goals of this new architecture are:
   4. Reduce latency to react to price changes
   5. Make it easy to on-board price feeds for new collateral types
   6. Make it easy to on-board new Oracles
- 
+
 ## Architecture
 Currently two main modules:
 
@@ -66,45 +66,49 @@ Add Maker build cache:
 nix run -f https://cachix.org/api/v1/install cachix -c cachix use maker
 ```
 
-Get the Scuttlbot private network keys (caps) from an admin and put it in a file
-(e.g. called `secret-ssb-caps.json`). The file should have the JSON format:
-`{ "shs": "<BASE64>", "sign": "<BASE64>" }`.
-
 Then run the following to make the `omnia`, `ssb-server` and `install-omnia`
 commands available in your user environment:
 
 ```
-nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/stable \
-  --arg ssb-caps ./secret-ssb-caps.json
+nix-env -i -f https://github.com/makerdao/oracles-v2/tarball/stable
 ```
 
-You can use the `install-omnia` command to install Omnia as a `systemd` service,
-update your `/etc/omnia.conf` and migrate a Scuttlbot secret.
+Get the Scuttlebot private network keys (caps) from an admin and put it in a file
+(e.g. called `secret-ssb-caps.json`). The file should have the JSON format:
+`{ "shs": "<BASE64>", "sign": "<BASE64>" }`.
+
+You can use the `install-omnia` command to install Omnia as a `systemd`
+service, update your `/etc/omnia.conf`, `~/.ssb/config` and migrate a
+Scuttlebot secret and gossip log.
+
+
+To install and configure Omnia as a feed running with `systemd`:
+
+```
+install-omnia feed \
+  --from         <ETHEREUM_ADDRESS> \
+  --keystore     <KEYSTORE_PATH> \
+  --password     <PASS_FILE_PATH> \
+  --cmc-api-key  <COINMARKETCAP_API_KEY> \
+  --ssb-caps     <CAPS_JSON_PATH> \
+  --ssb-external <PUBLICLY_REACHABLE_IP>
+```
+
+For more information about the install CLI:
 
 ```
 install-omnia help
 ```
 
-A one-liner for installing/updating an Omnia feed as a `systemd` service:
-
-```
-nix run -f https://github.com/makerdao/oracles-v2/tarball/stable \
-  --arg ssb-caps ./secret-ssb-caps.json \
-  -c install-omnia feed
-```
-
-It is also possible to set the whole Scuttlebot config by using `--arg ssb-config
-ssb-config.json` instead of `ssb-caps`. Make sure you set the `caps` property in your
-`ssb-config.json` instead.
-
-More details about the [Scuttlebot config](https://github.com/ssbc/ssb-config#configuration).
+The installed Scuttlebot config can be found in `~/.ssb.config`, more details
+about the [Scuttlebot config](https://github.com/ssbc/ssb-config#configuration).
 
 ## Development
 
 To build from inside this repo, clone and run:
 
 ```
-nix-build --arg ssb-caps ./secret-ssb-caps.json
+nix-build
 ```
 
 You can then run `omnia` from `./result/bin/omnia`.
@@ -112,7 +116,7 @@ You can then run `omnia` from `./result/bin/omnia`.
 To get a development environment with all dependencies run:
 
 ```
-nix-shell --arg ssb-caps ./secret-ssb-caps.json
+nix-shell
 cd omnia
 ./omnia.sh
 ```
