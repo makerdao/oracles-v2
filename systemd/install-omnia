@@ -17,12 +17,13 @@ Commands:
   help          Print this message
 
 Options:
-  --from ADDRESS                  Set Ethereum address to use for signing
-  --keystore PATH                 Set Ethereum keystore path
-  --password PATH                 Set Ethereum keystore password file path
-  --ssb-caps     CAPS_FILE        Set Scuttlbot caps from file
-  --ssb-external EXTERNAL_ADDRS   Set Scuttlbot external IP/host address
-  --ssb-secret   SECRET_FILE      Install Scuttlbot secret
+  --from         ADDRESS          Set Ethereum address to use for signing
+  --keystore     PATH             Set Ethereum keystore path
+  --password     PATH             Set Ethereum keystore password file path
+  --network      ETH_NETWORK      Set relayer Ethereum network
+  --ssb-caps     CAPS_FILE        Set Scuttlebot caps from file
+  --ssb-external EXTERNAL_ADDRS   Set Scuttlebot external IP/host address
+  --ssb-secret   SECRET_FILE      Install Scuttlebot secret
   --ssb-gossip   GOSSIP_JSON_FILE Install Scuttlbot gossip.json file
 EOF
   exit 1
@@ -145,6 +146,9 @@ while [[ -n "$1" ]]; do
       ;;
     --password)
       configUpdates+=( ".ethereum.password = \"$2\"" );shift
+      ;;
+    --network)
+      configUpdates+=( ".ethereum.network = \"$2\"" );shift
       ;;
     --ssb-external)
       ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );shift
