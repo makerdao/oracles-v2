@@ -1,11 +1,25 @@
-{ fetchgit }:
+let
+  inherit (builtins) map filter listToAttrs attrValues isString;
+  inherit (import makerpkgs' {}) pkgs;
+  inherit (pkgs) fetchgit;
+  inherit (pkgs.lib.strings) removePrefix;
 
-rec {
-  makerpkgs = import (fetchGit {
-    url = "https://github.com/makerdao/nixpkgs-pin";
+  getName = x:
+   let
+     parse = drv: (builtins.parseDrvName drv).name;
+   in if isString x
+      then parse x
+      else x.pname or (parse x.name);
+
+  makerpkgs' = fetchGit {
+    url = "https://github.com/makerdao/makerpkgs";
     rev = "d4b7fe56b38236566b3014d328be1bd9c7be7a2f";
     ref = "master";
-  }) {
+  };
+in
+
+rec {
+  makerpkgs = import makerpkgs' {
     dapptoolsOverrides = {
       current = dapptools-seth-0_8_4-pre;
     };
@@ -23,4 +37,12 @@ rec {
     rev = "e9d397fdb9a48c128abc49055840792192945e1b";
     ref = "master";
   };
+
+  nodepkgs = { pkgs ? makerpkgs.pkgs }: let
+    nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
+    shortNames = listToAttrs (map
+      (x: { name = removePrefix "node-" (getName x.name); value = x; })
+      (attrValues nodepkgs')
+    );
+  in nodepkgs' // shortNames;
 }

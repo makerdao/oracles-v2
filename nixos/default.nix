@@ -40,9 +40,51 @@ in {
       msgLimit = mkOption {
         type = types.int;
         description = ''
-          message look back limit
+          Message look back limit
         '';
         default = defaultFeedConfig.options.msgLimit;
+      };
+
+      srcTimeout = mkOption {
+        type = types.int;
+        description = ''
+          Price source timeout
+        '';
+        default = defaultFeedConfig.options.srcTimeout;
+      };
+
+      setzerTimeout = mkOption {
+        type = types.int;
+        description = ''
+          Setzer internal timeout
+        '';
+        default = defaultFeedConfig.options.setzerTimeout;
+      };
+
+      setzerCacheExpiry = mkOption {
+        type = types.int;
+        description = ''
+          Setzer internal cache expiry
+        '';
+        default = defaultFeedConfig.options.setzerCacheExpiry;
+      };
+
+      setzerMinMedian = mkOption {
+        type = types.int;
+        description = ''
+          Setzer internal minimum amount of sources for median
+        '';
+        default = defaultFeedConfig.options.setzerMinMedian;
+      };
+    };
+
+    services = {
+      cmcApiKey = mkOption {
+        type = types.str;
+        description = ''
+          CoinMarketCap API key
+        '';
+        default = "";
       };
     };
 
