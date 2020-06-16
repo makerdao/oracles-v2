@@ -91,7 +91,6 @@ copySsbConf() {
   done
 
   tee "$confPath" <<<"$updatedConf" >/dev/null 2>&1
-  #cp -iv <(printf %s "$updatedConf") "$confPath"
 
   if [[ -n "$installSsbSecret" ]]; then
     cp -iv "$installSsbSecret" "$HOME/.ssb/secret"
@@ -103,7 +102,7 @@ copySsbConf() {
   fi
 
 }
-declare -a ssbConfigUpdates
+mapfile -t ssbConfigUpdates < <(grep -v "^ *#\|^ *$" "$SCRIPT_DIR/ssb-config-updates")
 
 installConfigs() {
   copyOmniaConf "$installType.conf"
