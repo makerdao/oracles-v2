@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
       "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
   in ''
     mkdir -p $out/bin
-    cp -t $out/bin *.service *.json install-omnia
+    cp -t $out/bin *.service *.json install-omnia *-updates
 
     wrapProgram "$out/bin/install-omnia" \
       --prefix PATH : "${path}" \

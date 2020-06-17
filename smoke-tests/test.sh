@@ -23,6 +23,10 @@ install_relayer() {
     dapp --testnet-launch &
   sleep 2
 
+  # Change some config params
+  updatedConf=$(jq '.friends.hops = 2' "$HOME/.ssb/config")
+  printf %s "$updatedConf" > "$HOME/.ssb/config"
+
   install-omnia relayer \
     --network      "testnet" \
     --ssb-external "example-2.org" \
@@ -36,7 +40,7 @@ after() {
 
 . "$tpath/tap.sh"
 
-plan 31
+plan 33
 timeout 60
 
 note <<<"INSTALL FEED"
@@ -54,6 +58,8 @@ assert "SSB external IP set" \
   json '.connections.incoming.ws[0].external' <<<'"example.org"'
 assert "SSB caps set" \
   json .caps < "$rpath/caps.json"
+assert "SSB hops set" \
+  json .friends.hops <<<"6"
 
 assert "Omnia feed config installed" \
   test -f /etc/omnia.conf
@@ -100,6 +106,8 @@ assert "SSB external IP set" \
   json '.connections.incoming.ws[0].external' <<<'"example-2.org"'
 assert "SSB caps set" \
   json .caps < "$rpath/caps.json"
+assert "SSB hops set" \
+  json .friends.hops <<<"2"
 
 assert "Omnia relayer config installed" \
   test -f /etc/omnia.conf
