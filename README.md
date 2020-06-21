@@ -21,16 +21,20 @@ Currently two main modules:
 Each Feed runs a Feed client which pulls prices through Setzer, signs them with an ethereum private key, and broadcasts them as a message to the secure scuttlebutt network.
 
 [Relayer]
-The relayer monitors the gossiped messages, checks for liveness, and homogenizes the pricing data and signatures into a single ethereum transaction.
+Relayers monitor the gossiped messages, check for liveness, and homogenize the pricing data and signatures into a single ethereum transaction.
 
 ## [Live Kovan Oracles]
       BATUSD = 0xAb7366b12C982ca2DE162F35571b4d21E38a16FB
       BTCUSD = 0xf8A9Faa25186B14EbF02e7Cd16e39152b85aEEcd
+      ETHBTC = 0x0E30F0FC91FDbc4594b1e2E5d64E6F1f94cAB23D
       ETHUSD = 0x0E30F0FC91FDbc4594b1e2E5d64E6F1f94cAB23D
+      KNCUSD = 0x4C511ae3FFD63c0DE35D4A138Ff2b584FF450466
+      ZRXUSD = 0x1A6b4f516d61c73f568ff0Da15891e670eBc1afb
 
 ## [Live Mainnet Oracles]
       BATUSD = 0x18B4633D6E39870f398597f3c1bA8c4A41294966
       BTCUSD = 0xe0F30cb149fAADC7247E953746Be9BbBB6B5751f
+      ETHBTC = 0x81A679f98b63B3dDf2F17CB5619f4d6775b3c5ED
       ETHUSD = 0x64DE91F5A373Cd4c28de3600cB34C7C6cE410C85
 
 ## Query Oracle Contracts
