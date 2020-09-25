@@ -1,28 +1,26 @@
 version: "3.6"
 
-# Add env vars values in .env
-
 services:
-  feed:
+  oracle:
     image: omnia:latest
-    command: feed
+    secrets:
+      - caps.json
+      - keystore.json
+      - password.txt
     environment:
-      - ETH_FROM
-      - EXT_IP
-      - OMNIA_KEYSTORE
-      - OMNIA_PASSWORD
-      - OMNIA_CAPS
-      - SSB_INVITE
+      ETH_FROM: ''
+      EXT_IP: ''
+      OMNIA_KEYSTORE: ''
+      OMNIA_PASSWORD: ''
+      OMNIA_CAPS: |
+        {
+          ...
+        }
 
-  relayer:
-    image: omnia:latest
-    command: relayer
-    environment:
-      - ETH_FROM
-      - EXT_IP
-      - OMNIA_KEYSTORE
-      - OMNIA_PASSWORD
-      - OMNIA_CAPS
-      - SSB_INVITE
-      - ETH_NET
-      - INFURAKEY
+secrets:
+  caps.json:
+    file: secrets/caps.json
+  keystore.json:
+    file: secrets/keystore.json
+  password.txt:
+    file: secrets/password.txt
