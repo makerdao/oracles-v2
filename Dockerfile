@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y curl xz-utils git sudo jq && \
+    apt-get install -y curl xz-utils git sudo supervisor && \
     apt-get clean
 
 # Add the user nixuser for security reasons and for Nix
@@ -32,20 +32,15 @@ ENV USER=omnia \
 # Add Maker build cache
 RUN nix run -f https://cachix.org/api/v1/install cachix -c cachix use maker
 
-# Copy Omnia source code inside the container
 COPY . .
-
-# Give exec permission to setup scripts
 RUN sudo chmod a+x *.sh
 
 # Install Omnia and dependencies
 RUN nix-env -i --verbose -f .
 
-EXPOSE 8007
-EXPOSE 8008
-EXPOSE 8988
+# COPY supervisord.conf .
+# COPY start-ssb.sh .
+# COPY start-omnia.sh .
+# COPY setup.sh .
 
-# Setup and start Omnia and SSB
-ENTRYPOINT [ "./docker-entrypoint.sh" ]
-CMD [ ]
-# ENTRYPOINT [ "/tini", "--", "./docker-entrypoint.sh" ]
+CMD ["/usr/bin/supervisord", "-c", "/home/omnia/supervisord.conf"]
