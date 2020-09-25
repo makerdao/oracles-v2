@@ -1,0 +1,26 @@
+version: "3.6"
+
+services:
+  oracle:
+    image: omnia:latest
+    secrets:
+      - caps.json
+      - keystore.json
+      - password.txt
+    environment:
+      ETH_FROM: ''
+      EXT_IP: ''
+      OMNIA_KEYSTORE: ''
+      OMNIA_PASSWORD: ''
+      OMNIA_CAPS: |
+        {
+          ...
+        }
+
+secrets:
+  caps.json:
+    file: secrets/caps.json
+  keystore.json:
+    file: secrets/keystore.json
+  password.txt:
+    file: secrets/password.txt
