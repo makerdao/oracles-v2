@@ -42,6 +42,8 @@ RUN sudo chmod a+x *.sh
 RUN nix-env -i --verbose -f .
 
 # Setup and start Omnia and SSB
+EXPOSE 8007
+EXPOSE 8988
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 # CMD [ "feed" ]
 
