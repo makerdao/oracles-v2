@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -o errexit
 
@@ -19,6 +19,7 @@ sudo -E \
 
 sudo chown -R omnia $HOME/.ssb/
 cat /etc/omnia.conf
+env
 
 /home/omnia/.nix-profile/bin/ssb-server start &
 
