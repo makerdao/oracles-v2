@@ -121,8 +121,11 @@ case "$1" in
   feed)
     installType="feed"
     ;;
-  relayer)
-    installType="relayer"
+  relayer|relayer-mainnet)
+    installType="relayer-mainnet"
+    ;;
+  relayer-kovan)
+    installType="relayer-kovan"
     ;;
   help|--help|-h)
     usage
@@ -148,6 +151,9 @@ while [[ -n "$1" ]]; do
       ;;
     --network)
       configUpdates+=( ".ethereum.network = \"$2\"" );shift
+      ;;
+    --infuraKey)
+      configUpdates+=( ".ethereum.infuraKey = \"$2\"" );shift
       ;;
     --ssb-external)
       ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );shift
