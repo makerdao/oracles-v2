@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y curl xz-utils git sudo supervisor && \
+    apt-get install -y curl xz-utils git sudo net-tools && \
     apt-get clean
 
 # Add the user nixuser for security reasons and for Nix
