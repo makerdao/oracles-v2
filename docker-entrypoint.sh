@@ -49,27 +49,12 @@ echo "START SSB"
 echo '##################'
 /home/omnia/.nix-profile/bin/ssb-server start &
 
-echo '##################'
-echo "SLEEP"
-echo '##################'
-sleep 20
-
-echo '##################'
-echo "SSB WHOAMI"
-echo '##################'
-ssb-server whoami
-
-echo '##################'
-echo "SSB WHOAMI - OMNIA"
-echo '##################'
-sudo -E -iu omnia ssb-server whoami
-
-echo '##################'
-echo "ACCEPT INVITE"
-echo '##################'
-/home/omnia/.nix-profile/bin/ssb-server invite.accept $SSB_INVITE
-
-echo '##################'
-echo "START OMNIA"
-echo '##################'
-sudo -E -iu omnia omnia
+#echo '##################'
+#echo "ACCEPT INVITE"
+#echo '##################'
+#/home/omnia/.nix-profile/bin/ssb-server invite.accept $SSB_INVITE
+#
+#echo '##################'
+#echo "START OMNIA"
+#echo '##################'
+#sudo -E -iu omnia omnia
