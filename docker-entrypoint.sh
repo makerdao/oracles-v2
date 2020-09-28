@@ -44,4 +44,4 @@ echo '##################'
 echo "START OMNIA"
 echo '##################'
 sudo -E -iu omnia env
-sudo -E -iu omnia omnia
+sudo -E -iu omnia omnia &

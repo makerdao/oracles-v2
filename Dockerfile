@@ -4,6 +4,9 @@ RUN apt-get update && \
     apt-get install -y curl xz-utils git sudo net-tools && \
     apt-get clean
 
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /tini
+RUN chmod +x /tini
+
 # Add the user nixuser for security reasons and for Nix
 RUN useradd -ms /bin/bash omnia
 
@@ -41,10 +44,11 @@ RUN sudo chmod a+x *.sh
 # Install Omnia and dependencies
 RUN nix-env -i --verbose -f .
 
-# Setup and start Omnia and SSB
 EXPOSE 8007
+EXPOSE 8008
 EXPOSE 8988
-ENTRYPOINT [ "./docker-entrypoint.sh" ]
-# CMD [ "feed" ]
 
-# CMD ["/usr/bin/supervisord", "-c", "/home/omnia/supervisord.conf"]
+# Setup and start Omnia and SSB
+# ENTRYPOINT [ "./docker-entrypoint.sh" ]
+ENTRYPOINT [ "/tini", "--", "./docker-entrypoint.sh" ]
+# CMD [ "feed" ]
