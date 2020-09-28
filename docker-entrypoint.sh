@@ -36,17 +36,12 @@ $NIX_BIN/ssb-server start &
 
 sleep 10
 
-echo '##################'
-echo "ACCEPT INVITE"
-echo '##################'
-$NIX_BIN/ssb-server invite.accept $SSB_INVITE
+# echo '##################'
+# echo "ACCEPT INVITE"
+# echo '##################'
+# $NIX_BIN/ssb-server invite.accept $SSB_INVITE
 
-sleep 10
-
-echo '##################'
-echo "SSB WHOAMI - OMNIA"
-echo '##################'
-sudo -u omnia $NIX_BIN/ssb-server whoami
+# sleep 10
 
 echo '##################'
 echo "SSB WHOAMI"
