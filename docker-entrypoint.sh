@@ -44,10 +44,12 @@ echo "ENV VARS"
 echo '##################'
 env
 
+sleep infinity
+
 echo '##################'
 echo "START SSB"
 echo '##################'
-/home/omnia/.nix-profile/bin/ssb-server start &
+# /home/omnia/.nix-profile/bin/ssb-server start &
 
 #echo '##################'
 #echo "ACCEPT INVITE"
