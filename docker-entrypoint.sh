@@ -33,14 +33,15 @@ echo "START SSB"
 echo '##################'
 /home/omnia/.nix-profile/bin/ssb-server start &
 
-sleep infinity
+sleep 40
 
 echo '##################'
 echo "ACCEPT INVITE"
 echo '##################'
-/home/omnia/.nix-profile/bin/ssb-server invite.accept $SSB_INVITE
+# /home/omnia/.nix-profile/bin/ssb-server invite.accept $SSB_INVITE
 
 echo '##################'
 echo "START OMNIA"
 echo '##################'
+sudo -E -iu omnia env
 sudo -E -iu omnia omnia
