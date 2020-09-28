@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 importEnv () {
 	local config
 	if [[ -f "$OMNIA_CONFIG" ]]; then
