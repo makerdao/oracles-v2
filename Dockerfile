@@ -49,6 +49,6 @@ EXPOSE 8008
 EXPOSE 8988
 
 # Setup and start Omnia and SSB
-# ENTRYPOINT [ "./docker-entrypoint.sh" ]
-ENTRYPOINT [ "/tini", "--", "./docker-entrypoint.sh" ]
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
+# ENTRYPOINT [ "/tini", "--", "./docker-entrypoint.sh" ]
 # CMD [ "feed" ]
