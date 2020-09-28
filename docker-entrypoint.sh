@@ -33,7 +33,7 @@ echo "START SSB"
 echo '##################'
 /home/omnia/.nix-profile/bin/ssb-server start &
 
-sleep 10
+sleep infinity
 
 echo '##################'
 echo "ACCEPT INVITE"
