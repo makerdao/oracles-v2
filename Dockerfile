@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y curl xz-utils git sudo net-tools && \
+    apt-get install -y curl xz-utils git sudo jq && \
     apt-get clean
 
 # ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /tini

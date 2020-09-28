@@ -38,7 +38,7 @@ sleep 40
 echo '##################'
 echo "ACCEPT INVITE"
 echo '##################'
-# /home/omnia/.nix-profile/bin/ssb-server invite.accept $SSB_INVITE
+/home/omnia/.nix-profile/bin/ssb-server invite.accept $SSB_INVITE
 
 echo '##################'
 echo "START OMNIA"
