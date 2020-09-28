@@ -44,6 +44,16 @@ $NIX_BIN/ssb-server invite.accept $SSB_INVITE
 sleep 10
 
 echo '##################'
+echo "SSB WHOAMI - OMNIA"
+echo '##################'
+sudo -u omnia $NIX_BIN/ssb-server whoami
+
+echo '##################'
+echo "SSB WHOAMI"
+echo '##################'
+$NIX_BIN/ssb-server whoami
+
+echo '##################'
 echo "START OMNIA"
 echo '##################'
 sudo -u omnia $NIX_BIN/omnia
