@@ -43,4 +43,4 @@ echo '##################'
 echo '##################'
 echo "START OMNIA"
 echo '##################'
-sudo -E -iu omnia omnia
+sudo -iu omnia omnia
