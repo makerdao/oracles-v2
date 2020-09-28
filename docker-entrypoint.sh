@@ -39,9 +39,9 @@ sleep 40
 echo '##################'
 echo "ACCEPT INVITE"
 echo '##################'
-$NIX_BIN/ssb-server invite.accept $SSB_INVITE
+# $NIX_BIN/ssb-server invite.accept $SSB_INVITE
 
 echo '##################'
 echo "START OMNIA"
 echo '##################'
-sudo -E -u omnia $NIX_BIN/omnia
+sudo -u omnia /home/omnia/.nix-profile/bin/omnia
