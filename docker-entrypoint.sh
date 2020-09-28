@@ -44,4 +44,4 @@ $NIX_BIN/ssb-server invite.accept $SSB_INVITE
 echo '##################'
 echo "START OMNIA"
 echo '##################'
-sudo -u omnia $NIX_BIN/omnia
+sudo -E -u omnia $NIX_BIN/omnia
