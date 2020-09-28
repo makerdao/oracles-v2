@@ -38,3 +38,23 @@ jobs:
         docker build -t ${ECR_REGISTRY}/${SERVICE_NAME}:${IMAGE_TAG} .
         docker push ${ECR_REGISTRY}/${SERVICE_NAME}:${IMAGE_TAG}
         echo "::set-output name=image::${ECR_REGISTRY}/${SERVICE_NAME}:${IMAGE_TAG}"
+
+    - name: Download Feed Task Definition
+      run: |
+        aws ecs describe-task-definition --task-definition ${SERVICE_NAME}-feed --query taskDefinition > task-definition-feed.json
+ 
+    - name: Render Feed Task Definition
+      id: render-feed
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition-feed.json
+        container-name: ${{ env.SERVICE_NAME }}-feed
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Feed Service
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.render-feed.outputs.task-definition }}
+        service: ${{ env.SERVICE_NAME }}-feed
+        cluster: ${{ env.CLUSTER_NAME }}
+        wait-for-service-stability: true
