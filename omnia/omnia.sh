@@ -164,7 +164,6 @@ execute () {
 
 		#broadcast message to scuttelbot
 		broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
-	
 	done
 }
 
