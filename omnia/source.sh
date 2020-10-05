@@ -34,7 +34,7 @@ readSources () {
 addPriceFromSource () {
 	local _source=$1
 	local _price=$(printf "%f" "$2")
-	if [[ $_price =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9]+[0-9]*)$  ]]; then
+	if [[ "$(isPriceValid "$_price")" == "true" ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
 		verbose "$_source => $_price"
@@ -65,4 +65,5 @@ readSourcesFromGofer ()  {
 	done
 
 	median=$(echo "${_output}" | jq -r '.[0].price')
+  verbose "median => $median"
 }
