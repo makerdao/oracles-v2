@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 
 #publish new price messages for all assets
-broadcastAllPriceMessages () {
+readSourcesAndBroadcastAllPriceMessages()  {
 	for assetPair in "${assetPairs[@]}"; do
 		validSources=()
 		validPrices=()
 		median=0
 
 		log "Querying ${assetPair^^} prices and calculating median..."
-		readSources "$assetPair"
+		if [[ "$OMNIA_FEED_SOURCE" == "setzer" ]]; then
+			readSources "$assetPair"
+		elif [[ "$OMNIA_FEED_SOURCE" == "gofer" ]]; then
+			readSourcesFromGofer "$assetPair"
+		else
+			error "Error - Unknown Omnia Feed Source: $OMNIA_FEED_SOURCE"
+			continue
+		fi
 
 		if [[ "${#validPrices[@]}" -lt 2 ]] || [[ "${#validSources[@]}" -lt 2 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
 			error "Error - Failed to fetch sufficient valid prices from sources."
@@ -26,10 +33,9 @@ broadcastAllPriceMessages () {
 		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 
 		if [ "$(isEmpty "$latestMsg")" == "false" ] \
-		&& [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] \
-		&& [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] \
-		&& [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]
-		then
+			&& [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] \
+			&& [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] \
+			&& [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]; then
 			continue
 		fi
 
@@ -43,6 +49,7 @@ broadcastAllPriceMessages () {
 
 		#Convert timestamp to hex
 		timeHex=$(time2Hex "$time")
+		timeHex=${timeHex#"0x"}
 		if [[ ! "$timeHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert timestamp to hex"
 			debug "Timestamp = $time"
@@ -52,6 +59,7 @@ broadcastAllPriceMessages () {
 
 		#Convert median to hex
 		medianHex=$(price2Hex "$median")
+		medianHex=${medianHex#"0x"}
 		if [[ ! "$medianHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert median to hex:"
 			debug "Median = $median"
@@ -61,6 +69,7 @@ broadcastAllPriceMessages () {
 
 		#Convert asset pair to hex
 		assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
+		assetPairHex=${assetPairHex#"0x"}
 		if [[ ! "$assetPairHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert asset pair to hex:"
 			debug "Asset Pair = $assetPair"

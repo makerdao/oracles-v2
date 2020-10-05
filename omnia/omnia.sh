@@ -18,9 +18,11 @@ fi
 #initialize environment
 initEnv () {
 	OMNIA_VERSION="$(cat ./version)"
+  OMNIA_DRY_RUN=${OMNIA_DRY_RUN:-"false"}
+  OMNIA_FEED_SOURCE=${OMNIA_FEED_SOURCE:-"setzer"}
 
 	#Load Global configuration
-  	importEnv
+	importEnv
 
 	echo ""
   	echo ""
@@ -68,7 +70,7 @@ initEnv () {
 
 runFeed () {
 	while true; do
-		broadcastAllPriceMessages
+		readSourcesAndBroadcastAllPriceMessages
 		verbose "Sleeping for $OMNIA_INTERVAL seconds..."
 		sleep "$OMNIA_INTERVAL"
 	done
