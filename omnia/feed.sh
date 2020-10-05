@@ -9,9 +9,9 @@ readSourcesAndBroadcastAllPriceMessages()  {
 
 		log "Querying ${assetPair^^} prices and calculating median..."
 		if [[ "$OMNIA_FEED_SOURCE" == "setzer" ]]; then
-			readSources "$assetPair"
+			readSourcesWithSetzer "$assetPair"
 		elif [[ "$OMNIA_FEED_SOURCE" == "gofer" ]]; then
-			readSourcesFromGofer "$assetPair"
+			readSourcesWithGofer "$assetPair"
 		else
 			error "Error - Unknown Omnia Feed Source: $OMNIA_FEED_SOURCE"
 			continue
