@@ -26,6 +26,9 @@ readSources () {
 		_price=${_prices[$i]#* }
 		addPriceFromSource "$_source" "$_price"
 	done
+
+	median=$(getMedian "${validPrices[@]}")
+	verbose "median => $median"
 }
 
 addPriceFromSource () {

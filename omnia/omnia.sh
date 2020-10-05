@@ -72,7 +72,7 @@ signMessage () {
 		_data+="$arg"
 	done
 	verbose "Signing message..."
-    ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
+	ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
 }
 
 #publish new price messages for all assets
@@ -81,17 +81,14 @@ execute () {
 		validSources=()
 		validPrices=()
 
-		log "Querying ${assetPair^^} prices..."
-		#Query prices of asset pair
+		log "Querying ${assetPair^^} prices and calculating median..."
 		readSources "$assetPair"
+
 		if [[ "${#validPrices[@]}" -lt 2 ]] || [[ "${#validSources[@]}" -lt 2 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
 			error "Error - Failed to fetch sufficient valid prices from sources."
 			continue
 		fi
 
-		#Calculate median of prices
-		median=$(getMedian "${validPrices[@]}")
-		verbose "median => $median"
 		if [ "$(isPriceValid "$median")" == "false" ]; then
 			error "Error - Failed to calculate valid median: ($median)"
 			debug "Sources = ${validSources[*]}"
@@ -99,7 +96,7 @@ execute () {
 			continue
 		fi
 
-		 #Get latest message for asset pair
+		#Get latest message for asset pair
 		latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
 
 		if [ "$(isEmpty "$latestMsg")" == "false" ] \
