@@ -8,7 +8,7 @@ mapSetzer() {
 export -f mapSetzer
 
 #read price data of asset
-readSources () {
+readSourcesWithSetzer () {
 	local _assetPair="${1,,}"
 	local _prices
 	local _price
@@ -46,7 +46,7 @@ addPriceFromSource () {
 	fi
 }
 
-readSourcesFromGofer ()  {
+readSourcesWithGofer ()  {
 	local  _output
 	_output=$(gofer price --format json "${1}")
 	local _jqFilter='

@@ -31,7 +31,7 @@ OMNIA_SRC_TIMEOUT=60
 validSources=()
 validPrices=()
 median=0
-assert "read sources from setzer" run readSources batusd
+assert "read sources from setzer" run readSourcesWithSetzer batusd
 assert "length of validSources" test 3 = ${#validSources[@]}
 assert "length of validPrices" test 3 = ${#validPrices[@]}
 assert "median of validPrices" test 0.2 = "$median"
@@ -39,7 +39,7 @@ assert "median of validPrices" test 0.2 = "$median"
 validSources=()
 validPrices=()
 median=0
-assert "read sources from gofer" run readSourcesFromGofer bat/usd
+assert "read sources from gofer" run readSourcesWithGofer bat/usd
 assert "length of validSources" test 9 = ${#validSources[@]}
 assert "length of validPrices" test 9 = ${#validPrices[@]}
 assert "median of validPrices" test 0.2 = "$median"
