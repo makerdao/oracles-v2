@@ -59,36 +59,47 @@ pullLatestFeedMsgOfType () {
 
 #publish price  to scuttlebot
 broadcastPriceMsg () {
-    local _assetPair="$1"
-    local _price="$2"
-    local _priceHex="$3"
-    local _time="$4"
-    local _timeHex="$5"
-    local _hash="$6"
-    local _signature="$7"
-    local _sourcePrices
-    local _jqArgs=()
-    local _json
+	local _assetPair="$1"
+	local _price="$2"
+	local _priceHex="$3"
+	local _time="$4"
+	local _timeHex="$5"
+	local _hash="$6"
+	local _signature="$7"
+	local _sourcePrices
+	local _jqArgs=()
+	local _json
 
-    verbose "Constructing message..."
-    #generate JSON for transpose of sources with prices
-    if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
-        error "Error - failed to transpose sources with prices"
-        return
-    fi
-    #compose jq message arguments
-    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
-    #debug
-    verbose "${_jqArgs[*]}"
-    #generate JSON msg
-    # shellcheck disable=2068
-    if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}'); then
-        error "Error - failed to generate JSON msg"
-        return
-    fi
-    #debug
-    verbose "$_json"
-    #publish msg to scuttlebot
-    log "Publishing new price message..."
-    echo "$_json" | ssb-server publish .
+	verbose "Constructing message..."
+	#generate JSON for transpose of sources with prices
+	if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
+			error "Error - failed to transpose sources with prices"
+			return
+	fi
+	#compose jq message arguments
+	_jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
+	#debug
+	verbose "${_jqArgs[*]}"
+	#generate JSON msg
+	# shellcheck disable=2068
+	if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}'); then
+			error "Error - failed to generate JSON msg"
+			return
+	fi
+
+	#debug
+	verbose "$_json"
+
+	#publish msg to scuttlebot
+	log "Publishing new price message..."
+	if [[ $OMNIA_DRY_RUN == "true" ]]
+	then
+		verbose "broadcastPriceMsg in DRY-RUN mode"
+	elif [[ $OMNIA_DRY_RUN == "false" ]]
+	then
+		echo "$_json" | ssb-server publish .
+	else
+		error "Error - OMNIA_DRY_RUN not defined"
+		return
+	fi
 }
