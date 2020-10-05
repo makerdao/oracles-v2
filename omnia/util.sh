@@ -89,3 +89,12 @@ getOracleSpread () {
 	[[ "$OMNIA_MODE" == "RELAYER" ]] && _oracleSpread=$(cut -d ',' -f4 <<<"${assetInfo[$_assetPair]}")
 	echo "$_oracleSpread"
 }
+
+signMessage () {
+	local _data
+	for arg in "$@"; do
+		_data+="$arg"
+	done
+	verbose "Signing message..."
+	ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
+}
