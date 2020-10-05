@@ -42,3 +42,30 @@ addPriceFromSource () {
 		error "Error - [$_source] Invalid price data = $_price"
 	fi
 }
+
+readSourcesFromGofer ()  {
+	local  _output
+	_output=$(gofer price --format json "${1}")
+	local _jqFilter='[
+		.[]
+		|select(.error? == null)
+		|..
+		|.ticks?
+		|select(type == "array" and length > 0)
+		|.[]
+		|select(.["type"] == "origin" and .error? == null)
+		|{"source":(.base+"/"+.quote+"@"+.origin),price}
+	]|unique'
+	local _jqFilter2='.[]|(.source+" "+(.price|tostring))'
+
+	local _prices
+	mapfile -t _prices < <(echo "${_output}" | jq -r "${_jqFilter}|${_jqFilter2}" 2>/dev/null)
+
+	for i in "${!_prices[@]}"; do
+		_source=${_prices[$i]% *}
+		_price=${_prices[$i]#* }
+		addPriceFromSource "$_source" "$_price"
+	done
+
+	median=$(echo "${_output}" | jq -r '.[0].price')
+}
