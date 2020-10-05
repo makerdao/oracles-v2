@@ -9,7 +9,7 @@ in
 
 pkgs.mkShell rec {
   name = "oracle-shell";
-  buildInputs = omnia.runtimeDeps ++ (with pkgs; [
+  buildInputs = omnia.buildInputs ++ (with pkgs; [
     nodePackages.node2nix
     nodePackages.semver
     git
