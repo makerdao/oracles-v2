@@ -44,6 +44,7 @@ OMNIA_DRY_RUN="true"
 OMNIA_VERBOSE="true"
 OMNIA_VERSION="1.3.9-dev"
 OMNIA_FEED_SOURCE="gofer"
+export LC_ALL=POSIX
 
 median=0
 validSources=()
