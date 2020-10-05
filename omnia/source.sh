@@ -33,7 +33,7 @@ readSources () {
 
 addPriceFromSource () {
 	local _source=$1
-	local _price=$2
+	local _price=$(printf "%f" "$2")
 	if [[ $_price =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9]+[0-9]*)$  ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
@@ -46,20 +46,17 @@ addPriceFromSource () {
 readSourcesFromGofer ()  {
 	local  _output
 	_output=$(gofer price --format json "${1}")
-	local _jqFilter='[
-		.[]
-		|select(.error? == null)
-		|..
-		|.ticks?
-		|select(type == "array" and length > 0)
-		|.[]
-		|select(.["type"] == "origin" and .error? == null)
-		|{"source":(.base+"/"+.quote+"@"+.origin),price}
-	]|unique'
-	local _jqFilter2='.[]|(.source+" "+(.price|tostring))'
+	local _jqFilter='
+		[ ..
+			| select(type == "object" and .type == "origin" and .error == null)
+			| (.base+"/"+.quote+"@"+.origin)+" "+(.price|tostring)
+		]
+		| unique
+		| .[]
+	'
 
 	local _prices
-	mapfile -t _prices < <(echo "${_output}" | jq -r "${_jqFilter}|${_jqFilter2}" 2>/dev/null)
+	mapfile -t _prices < <(echo "${_output}" | jq -r "$_jqFilter" 2>/dev/null)
 
 	for i in "${!_prices[@]}"; do
 		_source=${_prices[$i]% *}

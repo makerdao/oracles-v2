@@ -16,19 +16,19 @@ wdir=$(mktemp -d "${TMPDIR:-/tmp}"/tapsh.XXXXXXXX)
 
 log() {
   cat > $wdir/log
-  if [[ -f $wdir/log && $(wc -c $wdir/log | cut -f1 -d' ') = 0 ]]; then
+  if [[ -f $wdir/log && $(wc -c $wdir/log 2>/dev/null | cut -f1 -d' ') = 0 ]]; then
     rm $wdir/log
   fi
 }
 note() { sed 's/^/# /'; }
 run() {
-  { local ecode=0
-    set -x
+  ecode=0
+  { set -x
     "$@" || ecode=$?
     { set +x; } >/dev/null 2>&1
-    if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
-    return $ecode
-  } 2>&1 </dev/null | log
+  } >$wdir/log 2>&1 </dev/null
+  if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
+  return $ecode
 }
 capture() {
   { set -x
@@ -116,7 +116,8 @@ assert() {
   if [[ ${desc^^} =~ ^\#\ SKIP ]]; then
     ((skipped_tests+=1))
   else
-    res=$("$@") || ecode=$?
+    "$@" > $wdir/res || ecode=$?
+    res=$(cat $wdir/res); rm -f $wdir/res
   fi
 
   if [[ $ecode == 0 && ! $res ]]; then

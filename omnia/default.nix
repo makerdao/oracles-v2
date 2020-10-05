@@ -6,14 +6,14 @@ stdenv.mkDerivation rec {
   version = lib.fileContents ./version;
   src = ./.;
 
-  passthru.runtimeDeps =  [
+  buildInputs =  [
     coreutils parallel bc jq gnused datamash ssb-server ethsign seth setzer-mcd
   ];
   nativeBuildInputs = [ makeWrapper ];
 
   buildPhase = "true";
   installPhase = let
-    path = lib.makeBinPath passthru.runtimeDeps;
+    path = lib.makeBinPath buildInputs;
     locales = lib.optionalString (glibcLocales != null)
       "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
   in ''
@@ -33,6 +33,15 @@ stdenv.mkDerivation rec {
       --argv0 omnia \
       --set PATH "${path}" \
       ${locales}
+  '';
+
+  doCheck = true;
+  checkPhase = ''
+    cp ${../smoke-tests/tap.sh} ./tap.sh
+    find ./test -name '*.sh' | while read -r x; do
+      patchShebangs $x
+      $x
+    done
   '';
 
   meta = with lib; {
