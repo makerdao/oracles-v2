@@ -2,36 +2,36 @@
 
 #publish new price messages for all assets
 readSourcesAndBroadcastAllPriceMessages()  {
+	local _feed_source="$OMNIA_FEED_SOURCE"
+
 	for assetPair in "${assetPairs[@]}"; do
 		readSourceAndBroadcastPriceMessage "$assetPair"
+		if [[ "$_feed_source" == "gofer" ]]
+		then
+			OMNIA_FEED_SOURCE="setzer"
+			readSourceAndBroadcastPriceMessage "$assetPair"
+			OMNIA_FEED_SOURCE="$_feed_source"
+		fi
 	done
 }
 
 readSourceAndBroadcastPriceMessage() {
-	local assetPair="$1"
 	validSources=()
 	validPrices=()
 	median=0
 
 	log "Querying ${assetPair^^} prices and calculating median..."
-	if [[ "$OMNIA_FEED_SOURCE" == "setzer" ]]; then
-		readSourcesWithSetzer "$assetPair"
-	elif [[ "$OMNIA_FEED_SOURCE" == "gofer" ]]; then
-		readSourcesWithGofer "$assetPair"
-	else
-		error "Error - Unknown Omnia Feed Source: $OMNIA_FEED_SOURCE"
+	readSources "$1"
+
+	if [[ "${median}" -eq 0 ]] || [[ "$(isPriceValid "$median")" == "false" ]]; then
+		error "Error - Failed to calculate valid median: ($median)"
+		debug "Sources = ${validSources[*]}"
+		debug "Prices = ${validPrices[*]}"
 		return
 	fi
 
 	if [[ "${#validPrices[@]}" -lt 2 ]] || [[ "${#validSources[@]}" -lt 2 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
 		error "Error - Failed to fetch sufficient valid prices from sources."
-		return
-	fi
-
-	if [ "$(isPriceValid "$median")" == "false" ]; then
-		error "Error - Failed to calculate valid median: ($median)"
-		debug "Sources = ${validSources[*]}"
-		debug "Prices = ${validPrices[*]}"
 		return
 	fi
 
