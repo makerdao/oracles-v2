@@ -18,7 +18,7 @@ fi
 #initialize environment
 initEnv () {
 	OMNIA_VERSION="$(cat ./version)"
-  OMNIA_FEED_SOURCE=${OMNIA_FEED_SOURCE:-"setzer"}
+	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
 
 	#Load Global configuration
 	importEnv
