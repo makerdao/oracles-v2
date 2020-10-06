@@ -19,7 +19,6 @@ fi
 #initialize environment
 initEnv () {
 	OMNIA_VERSION="$(cat ./version)"
-  OMNIA_DRY_RUN=${OMNIA_DRY_RUN:-"false"}
   OMNIA_FEED_SOURCE=${OMNIA_FEED_SOURCE:-"setzer"}
 
 	#Load Global configuration
