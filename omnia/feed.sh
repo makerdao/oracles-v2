@@ -1,29 +1,30 @@
 #!/usr/bin/env bash
 
-#publish new price messages for all assets
 readSourcesAndBroadcastAllPriceMessages()  {
-	local _feed_source="$OMNIA_FEED_SOURCE"
+	if [[ "${#assetPairs[@]}" -eq 0 ]] || [[ "${#OMNIA_FEED_SOURCES[@]}" -eq 0 ]]
+	then
+		error "Error - Loop in readSourcesAndBroadcastAllPriceMessages"
+		return
+	fi
 
-	for assetPair in "${assetPairs[@]}"; do
-		readSourceAndBroadcastPriceMessage "$assetPair"
-		if [[ "$_feed_source" == "gofer" ]]
-		then
-			OMNIA_FEED_SOURCE="setzer"
-			readSourceAndBroadcastPriceMessage "$assetPair"
-			OMNIA_FEED_SOURCE="$_feed_source"
-		fi
+	for _assetPair in "${assetPairs[@]}"; do
+		for OMNIA_FEED_SOURCE in "${OMNIA_FEED_SOURCES[@]}"; do
+			readSourcesAndBroadcastPriceMessage "$_assetPair"
+		done
 	done
 }
 
-readSourceAndBroadcastPriceMessage() {
+readSourcesAndBroadcastPriceMessage() {
+	local _assetPair="${1^^}"
+
 	validSources=()
 	validPrices=()
 	median=0
 
-	log "Querying ${assetPair^^} prices and calculating median..."
-	readSources "$1"
+	log "Querying ${_assetPair} prices and calculating median..."
+	readSources "$_assetPair"
 
-	if [[ "${median}" -eq 0 ]] || [[ "$(isPriceValid "$median")" == "false" ]]; then
+	if [[ "$(isPriceValid "$median")" == "false" ]]; then
 		error "Error - Failed to calculate valid median: ($median)"
 		debug "Sources = ${validSources[*]}"
 		debug "Prices = ${validPrices[*]}"
@@ -36,12 +37,12 @@ readSourceAndBroadcastPriceMessage() {
 	fi
 
 	#Get latest message for asset pair
-	latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$assetPair")
+	latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$_assetPair")
 
 	if [ "$(isEmpty "$latestMsg")" == "false" ] \
-		&& [ "$(isAssetPair "$assetPair" "$latestMsg")" == "true" ] \
-		&& [ "$(isMsgExpired "$assetPair" "$latestMsg")" == "false" ] \
-		&& [ "$(isMsgStale "$assetPair" "$latestMsg" "$median")" == "false" ]; then
+		&& [ "$(isAssetPair "$_assetPair" "$latestMsg")" == "true" ] \
+		&& [ "$(isMsgExpired "$_assetPair" "$latestMsg")" == "false" ] \
+		&& [ "$(isMsgStale "$_assetPair" "$latestMsg" "$median")" == "false" ]; then
 		return
 	fi
 
@@ -74,11 +75,11 @@ readSourceAndBroadcastPriceMessage() {
 	fi
 
 	#Convert asset pair to hex
-	assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
+	assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$_assetPair")")
 	assetPairHex=${assetPairHex#"0x"}
 	if [[ ! "$assetPairHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 		error "Error - Failed to convert asset pair to hex:"
-		debug "Asset Pair = $assetPair"
+		debug "Asset Pair = $_assetPair"
 		debug "Invalid Asset Pair Hex = $assetPairHex"
 		return
 	fi
@@ -127,5 +128,18 @@ readSourceAndBroadcastPriceMessage() {
 	starkSigS=$(echo "$starkSig" | cut -d " " -f2)
 
 	#broadcast message to scuttelbot
-	broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "$starkSigR" "$starkSigS" "$STARK_PUBLIC_KEY" "${validSources[@]}" "${validPrices[@]}"
+	broadcastPriceMsg "$_assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "$starkSigR" "$starkSigS" "$STARK_PUBLIC_KEY" "${validSources[@]}" "${validPrices[@]}"
+}
+
+readSources() {
+	local _assetPair="$1"
+
+	if [[ "$OMNIA_FEED_SOURCE" == "setzer" ]]; then
+		readSourcesWithSetzer "$_assetPair"
+	elif [[ "$OMNIA_FEED_SOURCE" == "gofer" ]]; then
+		readSourcesWithGofer "$_assetPair"
+	else
+		error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
+		return
+	fi
 }
