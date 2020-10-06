@@ -54,7 +54,6 @@ pullLatestFeedMsgOfType () {
 			signature: .value.content.signature
 		}
 	'
-	#error handling
 }
 
 #publish price  to scuttlebot
