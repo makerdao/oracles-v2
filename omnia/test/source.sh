@@ -3,7 +3,6 @@ tpath="$(cd ${0%/*}; pwd)"
 . "$tpath/../log.sh"
 . "$tpath/../util.sh"
 . "$tpath/../source.sh"
-. "$tpath/../tap.sh" || . "$tpath/../../smoke-tests/tap.sh"
 
 # Mock setzer
 setzer() {
@@ -27,6 +26,8 @@ gofer() {
 export -f gofer
 
 OMNIA_SRC_TIMEOUT=60
+
+. "$tpath/../tap.sh" 2>/dev/null || . "$tpath/../../smoke-tests/tap.sh"
 
 validSources=()
 validPrices=()
