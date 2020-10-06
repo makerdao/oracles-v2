@@ -24,7 +24,7 @@ gofer() {
 		*) return 1;;
 	esac
 }
-export -f setzer
+export -f gofer
 
 OMNIA_SRC_TIMEOUT=60
 

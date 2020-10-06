@@ -54,7 +54,6 @@ pullLatestFeedMsgOfType () {
 			signature: .value.content.signature
 		}
 	'
-	#error handling
 }
 
 #publish price  to scuttlebot
@@ -92,14 +91,5 @@ broadcastPriceMsg () {
 
 	#publish msg to scuttlebot
 	log "Publishing new price message..."
-	if [[ $OMNIA_DRY_RUN == "true" ]]
-	then
-		verbose "broadcastPriceMsg in DRY-RUN mode"
-	elif [[ $OMNIA_DRY_RUN == "false" ]]
-	then
-		echo "$_json" | ssb-server publish .
-	else
-		error "Error - OMNIA_DRY_RUN not defined"
-		return
-	fi
+	echo "$_json" | ssb-server publish .
 }
