@@ -70,3 +70,16 @@ readSourcesWithGofer ()  {
 	median=$(echo "${_output}" | jq -r '.[0].price')
   verbose "median => $median"
 }
+
+readSources() {
+	local _assetPair="$1"
+
+	if [[ "$OMNIA_FEED_SOURCE" == "setzer" ]]; then
+		readSourcesWithSetzer "$_assetPair"
+	elif [[ "$OMNIA_FEED_SOURCE" == "gofer" ]]; then
+		readSourcesWithGofer "$_assetPair"
+	else
+		error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
+		return
+	fi
+}
