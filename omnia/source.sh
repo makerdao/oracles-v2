@@ -36,7 +36,7 @@ readSourcesWithSetzer () {
 
 addPriceFromSource () {
 	local _source="$1"
-	local _price="$(printf "%f" "$2")"
+	local _price="$(LC_ALL=POSIX printf "%f" "$2")"
 	if [[ "$(isPriceValid "$_price")" == "true" ]]; then
 		validSources+=( "$_source" )
 		validPrices+=( "$_price" )
