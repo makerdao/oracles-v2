@@ -8,18 +8,22 @@ function fullPath() {
 _HERE="$(dirname "$(fullPath "$0")")"
 _TOP="$(dirname "$(dirname "${_HERE}")")"
 
-gofer()  {
+gofer() {
 	local _pwd=$PWD
 	cd "$(dirname "${_TOP}")/gofer"
 	go run "./cmd/gofer" "$@"
 	cd "$_pwd"
 }
 
-ethsign()  {
+ethsign() {
 	local _pwd=$PWD
 	cd "$(dirname "${_TOP}")/dapptools/src/ethsign"
 	go run "./ethsign.go" "$@"
 	cd "$_pwd"
+}
+
+ssb-server() {
+
 }
 
 _OMNIA="$_TOP/omnia"
@@ -40,11 +44,9 @@ function pullLatestFeedMsgOfType {
 	echo "{\"$0\": \"$1 $2\"}"
 }
 
-OMNIA_DRY_RUN="true"
 OMNIA_VERBOSE="true"
 OMNIA_VERSION="1.3.9-dev"
 OMNIA_FEED_SOURCE="gofer"
-export LC_ALL=POSIX
 
 median=0
 validSources=()
