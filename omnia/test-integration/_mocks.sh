@@ -1,13 +1,29 @@
 ssb-server() {
+	local _wdir="${wdir:-$tpath}"
 	case "$1" in
-		publish) cat > "$wdir/output";;
-		createUserStream) cat "$tpath/ssb-create-user-stream-resp.json";;
+		publish) cat > "$_wdir/output";;
+		createUserStream) cat "$tpath/ssb-create-user-stream-resp.ndjson";;
 		*) return 1;;
 	esac
 }
 export -f ssb-server
 
-rpath="$tpath/../../smoke-tests/resources"
-ETH_FROM="0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
-ETH_KEYSTORE="$rpath/keys"
-ETH_PASSWORD="$rpath/key"
+gofer() {
+	case "${*^^}" in
+		*BAT/USD*) cat "$tpath/gofer-batusd-resp.json";;
+		*MKR/USD*) cat "$tpath/gofer-mkrusd-resp.json";;
+		*) return 1;;
+	esac
+}
+export -f gofer
+
+setzer() {
+	case "$1-$2-$3" in
+		sources-batusd-) printf "a\nb\nc\n";;
+		price-batusd-a) echo 0.1;;
+		price-batusd-b) echo 0.2;;
+		price-batusd-c) echo 0.3;;
+		*) return 1;;
+	esac
+}
+export -f setzer
