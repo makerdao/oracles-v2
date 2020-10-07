@@ -11,9 +11,7 @@ mkdir -p $OMNIA_HOME/secrets
 [[ -z "$OMNIA_KEYSTORE" ]] && echo "OMNIA_KEYSTORE not set" || echo "$OMNIA_KEYSTORE" > $OMNIA_HOME/secrets/keystore.json
 [[ -z "$OMNIA_PASSWORD" ]] && echo "OMNIA_PASSWORD not set" || echo "$OMNIA_PASSWORD" > $OMNIA_HOME/secrets/password.txt
 
-echo '##################'
 echo "INSTALL OMNIA"
-echo '##################'
 sudo -E \
     $NIX_BIN/install-omnia feed \
         --ssb-external $EXT_IP \
@@ -24,31 +22,21 @@ sudo -E \
 
 sudo chown -R omnia $OMNIA_HOME/.ssb/
 
-echo '##################'
 echo "OMNIA CONFIG"
-echo '##################'
 cat /etc/omnia.conf
 
-echo '##################'
+# Todo run with `tini` and output logs to stdout
+# or better yet separate into its own container
 echo "START SSB"
-echo '##################'
-# $NIX_BIN/ssb-server start &
+$NIX_BIN/ssb-server start &
 
-sleep infinity
+echo "ACCEPT INVITE"
+$NIX_BIN/ssb-server invite.accept $SSB_INVITE
 
-# echo '##################'
-# echo "ACCEPT INVITE"
-# echo '##################'
-# $NIX_BIN/ssb-server invite.accept $SSB_INVITE
+# SSB server becomes unresponsive after accepting an invite
+# As it spends all its single thread resources to index
+# Wait for SSB server to index data then move on
+until $NIX_BIN/ssb-server whoami &> /dev/null; do echo "Waiting for SSB server index to finish...";sleep 30; done
 
-# sleep 10
-
-echo '##################'
-echo "SSB WHOAMI"
-echo '##################'
-# $NIX_BIN/ssb-server whoami
-
-echo '##################'
 echo "START OMNIA"
-echo '##################'
-# sudo -u omnia $NIX_BIN/omnia
+sudo -u omnia $NIX_BIN/omnia
