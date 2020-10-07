@@ -32,9 +32,9 @@ cat /etc/omnia.conf
 echo '##################'
 echo "START SSB"
 echo '##################'
-$NIX_BIN/ssb-server start &
+# $NIX_BIN/ssb-server start &
 
-sleep 10
+sleep infinity
 
 # echo '##################'
 # echo "ACCEPT INVITE"
@@ -46,9 +46,9 @@ sleep 10
 echo '##################'
 echo "SSB WHOAMI"
 echo '##################'
-$NIX_BIN/ssb-server whoami
+# $NIX_BIN/ssb-server whoami
 
 echo '##################'
 echo "START OMNIA"
 echo '##################'
-sudo -u omnia $NIX_BIN/omnia
+# sudo -u omnia $NIX_BIN/omnia
