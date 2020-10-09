@@ -130,6 +130,14 @@ Now you can start editing the `omnia` scripts and run them directly.
 
 ### Update dependencies
 
+To update dependencies like `setzer-mcd` use `niv` e.g.:
+
+```
+nix-shell
+niv show
+niv update setzer-mcd
+```
+
 To update NodeJS dependencies edit the `nix/node-packages.json` file and run:
 
 ```

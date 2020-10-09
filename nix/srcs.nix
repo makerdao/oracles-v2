@@ -1,6 +1,6 @@
 let
-  inherit (builtins) map filter listToAttrs attrValues isString;
-  inherit (import makerpkgs' {}) pkgs;
+  inherit (builtins) map filter listToAttrs attrValues isString currentSystem;
+  inherit (import sources.nixpkgs {}) pkgs;
   inherit (pkgs) fetchgit;
   inherit (pkgs.lib.strings) removePrefix;
 
@@ -11,37 +11,18 @@ let
       then parse x
       else x.pname or (parse x.name);
 
-  makerpkgs' = fetchGit {
-    url = "https://github.com/makerdao/makerpkgs";
-    rev = "d4b7fe56b38236566b3014d328be1bd9c7be7a2f";
-    ref = "master";
-  };
+  sources = import ./sources.nix;
 in
 
 rec {
-  makerpkgs = import makerpkgs' {
-    dapptoolsOverrides = {
-      current = dapptools-seth-0_8_4-pre;
-    };
+  makerpkgs = { system ? currentSystem }: import sources.makerpkgs {
+    dapptoolsOverrides = { current = ./dapptools.nix; };
   };
 
-  dapptools-seth-0_8_4-pre = fetchgit {
-    url = "https://github.com/dapphub/dapptools";
-    rev = "78508c6a8db2d6d3e8e09437dbe122bb5e6b2e7e";
-    sha256 = "1kwlh22q8scrd7spn3x91c9vv3axgvnqx3w8n9y4hrwkgypm7ahk";
-    fetchSubmodules = true;
-  };
-
-  setzer-mcd = fetchGit {
-    url = "https://github.com/makerdao/setzer-mcd";
-    rev = "4308e04630f8630ba82f7d1ab0604b28bbb81cf1";
-    ref = "master";
-  };
-
-  nodepkgs = { pkgs ? makerpkgs.pkgs }: let
-    nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
+  nodepkgs = { pkgs ? makerpkgs.pkgs, system ? currentSystem }: let
+    nodepkgs' = import ./nodepkgs.nix { inherit pkgs system; };
     shortNames = listToAttrs (map
-      (x: { name = removePrefix "node-" (getName x.name); value = x; })
+      (x: { name = removePrefix "node_" (getName x.name); value = x; })
       (attrValues nodepkgs')
     );
   in nodepkgs' // shortNames;

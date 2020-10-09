@@ -16,19 +16,19 @@ wdir=$(mktemp -d "${TMPDIR:-/tmp}"/tapsh.XXXXXXXX)
 
 log() {
   cat > $wdir/log
-  if [[ -f $wdir/log && $(wc -c $wdir/log | cut -f1 -d' ') = 0 ]]; then
+  if [[ -f $wdir/log && $(wc -c $wdir/log 2>/dev/null | cut -f1 -d' ') = 0 ]]; then
     rm $wdir/log
   fi
 }
 note() { sed 's/^/# /'; }
 run() {
-  { local ecode=0
-    set -x
+  ecode=0
+  { set -x
     "$@" || ecode=$?
     { set +x; } >/dev/null 2>&1
-    if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
-    return $ecode
-  } 2>&1 </dev/null | log
+  } >$wdir/log 2>&1 </dev/null
+  if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
+  return $ecode
 }
 capture() {
   { set -x
@@ -96,6 +96,7 @@ timeout() {
   fi
 }
 
+before_done=""
 test_count=0
 failed_tests=0
 skipped_tests=0
@@ -108,6 +109,11 @@ plan() {
 }
 
 assert() {
+  if [[ -z $before_done ]] && command -v before >/dev/null 2>&1; then
+    before_done=1
+    run before || { [[ -f $wdir/log ]] && note < $wdir/log; exit 3; }
+  fi
+
   ((test_count+=1))
   local desc="${1:+$1 }"; shift
   local ecode=0
@@ -116,7 +122,8 @@ assert() {
   if [[ ${desc^^} =~ ^\#\ SKIP ]]; then
     ((skipped_tests+=1))
   else
-    res=$("$@") || ecode=$?
+    "$@" > $wdir/res || ecode=$?
+    res=$(cat $wdir/res); rm -f $wdir/res
   fi
 
   if [[ $ecode == 0 && ! $res ]]; then
@@ -127,11 +134,11 @@ assert() {
     if [[ $res || -f $wdir/log ]]; then
       echo "  ---"
       if [[ $res ]]; then
-        sed 's/^/  /' <<<"$res"
+        sed 's/^/    /' <<<"$res"
       fi
       if [[ -f $wdir/log ]]; then
-        echo "  stdout: |"
-        sed 's/^/    /' $wdir/log
+        echo "    stdout: |-"
+        sed 's/^/      /' $wdir/log
         rm $wdir/log
       fi
       echo "  ..."
@@ -147,7 +154,7 @@ json() {
   output "${*-.}" > $wdir/got-$test_count.json
   local res="$(diff -u $wdir/expect-$test_count.json $wdir/got-$test_count.json)"
   [[ ! $res ]] || { cat <<EOF
-diff: |
+diff: |-
 $(sed 's/^/  /' <<<"$res")
 EOF
   }
@@ -157,7 +164,7 @@ match() {
   local input="$(cat)"
   local m="$(grep -Eo "$1" <<<"$input")"
   [[ $m ]] || { cat <<EOF
-got: |
+got: |-
 $(sed 's/^/  /' <<<"$input")
 expect: '$1'
 EOF
@@ -167,7 +174,7 @@ no_match() {
   local input="$(cat)"
   local m="$(grep -o "$1" <<<"$input")"
   [[ ! $m ]] || { cat <<EOF
-got: |
+got: |-
 $(sed 's/^/  /' <<<"$input")
 expect: '$1'
 EOF
@@ -197,7 +204,7 @@ http() {
     $url/$path 2> $wdir/headers-$test_count || (
       touch $wdir/output-$test_count
       cat <<EOF
-message: |
+message: |-
 $(sed 's/^/  /' < $wdir/headers-$test_count)
 EOF
     )
@@ -211,7 +218,3 @@ touch $wdir/output
 touch $wdir/headers
 
 echo TAP version 13
-
-if command -v before >/dev/null 2>&1; then
-  run before || { [[ -f $wdir/log ]] && note < $wdir/log; exit 3; }
-fi

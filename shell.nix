@@ -1,24 +1,24 @@
-let srcs = import ./nix/srcs.nix; in
+let
+  srcs = import ./nix/srcs.nix;
+  sources = import ./nix/sources.nix;
+in
 
-{ pkgs ? srcs.makerpkgs.pkgs
+{ pkgs ? import sources.nixpkgs {}
+, makerpkgs ? srcs.makerpkgs {}
 }@args:
 
-let
-  inherit (import ./. args) omnia;
-in
+let oracles = import ./. args; in
 
 pkgs.mkShell rec {
   name = "oracle-shell";
-  buildInputs = omnia.runtimeDeps ++ (with pkgs; [
+  buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [
+    git niv
     nodePackages.node2nix
     nodePackages.semver
-    git
   ]);
 
   VERSION_FILE = toString ./omnia/version;
   ROOT_DIR = toString ./.;
-
-  NIX_PATH="nixpkgs=${pkgs.path}";
 
   shellHook = ''
     updateNodePackages() {

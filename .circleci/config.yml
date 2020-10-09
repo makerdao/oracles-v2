@@ -5,9 +5,11 @@ workflows:
   build-test-cache:
     jobs:
       - smoke-test
+      - regression
       - cache:
           requires:
             - smoke-test
+            - regression
           context: NIX_BUILD
           filters:
             branches:
@@ -48,6 +50,31 @@ commands:
           command: |
             cachix use maker
             cachix use dapp
+  setup-ca:
+    description: Setup CA certificate
+    parameters:
+      cert:
+        type: string
+    steps:
+      - run:
+          name: Install cert tools
+          command: |
+            command -v update-ca-certificates || apk --no-progress add --update --no-cache ca-certificates
+      - run:
+          name: Install cert << parameters.cert >>
+          command: |
+            cp "<< parameters.cert >>" /usr/local/share/ca-certificates
+            update-ca-certificates
+  pre-fetch:
+    description: Pre-fetch Nix dependencies
+    parameters:
+      path:
+        type: string
+    steps:
+      - run-nix:
+          name_: Pre-fetch dependencies for << parameters.path >>
+          command: |
+            nix-shell "<< parameters.path >>" --run true
 
 executors:
   nix-executor:
@@ -64,17 +91,32 @@ jobs:
       - setup-nix
       - setup-cachix
       - checkout
-      - run-nix:
-          name_: Pre-fetch test dependencies
-          command: |
-            nix-shell smoke-tests --run true
+      - pre-fetch:
+          path: tests
       - run-nix:
           name_: Smoke test
           command: |
-            nix-shell smoke-tests --run smokeTest
+            nix-shell tests --run testSmoke
       - store_test_results:
-          path: smoke-tests/test-results
-
+          path: tests/test-results
+  regression:
+    executor: nix-executor
+    steps:
+      - setup-cachix
+      - checkout
+      - setup-ca:
+          cert: tests/resources/mitmproxy/mitmproxy-ca-cert.cer
+      - pre-fetch:
+          path: tests
+      - run-nix:
+          name_: End 2 end regression test
+          command: |
+            nix-shell tests --run testE2E
+      - store_test_results:
+          path: ./tests/test-results
+      - store_artifacts:
+          path: ./logs
+          destination: test-logs
   cache:
     executor: nix-executor
     steps:
