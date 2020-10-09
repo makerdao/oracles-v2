@@ -2,6 +2,7 @@
 tpath="$(cd ${0%/*}; pwd)"
 . "$tpath/../log.sh"
 . "$tpath/../util.sh"
+. "$tpath/../status.sh"
 . "$tpath/../source.sh"
 
 # Mock setzer
