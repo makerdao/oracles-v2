@@ -19,7 +19,7 @@ export -f setzer
 
 # Mock gofer
 gofer() {
-	case "${*^^}" in
+	case "$*" in
 		*BAT/USD*) cat "$tpath/gofer-batusd-resp.json";;
 		*) return 1;;
 	esac
@@ -41,7 +41,7 @@ assert "median of validPrices" test 0.2 = "$median"
 validSources=()
 validPrices=()
 median=0
-assert "read sources from gofer" run readSourcesWithGofer bat/usd
+assert "read sources from gofer" run readSourcesWithGofer BAT/USD
 assert "length of validSources" test 9 = ${#validSources[@]}
 assert "length of validPrices" test 9 = ${#validPrices[@]}
 assert "median of validPrices" test 0.2 = "$median"
