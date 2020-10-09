@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 readSourcesWithSetzer()  {
-	local _assetPair="${1,,}"
-	local _prices
-	local _price
-	local _source
+	local _assetPair=$1
+	_assetPair="${_assetPair,,}"
+	_assetPair="${_assetPair/\/}"
 
+	local _prices
 	mapfile -t _prices < <(
 		setzer sources "$_assetPair" \
 		| parallel \
@@ -16,6 +16,8 @@ readSourcesWithSetzer()  {
 			2>/dev/null
 	)
 
+	local _price
+	local _source
 	for i in "${!_prices[@]}"; do
 		_source=${_prices[$i]% *}
 		_price=${_prices[$i]#* }
