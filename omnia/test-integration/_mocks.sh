@@ -1,7 +1,11 @@
 ssb-server() {
+	echo "$*" >> "$tpath/log-ssb-server.txt"
 	local _wdir="${wdir:-$tpath}"
 	case "$1" in
-		publish) cat > "$_wdir/output";;
+		publish)
+			cat > "$_wdir/output"
+			cat "$_wdir/output" >> "$tpath/log-ssb-server.txt"
+			;;
 		createUserStream) cat "$tpath/ssb-create-user-stream-resp.ndjson";;
 		*) return 1;;
 	esac
@@ -9,8 +13,8 @@ ssb-server() {
 export -f ssb-server
 
 gofer() {
+	echo "$*" >> "$tpath/log-gofer.txt"
 	case "${*^^}" in
-		*BAT/USD*) cat "$tpath/gofer-batusd-resp.json";;
 		*MKR/USD*) cat "$tpath/gofer-mkrusd-resp.json";;
 		*) return 1;;
 	esac
@@ -18,11 +22,12 @@ gofer() {
 export -f gofer
 
 setzer() {
+	echo "$1-$2-$3" >> "$tpath/log-setzer.txt"
 	case "$1-$2-$3" in
-		sources-batusd-) printf "a\nb\nc\n";;
-		price-batusd-a) echo 0.1;;
-		price-batusd-b) echo 0.2;;
-		price-batusd-c) echo 0.3;;
+		sources-mkrusd-) printf "a\nb\nc\n";;
+		price-mkrusd-a) echo 0.11;;
+		price-mkrusd-b) echo 0.22;;
+		price-mkrusd-c) echo 0.33;;
 		*) return 1;;
 	esac
 }
