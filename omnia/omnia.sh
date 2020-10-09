@@ -18,15 +18,14 @@ fi
 #initialize environment
 initEnv () {
 	OMNIA_VERSION="$(cat ./version)"
-	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
 
 	#Load Global configuration
 	importEnv
 
 	echo ""
-  	echo ""
-	echo "  /\$\$\$\$\$\$                          /\$\$                                "          
-	echo " /\$\$__  \$\$                        |__/                                    "          
+	echo ""
+	echo "  /\$\$\$\$\$\$                          /\$\$                                "
+	echo " /\$\$__  \$\$                        |__/                                    "
 	echo "| \$\$  \ \$\$ /\$\$\$\$\$\$/\$\$\$\$  /\$\$\$\$\$\$\$  /\$\$  /\$\$\$\$\$\$  "
 	echo "| \$\$  | \$\$| \$\$_  \$\$_  \$\$| \$\$__  \$\$| \$\$ |____  \$\$            "
 	echo "| \$\$  | \$\$| \$\$ \ \$\$ \ \$\$| \$\$  \ \$\$| \$\$  /\$\$\$\$\$\$\$       "
@@ -36,14 +35,14 @@ initEnv () {
 	echo ""
 	echo ""
 	echo "------------------------------- STARTING OMNIA -------------------------------"
-  	echo "Bot started $(date)"
-  	echo "Omnia Version:                     V$OMNIA_VERSION"
-  	echo "Mode:                              $OMNIA_MODE"
-  	echo "Verbose Mode:                      $OMNIA_VERBOSE"
-  	echo "Interval:                          $OMNIA_INTERVAL seconds"
-  	echo ""
-  	echo "ETHEREUM"
-  	[[ $OMNIA_MODE == "RELAYER" ]] && echo "Network:                           $ETH_RPC_URL"
+	echo "Bot started $(date)"
+	echo "Omnia Version:                     V$OMNIA_VERSION"
+	echo "Mode:                              $OMNIA_MODE"
+	echo "Verbose Mode:                      $OMNIA_VERBOSE"
+	echo "Interval:                          $OMNIA_INTERVAL seconds"
+	echo ""
+	echo "ETHEREUM"
+	[[ $OMNIA_MODE == "RELAYER" ]] && echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
 	echo ""
 	echo "SCUTTLEBOT"
