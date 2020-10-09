@@ -19,6 +19,7 @@ importEnv () {
 	jq -e . "$config" >/dev/null 2>&1 || { error "Error - Config is not valid JSON"; exit 1; }
 
 	importMode "$config"
+	importSources "$config"
 	importEthereumEnv "$config"
 	importStarkwareEnv "$config"
 	importAssetPairsEnv "$config"
@@ -32,11 +33,18 @@ importEnv () {
 	fi
 }
 
+
 importMode () {
 	local _config="$1"
 	OMNIA_MODE="$(jq -r '.mode' < "$_config" | tr '[:lower:]' '[:upper:]')"
 	[[ "$OMNIA_MODE" =~ ^(FEED|RELAYER){1}$ ]] || { error "Error - Invalid Mode param, valid values are 'FEED' and 'RELAYER'"; exit 1; }
 	export OMNIA_MODE
+}
+
+importSources () {
+	local _config="$1"
+	readarray -t OMNIA_FEED_SOURCES < <(echo "$_config" | jq -r '.sources | .[]')
+	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
 }
 
 importNetwork () {
@@ -72,7 +80,6 @@ importEthereumEnv () {
 	_json=$(jq -S '.ethereum' < "$_config")
 
 	[[ "$OMNIA_MODE" == "RELAYER" ]] && importNetwork "$_json"
-
 
 	ETH_FROM="${ETH_FROM-$(jq -r '.from' <<<"$_json")}"
 	#this just checks for valid chars and length, NOT checksum!

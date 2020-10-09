@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
 readSourcesWithSetzer()  {
-	local _assetPair=$1
-	_assetPair="${_assetPair,,}"
-	_assetPair="${_assetPair/\/}"
-
+	local _assetPair="$1"
 	local _prices
+
 	mapfile -t _prices < <(
 		setzer sources "$_assetPair" \
 		| parallel \
@@ -50,6 +48,8 @@ readSourcesWithGofer()   {
 	local _prices
 	mapfile -t _prices < <(echo "${_output}" | jq -r "$_jqFilter" 2> /dev/null)
 
+	local _source
+	local _price
 	for i in "${!_prices[@]}"; do
 		_source=${_prices[$i]% *}
 		_price=${_prices[$i]#* }

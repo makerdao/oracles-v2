@@ -8,21 +8,22 @@ readSourcesAndBroadcastAllPriceMessages()  {
 	fi
 
 	for _assetPair in "${assetPairs[@]}"; do
-		for OMNIA_FEED_SOURCE in "${OMNIA_FEED_SOURCES[@]}"; do
-			readSourcesAndBroadcastPriceMessage "$_assetPair"
+		for _src in "${OMNIA_FEED_SOURCES[@]}"; do
+			readSourcesAndBroadcastPriceMessage "$_assetPair" "$_src"
 		done
 	done
 }
 
 readSourcesAndBroadcastPriceMessage() {
-	local _assetPair="${1^^}"
+	local _assetPair="$1"
+	local _src="$2"
 
 	validSources=()
 	validPrices=()
 	median=0
 
 	log "Querying ${_assetPair} prices and calculating median..."
-	readSources "$_assetPair"
+	readSources "$_assetPair" "$_src"
 
 	if [[ "$(isPriceValid "$median")" == "false" ]]; then
 		error "Error - Failed to calculate valid median: ($median)"
@@ -133,10 +134,14 @@ readSourcesAndBroadcastPriceMessage() {
 
 readSources() {
 	local _assetPair="$1"
+	local _src="${2,,}"
 
-	if [[ "$OMNIA_FEED_SOURCE" == "setzer" ]]; then
+	if [[ "$_src" == "setzer" ]]; then
+		_assetPair="${_assetPair,,}"
+		_assetPair="${_assetPair/\/}"
 		readSourcesWithSetzer "$_assetPair"
-	elif [[ "$OMNIA_FEED_SOURCE" == "gofer" ]]; then
+	elif [[ "$_src" == "gofer" ]]; then
+		_assetPair="${_assetPair^^}"
 		readSourcesWithGofer "$_assetPair"
 	else
 		error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
