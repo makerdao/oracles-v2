@@ -33,9 +33,11 @@ $NIX_BIN/ssb-server start &
 echo "ACCEPT INVITE"
 $NIX_BIN/ssb-server invite.accept $SSB_INVITE
 
+sleep 10
+
 # SSB server becomes unresponsive after accepting an invite
-# As it spends all its single thread resources to index
-# Wait for SSB server to index data then move on
+# As it spends all its single thread resources to index new data.
+# Wait for SSB server to index data only then move on.
 until $NIX_BIN/ssb-server whoami &> /dev/null; do echo "Waiting for SSB server index to finish...";sleep 30; done
 
 echo "START OMNIA"
