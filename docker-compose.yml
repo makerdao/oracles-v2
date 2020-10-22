@@ -1,27 +1,26 @@
 version: "3.6"
 
 services:
-  oracle:
+  feed:
     image: omnia:latest
-    secrets:
-      - caps.json
-      - keystore.json
-      - password.txt
+    command: feed
     environment:
-      ETH_FROM: ''
-      EXT_IP: ''
-      SSB_INVITE: ''
-      OMNIA_KEYSTORE: ''
-      OMNIA_PASSWORD: ''
-      OMNIA_CAPS: |
-        {
-          ...
-        }
+      - ETH_FROM
+      - EXT_IP
+      - OMNIA_KEYSTORE
+      - OMNIA_PASSWORD
+      - OMNIA_CAPS
+      - SSB_INVITE
 
-secrets:
-  caps.json:
-    file: secrets/caps.json
-  keystore.json:
-    file: secrets/keystore.json
-  password.txt:
-    file: secrets/password.txt
+  relayer:
+    image: omnia:latest
+    command: relayer
+    environment:
+      - ETH_FROM
+      - EXT_IP
+      - OMNIA_KEYSTORE
+      - OMNIA_PASSWORD
+      - OMNIA_CAPS
+      - SSB_INVITE
+      - ETH_NET
+      - INFURAKEY
