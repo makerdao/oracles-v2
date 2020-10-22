@@ -1,5 +1,7 @@
 version: "3.6"
 
+# Add env vars values in .env
+
 services:
   feed:
     image: omnia:latest
