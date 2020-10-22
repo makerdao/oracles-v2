@@ -14,9 +14,10 @@ mkdir -p $OMNIA_HOME/secrets
 case "$1" in
     sh|bash)
         set -- "$@"
+        exec "$@"
     ;;
     feed)
-    echo "INSTALL OMNIA FEED"
+    echo "INSTALL OMNIA - FEED"
     sudo -E \
     $NIX_BIN/install-omnia feed \
         --ssb-external $EXT_IP \
@@ -26,9 +27,9 @@ case "$1" in
         --password $OMNIA_HOME/secrets/password.txt
     ;;
     relayer)
-    echo "INSTALL OMNIA RELAYER"
+    echo "INSTALL OMNIA - RELAYER"
     sudo -E \
-    $HOME/.nix-profile/bin/install-omnia relayer-$ETH_NET \
+    $NIX_BIN/install-omnia relayer-$ETH_NET \
         --ssb-external $EXT_IP \
         --from $ETH_FROM \
         --ssb-caps $OMNIA_HOME/secrets/caps.json \
