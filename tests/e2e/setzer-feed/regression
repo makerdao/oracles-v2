@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+
+. "$_path/../../lib/tap.sh"
+
+cp -f "$1" $wdir/output
+jqf=".[].value.content|{type,sources,price,priceHex}"
+mapfile -t symbols < <(jq -r "$jqf|.type" "$_path/ssb-messages.json")
+
+plan ${#symbols[@]}
+
+note <<<"Regression assertions"
+
+for symbol in "${symbols[@]}"; do
+  jqfs="$jqf|select(.type == \"$symbol\")"
+
+  assert "regression of ssb message for $symbol" \
+    json "$jqfs" <<<$(jq "$jqfs" "$_path/ssb-messages.json")
+done

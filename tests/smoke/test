@@ -1,10 +1,13 @@
-#!/bin/bash
-tpath="$(cd ${0%/*}; pwd)"
-rpath="$tpath/resources"
+#!/usr/bin/env bash
+_path="$(cd ${BASH_SOURCE[0]%/*}; pwd)"
+r_path="$_path/../resources"
 
-from_addr="0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
-keystore_path="$rpath/keys"
-key_path="$rpath/key"
+. "$_path/../lib/include.sh"
+
+exportEthEnvs
+from_addr="$ETH_FROM"
+keystore_path="$ETH_KEYSTORE"
+key_path="$ETH_PASSWORD"
 
 install_feed() {
   install-omnia feed \
@@ -12,7 +15,7 @@ install_feed() {
     --keystore     "$keystore_path" \
     --password     "$key_path" \
     --ssb-external "example.org" \
-    --ssb-caps     "$rpath/caps.json" \
+    --ssb-caps     "$r_path/caps.json" \
     | sudo sh
 }
 
@@ -38,7 +41,7 @@ after() {
   sudo systemctl stop omnia ssb-server
 }
 
-. "$tpath/tap.sh"
+. "$_path/../lib/tap.sh"
 
 plan 33
 timeout 60
@@ -57,7 +60,7 @@ assert "SSB external IP set" \
 assert "SSB external IP set" \
   json '.connections.incoming.ws[0].external' <<<'"example.org"'
 assert "SSB caps set" \
-  json .caps < "$rpath/caps.json"
+  json .caps < "$r_path/caps.json"
 assert "SSB hops set" \
   json .friends.hops <<<"6"
 
@@ -105,7 +108,7 @@ assert "SSB external IP set" \
 assert "SSB external IP set" \
   json '.connections.incoming.ws[0].external' <<<'"example-2.org"'
 assert "SSB caps set" \
-  json .caps < "$rpath/caps.json"
+  json .caps < "$r_path/caps.json"
 assert "SSB hops set" \
   json .friends.hops <<<"2"
 

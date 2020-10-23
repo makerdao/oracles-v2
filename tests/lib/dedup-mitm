@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+import io
+import sys
+
+from mitmproxy.io import FlowReader, FlowWriter
+
+def flow_str(flow):
+  return "%s|%s" % (flow.request.url, flow.request.content)
+
+def dedup(fn):
+  ids = set()
+  flows = list()
+  with open(fn, "rb") as fin:
+    reader = FlowReader(fin)
+    for flow in reader.stream():
+      id = flow_str(flow)
+      if not id in ids:
+        ids.add(id)
+        flows.append(flow)
+  with open(fn, "wb") as fout:
+    writer = FlowWriter(fout)
+    for flow in flows:
+      writer.add(flow)
+
+if __name__ == "__main__":
+  if len(sys.argv) != 2:
+    print("Usage: %s FILE" % (sys.argv[0],))
+    exit(1)
+  else:
+    dedup(sys.argv[1])

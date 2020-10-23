@@ -1,9 +1,13 @@
-let srcs = import ./nix/srcs.nix; in
+let
+  srcs = import ./nix/srcs.nix;
+  sources = import ./nix/sources.nix;
+in
 
-{ pkgs ? srcs.makerpkgs.pkgs
+{ pkgs ? import sources.nixpkgs {}
+, makerpkgs ? srcs.makerpkgs {}
 , nodepkgs ? srcs.nodepkgs { inherit pkgs; }
-, setzer-mcdSrc ? srcs.setzer-mcd
-}: with pkgs;
+, setzer-mcdSrc ? sources.setzer-mcd
+}: with makerpkgs.pkgs;
 
 let
   ssb-server = lib.setPrio 10 (nodepkgs.ssb-server.override {

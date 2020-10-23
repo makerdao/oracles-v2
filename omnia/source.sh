@@ -16,7 +16,10 @@ readSources () {
 
 	mapfile -t _prices < <(
 		setzer sources "$_assetPair" \
-		| parallel -j0 --termseq KILL --timeout "$OMNIA_SRC_TIMEOUT" \
+		| parallel \
+			-j${OMNIA_SOURCE_PARALLEL:-0} \
+			--termseq KILL \
+			--timeout "$OMNIA_SRC_TIMEOUT" \
 			mapSetzer "$_assetPair" \
 			2>/dev/null
 	)
