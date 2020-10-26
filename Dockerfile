@@ -4,9 +4,6 @@ RUN apt-get update && \
     apt-get install -y curl xz-utils git sudo jq && \
     apt-get clean
 
-# ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /tini
-# RUN chmod +x /tini
-
 # Add the user nixuser for security reasons and for Nix
 RUN useradd -ms /bin/bash omnia
 
