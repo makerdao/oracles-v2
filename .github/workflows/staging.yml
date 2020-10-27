@@ -43,12 +43,12 @@ jobs:
 
     - name: Download Feed Task Definition
       run: |
-        aws ecs describe-task-definition --task-definition ${FEED_SERVICE_NAME}-feed --query taskDefinition > task-definition-feed.json
+        aws ecs describe-task-definition --task-definition ${FEED_SERVICE_NAME} --query taskDefinition > task-definition-feed.json
  
 
     - name: Download Relayer Task Definition
       run: |
-        aws ecs describe-task-definition --task-definition ${RELAYER_SERVICE_NAME}-relayer --query taskDefinition > task-definition-relayer.json
+        aws ecs describe-task-definition --task-definition ${RELAYER_SERVICE_NAME} --query taskDefinition > task-definition-relayer.json
  
     - name: Render Feed Task Definition
       id: render-feed
@@ -63,14 +63,14 @@ jobs:
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition-relayer.json
-        container-name: ${{ env.FEED_SERVICE_NAME }}
+        container-name: ${{ env.RELAYER_SERVICE_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Feed Service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.render-feed.outputs.task-definition }}
-        service: ${{ env.FEED_SERVICE_NAME }}-feed
+        service: ${{ env.FEED_SERVICE_NAME }}
         cluster: ${{ env.CLUSTER_NAME }}
         wait-for-service-stability: true
 
@@ -78,6 +78,6 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.render-relayer.outputs.task-definition }}
-        service: ${{ env.FEED_SERVICE_NAME }}
+        service: ${{ env.RELAYER_SERVICE_NAME }}
         cluster: ${{ env.CLUSTER_NAME }}
         wait-for-service-stability: true
