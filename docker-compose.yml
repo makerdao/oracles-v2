@@ -26,3 +26,4 @@ services:
       - SSB_INVITE
       - ETH_NET
       - INFURAKEY
+      - ETH_GAS

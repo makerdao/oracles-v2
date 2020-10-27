@@ -12,7 +12,9 @@ jobs:
     env:
       REGION: us-east-1
       CLUSTER_NAME: omnia-staging
-      SERVICE_NAME: omnia-staging
+      IMAGE_NAME: omnia-staging
+      FEED_SERVICE_NAME: omnia-feed-kovan-staging
+      RELAYER_SERVICE_NAME: omnia-relayer-kovan-staging
 
     steps:
     - name: Checkout
@@ -35,26 +37,47 @@ jobs:
         IMAGE_TAG: latest
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
       run: |
-        docker build -t ${ECR_REGISTRY}/${SERVICE_NAME}:${IMAGE_TAG} .
-        docker push ${ECR_REGISTRY}/${SERVICE_NAME}:${IMAGE_TAG}
-        echo "::set-output name=image::${ECR_REGISTRY}/${SERVICE_NAME}:${IMAGE_TAG}"
+        docker build -t ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
+        docker push ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+        echo "::set-output name=image::${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
 
     - name: Download Feed Task Definition
       run: |
-        aws ecs describe-task-definition --task-definition ${SERVICE_NAME}-feed --query taskDefinition > task-definition-feed.json
+        aws ecs describe-task-definition --task-definition ${FEED_SERVICE_NAME}-feed --query taskDefinition > task-definition-feed.json
+ 
+
+    - name: Download Relayer Task Definition
+      run: |
+        aws ecs describe-task-definition --task-definition ${RELAYER_SERVICE_NAME}-relayer --query taskDefinition > task-definition-relayer.json
  
     - name: Render Feed Task Definition
       id: render-feed
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition-feed.json
-        container-name: ${{ env.SERVICE_NAME }}-feed
+        container-name: ${{ env.FEED_SERVICE_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+ 
+    - name: Render Relayer Task Definition
+      id: render-relayer
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition-relayer.json
+        container-name: ${{ env.FEED_SERVICE_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Feed Service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.render-feed.outputs.task-definition }}
-        service: ${{ env.SERVICE_NAME }}-feed
+        service: ${{ env.FEED_SERVICE_NAME }}-feed
+        cluster: ${{ env.CLUSTER_NAME }}
+        wait-for-service-stability: true
+
+    - name: Deploy Relayer Service
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.render-relayer.outputs.task-definition }}
+        service: ${{ env.FEED_SERVICE_NAME }}
         cluster: ${{ env.CLUSTER_NAME }}
         wait-for-service-stability: true
