@@ -49,7 +49,7 @@ sudo chown -R omnia $OMNIA_HOME/.ssb/
 # Todo run with `tini` and output logs to stdout
 # or better yet separate into its own container
 echo "START SSB"
-$NIX_BIN/ssb-server start &
+$NIX_BIN/ssb-server start &>/dev/null &
 # Wait to process the above
 sleep 5
 
