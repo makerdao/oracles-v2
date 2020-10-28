@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -exo pipefail
+
+filer
+
+export OMNIA_CONFIG=$HOME/omnia.conf
+confer OMNIA > $OMNIA_CONFIG
+
+mkdir -p $HOME/.ssb
+confer SSB > $HOME/.ssb/config
+
+mkdir -p $HOME/logs
+
+ssb-server start 2>$HOME/logs/ssb-server.err >$HOME/logs/ssb-server.out &
+sleep 5
+
+test -z "$SSB_INVITE" || {
+  ssb-server invite.accept "$SSB_INVITE"
+  sleep 1
+}
+
+omnia 2>$HOME/logs/omnia.err >$HOME/logs/omnia.out &
+sleep 1
+
+tail -f $HOME/logs/*
+kill $$

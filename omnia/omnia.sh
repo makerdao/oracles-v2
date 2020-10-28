@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -n $OMNIA_DEBUG ]]; then
+	env
 	set -x
 fi
 
@@ -137,7 +138,7 @@ execute () {
 		fi
 
 		#Convert asset pair to hex
-		assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")")
+		assetPairHex=$(seth --to-bytes32 "$(seth --from-ascii "$assetPair")" | sed s/^0x//)
 		if [[ ! "$assetPairHex" =~ ^[0-9a-fA-F]{64}$ ]]; then
 			error "Error - Failed to convert asset pair to hex:"
 			debug "Asset Pair = $assetPair"

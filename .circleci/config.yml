@@ -15,6 +15,9 @@ workflows:
             branches:
               only:
                 - master
+      - docker:
+          requires:
+            - cache
 
 commands:
   setup-nix:
@@ -79,7 +82,7 @@ commands:
 executors:
   nix-executor:
     docker:
-      - image: nixos/nix@sha256:af330838e838cedea2355e7ca267280fc9dd68615888f4e20972ec51beb101d8
+      - image: nixos/nix@sha256:909992c623023c15950f088185326b80012584127fbaef6366980d26a91c73d5
   ubuntu-executor:
     machine:
       image: ubuntu-1604:201903-01
@@ -125,3 +128,17 @@ jobs:
       - run-nix:
           name_: Push to Cachix
           command: nix-build --no-out-link | cachix push maker
+  docker:
+    executor: nix-executor
+    steps:
+      - setup-cachix
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - run:
+          name: Build docker image
+          command: |
+            nix-env -i docker
+            TAG="circleci-${CIRCLE_BUILD_NUM:-latest}"
+            docker build -t makerdao/omnia:$TAG .

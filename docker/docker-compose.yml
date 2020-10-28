@@ -1,0 +1,28 @@
+version: "3.6"
+
+services:
+  feed:
+    image: omnia-new:latest
+    env_file: feed.env
+    expose:
+      - ${SSB_NET_PORT}
+      - ${SSB_WS_PORT}
+    environment:
+      - SSB_SET_connections_incoming_net__external="${EXT_IP}"
+      - SSB_SET_connections_incoming_net__port=${SSB_NET_PORT}
+      - SSB_SET_connections_incoming_ws__external="${EXT_IP}"
+      - SSB_SET_connections_incoming_ws__port=${SSB_WS_PORT}
+      - OMNIA_SET_mode="feed"
+
+  relayer:
+    image: omnia-new:latest
+    env_file: relayer.env
+    expose:
+      - ${SSB_NET_PORT}
+      - ${SSB_WS_PORT}
+    environment:
+      - SSB_SET_connections_incoming_net__external="${EXT_IP}"
+      - SSB_SET_connections_incoming_net__port=${SSB_NET_PORT}
+      - SSB_SET_connections_incoming_ws__external="${EXT_IP}"
+      - SSB_SET_connections_incoming_ws__port=${SSB_WS_PORT}
+      - OMNIA_SET_mode="relayer"
