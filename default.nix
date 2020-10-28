@@ -10,7 +10,7 @@ in
 }: with makerpkgs.pkgs;
 
 let
-  ssb-server = lib.setPrio 10 (nodepkgs.ssb-server.override {
+  ssb-server = lib.setPrio 9 (nodepkgs.ssb-server.override {
     buildInputs = [ gnumake nodepkgs.node-gyp-build ];
   });
 
