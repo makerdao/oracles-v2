@@ -1,7 +1,7 @@
 FROM nixos/nix@sha256:909992c623023c15950f088185326b80012584127fbaef6366980d26a91c73d5
 
 # Install dependencies
-RUN apk add --update --no-cache bash git
+RUN apk add --no-cache bash git
 
 # Setup Nix cache
 RUN nix run -f https://cachix.org/api/v1/install cachix \
@@ -11,6 +11,7 @@ RUN nix run -f https://cachix.org/api/v1/install cachix \
 # Copy Omnia source code inside the container
 COPY omnia /src/omnia
 COPY nix /src/nix
+COPY systemd/ssb-config.json /src/ssb-config.json
 
 # Install Omnia runner and dependencies
 RUN nix-env -i -f /src/nix/docker.nix --verbose; \

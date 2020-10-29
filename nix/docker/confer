@@ -12,7 +12,7 @@ for confVar in $(eval "echo \${!${prefix}_SET_*}"); do
   | .$confPath = ${!confVar}"
 done
 
-conf="$(eval "echo \"\${${prefix}_SET:-\$(cat \"\${${prefix}_CONFER_CONFIG:-/dev/null}\")}\"")"
+conf="$(eval "echo \"\${${prefix}_SET:-\$(cat \"\${${prefix}_FILE_SET:-/dev/null}\")}\"")"
 [ -n "$conf" ] || {
   echo >&2 "Error: Both ${prefix}_SET and ${prefix}_FILE_SET are empty."
   exit 1;
