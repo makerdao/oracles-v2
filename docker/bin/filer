@@ -4,7 +4,7 @@ set -eo pipefail
 for filePathVar in ${!FILE_PATH_*}; do
   fileContentVar="FILE_CONT_${filePathVar#FILE_PATH_}"
   filePath="${!filePathVar}"
-  echo "Creating file from ENV $fileContentVar -> $filePath"
+  echo >&2 "Creating file from ENV $fileContentVar -> $filePath"
   mkdir -p $(dirname "$filePath")
   echo -n "${!fileContentVar}" > "$filePath"
 done

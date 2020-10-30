@@ -6,18 +6,19 @@ x-omnia: &default
     - ${SSB_NET_PORT}
     - ${SSB_WS_PORT}
   environment: &env
-    SSB_FILE_SET: /src/ssb-config.json
     ETH_GAS: 7000000
-    SSB_SET_connections_incoming_net__external: '"${EXT_IP}"'
+    SSB_INVITE: ${SSB_INVITE}
+    SSB_FILE_SET: /src/ssb-config.json
+    SSB_STR_connections_incoming_net__external: ${EXT_IP}
     SSB_SET_connections_incoming_net__port: ${SSB_NET_PORT}
-    SSB_SET_connections_incoming_ws__external: '"${EXT_IP}"'
+    SSB_STR_connections_incoming_ws__external: ${EXT_IP}
     SSB_SET_connections_incoming_ws__port: ${SSB_WS_PORT}
     SSB_SET_caps: ${SSB_CAPS}
-    OMNIA_SET_ethereum_from: '"${ETH_FROM}"'
-    OMNIA_SET_ethereum_keystore: '"/home/omnia/keys"'
-    OMNIA_SET_ethereum_password: '"/home/omnia/password"'
-    OMNIA_SET_ethereum_network: '"${ETH_NET-mainnet}"'
-    OMNIA_SET_ethereum_infuraKey: '"${INFURAKEY}"'
+    OMNIA_STR_ethereum_from: ${ETH_FROM}
+    OMNIA_STR_ethereum_keystore: /home/omnia/keys
+    OMNIA_STR_ethereum_password: /home/omnia/password
+    OMNIA_STR_ethereum_network: ${ETH_NET-mainnet}
+    OMNIA_STR_ethereum_infuraKey: ${INFURAKEY}
     FILE_PATH_ETH_PASSWORD: /home/omnia/password
     FILE_CONT_ETH_PASSWORD: ${ETH_PASSWORD}
     FILE_PATH_ETH_KEY: /home/omnia/keys/key.json
@@ -30,7 +31,7 @@ services:
       <<: *env
       OMNIA_FILE_SET: /src/omnia/config/feed.conf
 
-  relayer:
+  relay:
     <<: *default
     environment:
       <<: *env
