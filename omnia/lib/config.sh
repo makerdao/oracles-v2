@@ -20,6 +20,7 @@ importEnv () {
 
 	importMode "$config"
 	importSources "$config"
+	importPublishers "$config"
 	importEthereumEnv "$config"
 	importAssetPairsEnv "$config"
 	importOptionsEnv "$config"
@@ -44,6 +45,18 @@ importSources () {
 	local _config="$1"
 	readarray -t OMNIA_FEED_SOURCES < <(echo "$_config" | jq -r '.sources | .[]')
 	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
+}
+
+importPublishers () {
+	local _config="$1"
+	readarray -t OMNIA_FEED_PUBLISHERS < <(echo "$_config" | jq -r '.publishers | .[]')
+	[[ "${#OMNIA_FEED_PUBLISHERS[@]}" -gt 0 ]] || OMNIA_FEED_PUBLISHERS=("oracle-transporter-ssb")
+}
+
+importPullers () {
+	local _config="$1"
+	readarray -t OMNIA_MESSAGE_PULLERS < <(echo "$_config" | jq -r '.pullers | .[]')
+	[[ "${#OMNIA_MESSAGE_PULLERS[@]}" -gt 0 ]] || OMNIA_MESSAGE_PULLERS=("oracle-transporter-ssb")
 }
 
 importNetwork () {
