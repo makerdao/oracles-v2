@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 #log console output with timestamp
 function log {
  	echo "[$(date "+%D %T")] $1" >&2

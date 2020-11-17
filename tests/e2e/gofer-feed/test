@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+
+. "$_path/../../lib/tap.sh"
+plan 3
+
+cp -f "$1" $wdir/output
+
+assert "ssb message pair" \
+  json '[.[].value.content.type|type == "string"]|all' <<<"true"
+assert "ssb message version" \
+  json '[.[].value.content.version|type == "string"]|all' <<<"true"
+assert "ssb message price" \
+  json '[.[].value.content.price|type == "number"]|all' <<<"true"
