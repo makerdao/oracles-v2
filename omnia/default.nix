@@ -1,48 +1,47 @@
-{ stdenv, makeWrapper, lib, glibcLocales
+{ stdenv, makeWrapper, runCommand, lib, glibcLocales
 , coreutils, bash, parallel, bc, jq, gnused, datamash, gnugrep
 , ssb-server, ethsign, seth, setzer-mcd, stark-cli }:
 
-stdenv.mkDerivation rec {
-  name = "omnia-${version}";
-  version = lib.fileContents ./version;
-  src = ./.;
-
-  passthru.runtimeDeps =  [
+let
+  deps = [
     coreutils bash parallel bc jq gnused datamash gnugrep
     ssb-server ethsign seth setzer-mcd stark-cli
   ];
-  buildInputs = passthru.runtimeDeps;
-  nativeBuildInputs = [ makeWrapper ];
+in
 
-  buildPhase = "true";
-  installPhase = let
+stdenv.mkDerivation rec {
+  name = "omnia-${version}";
+  version = lib.fileContents ./lib/version;
+  src = ./.;
+
+  buildInputs = deps;
+  nativeBuildInputs = [ makeWrapper ];
+  passthru.runtimeDeps = buildInputs;
+
+  buildPhase = let
     path = lib.makeBinPath passthru.runtimeDeps;
     locales = lib.optionalString (glibcLocales != null)
       "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
   in ''
+    find ./bin -type f | while read -r x; do
+      patchShebangs "$x"
+      wrapProgram "$x" \
+        --set PATH "$out/bin:${path}" \
+        ${locales}
+    done
+  '';
+
+  installPhase = ''
     mkdir -p $out/{bin,lib}
-    cp -r -t $out/lib ./*
-
-    cat > $out/bin/omnia <<EOF
-    #!/usr/bin/env bash
-    (cd $out/lib
-      exec ./omnia.sh
-    )
-    EOF
-
-    chmod +x $out/bin/omnia
-
-    wrapProgram "$out/bin/omnia" \
-      --argv0 omnia \
-      --set PATH "${path}" \
-      ${locales}
+    cp -r -t $out/bin ./bin
+    cp -r -t $out/lib ./lib
   '';
 
   doCheck = true;
   checkPhase = ''
     cp ${../tests/lib/tap.sh} ./tap.sh
-    find ./test -name '*.sh' | while read -r x; do
-      patchShebangs $x
+    find . -name '*_test*' -or -path "*/test/*.sh" | while read -r x; do
+      patchShebangs "$x"
       $x
     done
   '';

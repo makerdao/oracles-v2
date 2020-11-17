@@ -1,9 +1,12 @@
 #!/bin/bash
-tpath="$(cd ${0%/*}; pwd)"
-. "$tpath/../log.sh"
-. "$tpath/../util.sh"
-. "$tpath/../status.sh"
-. "$tpath/../source.sh"
+test_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+root_path=$(cd "$test_path/.."; pwd)
+lib_path="$root_path/lib"
+
+. "$lib_path/log.sh"
+. "$lib_path/util.sh"
+. "$lib_path/status.sh"
+. "$lib_path/source.sh"
 
 # Mock setzer
 setzer() {
@@ -20,7 +23,7 @@ export -f setzer
 # Mock gofer
 gofer() {
 	case "$*" in
-		*BAT/USD*) cat "$tpath/gofer-batusd-resp.json";;
+		*BAT/USD*) cat "$test_path/gofer-batusd-resp.json";;
 		*) return 1;;
 	esac
 }
@@ -28,7 +31,7 @@ export -f gofer
 
 OMNIA_SRC_TIMEOUT=60
 
-. "$tpath/../tap.sh" 2>/dev/null || . "$tpath/../../tests/lib/tap.sh"
+. "$root_path/tap.sh" 2>/dev/null || . "$root_path/../tests/lib/tap.sh"
 
 validSources=()
 validPrices=()

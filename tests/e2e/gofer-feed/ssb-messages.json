@@ -1,0 +1,442 @@
+[
+  {
+    "key": "%aHyUFt25Kt4pf1YSNMqJP56z752k2gC+v7e9eqT++hY=.sha256",
+    "value": {
+      "previous": "%urt5gihvzmh0H3/c/0X8X2Ceyvr0weuyQbB5kEIR7vU=.sha256",
+      "sequence": 15,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364894717,
+      "hash": "sha256",
+      "content": {
+        "type": "ZRXUSD",
+        "version": "1.4.0",
+        "price": 0.38793,
+        "priceHex": "0000000000000000000000000000000000000000000000000562344797b7a000",
+        "time": 1603364893,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f91681d",
+        "hash": "28bd074c89f7f88d3e0210d8944f094927ca648a3609b5946c2e5726c7cca70a",
+        "signature": "10b2a921d8426cd946feacc9caa15f757aac323c7bc87c45969d62eefab1ebde5fbe5162aa978d52561e12bdd28d9a47d223857f9b654cb70e0180597c15c6f91b",
+        "sources": {
+          "binance": "0.3871752037",
+          "bitfinex": "0.3879300000",
+          "coinbase": "0.3883090000",
+          "okex": "0.3897710817",
+          "upbit": "0.3856303441"
+        }
+      },
+      "signature": "GkRblc7XobBPZevm4PwFIkJhy04lR7mbO7XDnxgeiTfRnKgd/VqM/Zw8/toLpd7PmXBXr4SMFuvjptH0L3ejDA==.sig.ed25519"
+    },
+    "timestamp": 1603364894717.001
+  },
+  {
+    "key": "%urt5gihvzmh0H3/c/0X8X2Ceyvr0weuyQbB5kEIR7vU=.sha256",
+    "value": {
+      "previous": "%iKdH72klRA3Re6vzICwKn9WY1cgYqXH6ZtuIxB0Ytis=.sha256",
+      "sequence": 14,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364892912,
+      "hash": "sha256",
+      "content": {
+        "type": "YFIUSD",
+        "version": "1.4.0",
+        "price": 13994.5,
+        "priceHex": "0000000000000000000000000000000000000000000002f6a4b393f6141a0000",
+        "time": 1603364891,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f91681b",
+        "hash": "a809bd35c48ec199a2bafabb29f01f0feaa775bd006b30b16d2d4d7a6310ea16",
+        "signature": "52a85fa2ff0b31b43b5139d76f86a3a60086cae2b4a5857055bbdd81d302606506589652487aab17e828a84a742f958e405be8b192c7a637982510a97f6d4f471b",
+        "sources": {
+          "binance": "14010.2977308000",
+          "coinbase": "13994.0000000000",
+          "ftx": "13995.0000000000",
+          "gemini": "13902.0500000000",
+          "huobi": "14003.1825010239",
+          "uniswap": "13988.5941505080"
+        }
+      },
+      "signature": "1ZaqKN69r1Y3aRyaRRoIvzTO3I1yPVT3LzXjDLIA+ZLGRXrJRq8vgi9BYY1HpvqFuShhMLd8vhhLhpMkaA6eDA==.sig.ed25519"
+    },
+    "timestamp": 1603364892912.001
+  },
+  {
+    "key": "%iKdH72klRA3Re6vzICwKn9WY1cgYqXH6ZtuIxB0Ytis=.sha256",
+    "value": {
+      "previous": "%+LyZiL1AIoz9J/CPSV4f8N/h2Qkt2HXeRi7GFJ8STCs=.sha256",
+      "sequence": 13,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364891046,
+      "hash": "sha256",
+      "content": {
+        "type": "USDTUSD",
+        "version": "1.4.0",
+        "price": 1.0007355522,
+        "priceHex": "0000000000000000000000000000000000000000000000000de353aebefc4200",
+        "time": 1603364890,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f91681a",
+        "hash": "514449a21c9b0ad4704c2b1b3ec1ec3ed53058cbca6c18f85caa0cbc011ecff0",
+        "signature": "789e0cf553fa16d670e3f6192d534e0821e8caa1a99123e5e0d23a7741b476330f6e0d1600377f4d0bf345c687b767151765bea4eee2692e4d1d59b111598d3f1b",
+        "sources": {
+          "binance": "1.0007239784",
+          "bitfinex": "1.0012000000",
+          "ftx": "1.0008726850",
+          "huobi": "0.9999515621",
+          "kraken": "1.0007000000",
+          "okex": "1.0007471260"
+        }
+      },
+      "signature": "si3PwsFfOZNUb7TGN/JlTXNU5wAE6L4kDZ83bu+O/NMZ5kfK6x5KRfeslpz3LHVyPqeh4EB5lrAbI7r5ur1zAA==.sig.ed25519"
+    },
+    "timestamp": 1603364891046.001
+  },
+  {
+    "key": "%+LyZiL1AIoz9J/CPSV4f8N/h2Qkt2HXeRi7GFJ8STCs=.sha256",
+    "value": {
+      "previous": "%FlUSJ5HY4FU6NGNnT/yHS3Lh5L21YyOhD2WkbiSlfcM=.sha256",
+      "sequence": 12,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364888939,
+      "hash": "sha256",
+      "content": {
+        "type": "MANAUSD",
+        "version": "1.4.0",
+        "price": 0.0754102559,
+        "priceHex": "000000000000000000000000000000000000000000000000010be93a6b573f00",
+        "time": 1603364887,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916817",
+        "hash": "456a045d04052e9d6cd35592daa9a1bc3caecf294727fbb93f8135b2bb8b4cf1",
+        "signature": "5b68ae15d79338b5a23587eda652facb146d3c53a3817132e699576d5a81d6956e5d849b289f7f2205ca14d3eb819805840e40fd860f18f8612630035da987661b",
+        "sources": {
+          "binance": "0.0754102559",
+          "bittrex": "0.0757996376",
+          "coinbase": "0.0747367495",
+          "huobi": "0.0754554606",
+          "upbit": "0.0749199456"
+        }
+      },
+      "signature": "VGuNW3zens4SOHJrC/g2dFNGVGLqUde5K5cOtwBLG3NB4wTgHOAp+Yt1pTxTcPzLEpem0MnjdXkEEZJkF3AOAw==.sig.ed25519"
+    },
+    "timestamp": 1603364888939.001
+  },
+  {
+    "key": "%FlUSJ5HY4FU6NGNnT/yHS3Lh5L21YyOhD2WkbiSlfcM=.sha256",
+    "value": {
+      "previous": "%+hdwtnH/pjesup+zSIt0ubP9psBwmPDB68T5iZQueKI=.sha256",
+      "sequence": 11,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364886534,
+      "hash": "sha256",
+      "content": {
+        "type": "LRCUSD",
+        "version": "1.4.0",
+        "price": 0.17231134475,
+        "priceHex": "00000000000000000000000000000000000000000000000002642c414e97f780",
+        "time": 1603364885,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916815",
+        "hash": "419fd90ef55bf1764893d7b5198dead5a6c119e14da6ec2d6680e2fe726f3f78",
+        "signature": "f9036630415a11494718cff8e08113350f9bec30f27ea87dadc81dfc8372ec024092e4fb72574985cf3073c3b26ba4f3960d78aa15c9cc743438a381d44c12bc1b",
+        "sources": {
+          "binance": "0.1719769175",
+          "loopring": "0.1726457720",
+          "okex": "0.1711257794",
+          "uniswap": "0.1744542690"
+        }
+      },
+      "signature": "59s/KDBwLXqaGsHU5HeiPrYhXSEc6bGn7zwe1t2lmnfWL0rudrs4OVx6+PbYkMekzLWy9Le+be/eRTYO9XYmCQ==.sig.ed25519"
+    },
+    "timestamp": 1603364886535
+  },
+  {
+    "key": "%+hdwtnH/pjesup+zSIt0ubP9psBwmPDB68T5iZQueKI=.sha256",
+    "value": {
+      "previous": "%1+8BL0RHWrMJI07OjjpNum4NTaBo48jMmIzMAiaEbZU=.sha256",
+      "sequence": 10,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364884784,
+      "hash": "sha256",
+      "content": {
+        "type": "LINKUSD",
+        "version": "1.4.0",
+        "price": 11.54935,
+        "priceHex": "000000000000000000000000000000000000000000000000a04788a248a86000",
+        "time": 1603364883,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916813",
+        "hash": "cf57ab83a382adffe5b777a89f18eccd95b4d92a54b93d7e20b7f3e8ba11c25a",
+        "signature": "24c79ad80fc7e0c86d23556e750395e1ab16e75c68d82971428e9638b97f74fc7bd806263d2229c4d07d2ed716fc1307fef376efb474698d3f3e1641eacc97a21c",
+        "sources": {
+          "binance": "11.5377691527",
+          "coinbase": "11.5562000000",
+          "ftx": "11.5510000000",
+          "gemini": "11.5147000000",
+          "huobi": "11.5518907733",
+          "kraken": "11.5477000000"
+        }
+      },
+      "signature": "X3Q/S3T4sYf2cUb7Nwtmk53u/C3/HabwO3ByWSp51sTLZE2SHrhTl+EPvTxWFZOMar7VXgOtyaqW+5aRRAABCQ==.sig.ed25519"
+    },
+    "timestamp": 1603364884784.001
+  },
+  {
+    "key": "%1+8BL0RHWrMJI07OjjpNum4NTaBo48jMmIzMAiaEbZU=.sha256",
+    "value": {
+      "previous": "%3KtFXAZMye+J5eiQADZRJwBMNytvbumg2wCGmPOlz0g=.sha256",
+      "sequence": 9,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364882503,
+      "hash": "sha256",
+      "content": {
+        "type": "LENDUSD",
+        "version": "1.4.0",
+        "price": 0.3535588467,
+        "priceHex": "00000000000000000000000000000000000000000000000004e817e5d8c01300",
+        "time": 1603364881,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916811",
+        "hash": "0271e9ddf3b26418cd39b1d1959f3ec9bd6cc3c21e922c7da154bd5d83ff8b22",
+        "signature": "e2581acba06a50aa4f35cd2b0ef55732a16949d918f1804df7b85a29d6e46bed7bfc859ee1dc705ab924f6252c629bde3606e440f5bcca1d26e35c4e47115aa71c",
+        "sources": {
+          "binance": "0.5856300768",
+          "kyber": "0.3529621938",
+          "uniswap": "0.3535588467"
+        }
+      },
+      "signature": "vxhgXVCUpVsBz1PDYqjBIW3YOcuXnRtBDCvH+iK9G25oyIcCUUjL9ajdrfszfocNCh2MgfHy2qEPFAltc1fpAA==.sig.ed25519"
+    },
+    "timestamp": 1603364882503.001
+  },
+  {
+    "key": "%3KtFXAZMye+J5eiQADZRJwBMNytvbumg2wCGmPOlz0g=.sha256",
+    "value": {
+      "previous": "%mfFW6x7TWINrU5hwIzajyJGJ5rJpIgwxLN7nIG840xk=.sha256",
+      "sequence": 8,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364880522,
+      "hash": "sha256",
+      "content": {
+        "type": "KNCUSD",
+        "version": "1.4.0",
+        "price": 0.9535,
+        "priceHex": "0000000000000000000000000000000000000000000000000d3b8332b955c000",
+        "time": 1603364879,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f91680f",
+        "hash": "6d6835d5396b48ee5ab0ec4729ad5bc18f05408d770a1ea97aefc5fa233eb078",
+        "signature": "8f1fbfc49c28bec5e64143a783d38975f1c0236c1183eb89e4b9bfaebc0e56360add12c6584616854ea0c302688316c19efe2779683981690cedd48a690aa3401b",
+        "sources": {
+          "binance": "0.9539851650",
+          "coinbase": "0.9535000000",
+          "huobi": "0.9529468138",
+          "kyber": "0.9647111719",
+          "upbit": "0.9486329975"
+        }
+      },
+      "signature": "3Lmcv9Na5hcHmylj6JBuOq9RoNYOIEsFMw3+MwzRqj3YzeJzifli5P77cxyd5HsZ38GXVlyAX13P0dOpLE0EDw==.sig.ed25519"
+    },
+    "timestamp": 1603364880522.001
+  },
+  {
+    "key": "%mfFW6x7TWINrU5hwIzajyJGJ5rJpIgwxLN7nIG840xk=.sha256",
+    "value": {
+      "previous": "%IA9sizI9lpm8vvSDeewKK/UKTV1E4lw3TFPjy3xTn5g=.sha256",
+      "sequence": 7,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364878663,
+      "hash": "sha256",
+      "content": {
+        "type": "KNCETH",
+        "version": "1.4.0",
+        "price": 0.00230908365,
+        "priceHex": "000000000000000000000000000000000000000000000000000834196eb70480",
+        "time": 1603364877,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f91680d",
+        "hash": "ffc2db4ebd8d39cceac42fbe4b9128950e16494355fc425c53564de6953f235e",
+        "signature": "27d6af103a30df63e2731541ce10bcf71d19752c5c42f7a13ed663898686edba373fc7e43d928a7a0d9acd549578b71e6e2370cdc4d33ef7c714d3f40ac98c531c",
+        "sources": {
+          "binance": "0.0023087796",
+          "coinbase": "0.0023093877",
+          "huobi": "0.0023062667",
+          "kyber": "0.0023365413",
+          "uniswap": "0.0023267861",
+          "upbit": "0.0023083530"
+        }
+      },
+      "signature": "b/oi2H/qmcqK+In08MH52U+MSuPfOEuq92QG8aHGBq1Dg787w5WBx5MWN1phAPjx2DldoVkLB/QysJCCD6rbCA==.sig.ed25519"
+    },
+    "timestamp": 1603364878663.001
+  },
+  {
+    "key": "%IA9sizI9lpm8vvSDeewKK/UKTV1E4lw3TFPjy3xTn5g=.sha256",
+    "value": {
+      "previous": "%RsraO74D4T4CPmFL1Ity6i27PnliBmw4fUJqcdrteyo=.sha256",
+      "sequence": 6,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364876356,
+      "hash": "sha256",
+      "content": {
+        "type": "ETHUSD",
+        "version": "1.4.0",
+        "price": 412.88,
+        "priceHex": "00000000000000000000000000000000000000000000001661dc6c77cf480000",
+        "time": 1603364875,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f91680b",
+        "hash": "bc3f60760fd6653275dccb60e56463d41016c0f8074031987ac00b54dbf98e44",
+        "signature": "3e2739003293884f247e8c93c3e145e181237e9b3a1079933ae074de5dc2f74a771f5ed8165b9ca04019bfe076afec48b2707323341423a44cd533d80a1fd2571c",
+        "sources": {
+          "binance": "412.9133340700",
+          "bitstamp": "412.7300000000",
+          "coinbase": "412.9100000000",
+          "ftx": "413.0000000000",
+          "gemini": "412.8800000000",
+          "kraken": "412.5300000000",
+          "uniswap": "409.8143011378"
+        }
+      },
+      "signature": "8xv4DnJLc1UCFovKUq3aqwQoszheprbDkdqkutg8C+LGfkpe7mekY+cNVZEtTLMhT1UmJ+I0dMAkM/0ALWrVDA==.sig.ed25519"
+    },
+    "timestamp": 1603364876356.001
+  },
+  {
+    "key": "%RsraO74D4T4CPmFL1Ity6i27PnliBmw4fUJqcdrteyo=.sha256",
+    "value": {
+      "previous": "%S06K5LYmoxLiGh0zwHAYiYcgIH/HarQg+Xx28dMxvjI=.sha256",
+      "sequence": 5,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364874357,
+      "hash": "sha256",
+      "content": {
+        "type": "ETHBTC",
+        "version": "1.4.0",
+        "price": 0.031835,
+        "priceHex": "000000000000000000000000000000000000000000000000007119c38a6cb000",
+        "time": 1603364873,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916809",
+        "hash": "b2ca397191660bf74ad78dec241b872cdffae62a4aaf02b47e56a043f2fa08e2",
+        "signature": "0e7823c6ba5bb502953189c9a97d1a54fc1d67050e86b3bbc751710ff9098fd435c7ca93514b6162030d59057ac90c6d52221453fc38d536b3c028cfa50a983d1c",
+        "sources": {
+          "binance": "0.0318130000",
+          "bitfinex": "0.0318200000",
+          "coinbase": "0.0318400000",
+          "huobi": "0.0318490000",
+          "kraken": "0.0318300000",
+          "poloniex": "0.0318400000"
+        }
+      },
+      "signature": "OliJzKfXk112Xr+ePUXB7nX9YcqvVowrn8ynn2V4jjy1r0oeE9itb/ClRAcFuICQCgLzidbl6SGShim5jwysCA==.sig.ed25519"
+    },
+    "timestamp": 1603364874357.001
+  },
+  {
+    "key": "%S06K5LYmoxLiGh0zwHAYiYcgIH/HarQg+Xx28dMxvjI=.sha256",
+    "value": {
+      "previous": "%YzEtEvslgYhhqgZb2tGSBP6F9a7iZ/+nuBrn43HWW8Q=.sha256",
+      "sequence": 4,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364872649,
+      "hash": "sha256",
+      "content": {
+        "type": "COMPUSD",
+        "version": "1.4.0",
+        "price": 99.27296677825,
+        "priceHex": "00000000000000000000000000000000000000000000000561b06d5068bef680",
+        "time": 1603364871,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916807",
+        "hash": "1aabde426b22d1d0ee53aa1d35c6a1b2a32ca7f7b0e65b0ae9734c29cddff614",
+        "signature": "a6d2dd71b1b4b01124ad59f59edaa50d322545b21b75dfd13ba49fdbbcc2b2640d9a815dcab8184c0cca8ba8b564377ef09d0fcbf1de77c2205fc673244bbcd01c",
+        "sources": {
+          "binance": "99.2929814893",
+          "coinbase": "99.3000000000",
+          "huobi": "99.2529520672",
+          "kraken": "98.8900000000",
+          "kucoin": "90.9668616950",
+          "uniswap": "100.2393882314"
+        }
+      },
+      "signature": "biFyLFai7mxQm6HebsMx1EmI1QC+x9/ABZ6q9F7wWGtIJbojVCoAO32qJHpAfw8zGvEap7StF9TzX1apQEzeAA==.sig.ed25519"
+    },
+    "timestamp": 1603364872649.001
+  },
+  {
+    "key": "%YzEtEvslgYhhqgZb2tGSBP6F9a7iZ/+nuBrn43HWW8Q=.sha256",
+    "value": {
+      "previous": "%ala1wEvNnUjEps5MYeFTSGRRNFCGornODqk1UhP7kUE=.sha256",
+      "sequence": 3,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364870012,
+      "hash": "sha256",
+      "content": {
+        "type": "BTCUSD",
+        "version": "1.4.0",
+        "price": 12979.39,
+        "priceHex": "0000000000000000000000000000000000000000000002bf9d38653e99530000",
+        "time": 1603364869,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916805",
+        "hash": "3d43dc088e3d1c06926954b95516d415cccfb94f0e6af0865ac3987ae69c5177",
+        "signature": "8e6e5636b0544509a6ef172bf7f4aec155d6129b7ee7a4e9e9bf1a61f5353c1f3b97a49d151210135f306487648a1a66d00961cac4ebb179d4634ad7966ad4d71c",
+        "sources": {
+          "bitstamp": "12979.8800000000",
+          "bittrex": "12976.5210000000",
+          "coinbase": "12978.4000000000",
+          "gemini": "12979.3900000000",
+          "kraken": "12981.5000000000"
+        }
+      },
+      "signature": "KfBrBCLqQvB0o+FZIqfw02gtQE1McHBcrI7LlerNH0BdMfuVjFjHdLvm71XCH7EswW5W1rMTuX4+JNUFA620BQ==.sig.ed25519"
+    },
+    "timestamp": 1603364870012.001
+  },
+  {
+    "key": "%ala1wEvNnUjEps5MYeFTSGRRNFCGornODqk1UhP7kUE=.sha256",
+    "value": {
+      "previous": "%bt8uZYBI0RCox683jgxzx3p65pIZEqJUq7hX47/dx50=.sha256",
+      "sequence": 2,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364868392,
+      "hash": "sha256",
+      "content": {
+        "type": "BATUSD",
+        "version": "1.4.0",
+        "price": 0.22097321195,
+        "priceHex": "00000000000000000000000000000000000000000000000003110df72b282780",
+        "time": 1603364867,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916803",
+        "hash": "42bfb4ca9a1bfdaf630470c5ee7e5fe137966b722db468458185fcd52d679dc0",
+        "signature": "65e449a2dab8d849ba04138585728a02b3b316aa5ec9075b68b1ccaf3b3c18ef7aed3db778163f4ea11f145823b504bfaba15e3de4ff9350a176baf379f0d5281b",
+        "sources": {
+          "binance": "0.2212985995",
+          "bittrex": "0.2207794239",
+          "coinbase": "0.2211670000",
+          "upbit": "0.2197298757"
+        }
+      },
+      "signature": "e082dItXgWXWEJ4g5UyVGQGdahraHbCRkGOplxG24m42jWL4ZIT4jy7L9ZSWP4+Fw8Ee3NR0y/FBW8XdjECkDg==.sig.ed25519"
+    },
+    "timestamp": 1603364868393
+  },
+  {
+    "key": "%bt8uZYBI0RCox683jgxzx3p65pIZEqJUq7hX47/dx50=.sha256",
+    "value": {
+      "previous": null,
+      "sequence": 1,
+      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
+      "timestamp": 1603364866703,
+      "hash": "sha256",
+      "content": {
+        "type": "BALUSD",
+        "version": "1.4.0",
+        "price": 12.60147289495,
+        "priceHex": "000000000000000000000000000000000000000000000000aee16cd51e354580",
+        "time": 1603364865,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005f916801",
+        "hash": "01e04fdcf2389d8324dd0d02376c599143b65ad21ed0480048567bfb152fc8f0",
+        "signature": "b834faf103e255ee9992093a1af75000fbfca2f6dc82c8e5d00f0f998456327864ad0e2372eb49a8c5f6faeef9b5b556d67573071e633c82f9fcc122a37fea1c1c",
+        "sources": {
+          "balancer": "12.5473277729",
+          "binance": "12.6042856290",
+          "coinbase": "12.6097100000",
+          "okex": "12.5892532467",
+          "huobi": "12.5986601609",
+          "uniswap": "12.8041974834"
+        }
+      },
+      "signature": "3AHrOUGOQIctEyL5o9Fp4wReOKgCodf0F/ONXcpbHi6qqJ23D2U0niMYaYxiwKtpekYVaWH+ZsOZEvkj9ohBCw==.sig.ed25519"
+    },
+    "timestamp": 1603364866704
+  }
+]
