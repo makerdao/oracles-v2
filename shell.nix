@@ -15,7 +15,7 @@ pkgs.mkShell rec {
     nodePackages.semver
   ]);
 
-  VERSION_FILE = toString ./omnia/version;
+  VERSION_FILE = toString ./omnia/lib/version;
   ROOT_DIR = toString ./.;
 
   shellHook = ''
