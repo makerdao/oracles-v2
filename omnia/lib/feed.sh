@@ -1,40 +1,60 @@
 #!/usr/bin/env bash
 
 readSourcesAndBroadcastAllPriceMessages()  {
-	if [[ "${#assetPairs[@]}" -eq 0 ]] || [[ "${#OMNIA_FEED_SOURCES[@]}" -eq 0 ]]
+	if [[ "${#assetPairs[@]}" -eq 0 || "${#OMNIA_FEED_SOURCES[@]}" -eq 0 || "${#OMNIA_FEED_PUBLISHERS[@]}" -eq 0 ]]
 	then
 		error "Error - Loop in readSourcesAndBroadcastAllPriceMessages"
-		return
+		return 1
 	fi
 
 	for _assetPair in "${assetPairs[@]}"; do
+		local _message
+
 		for _src in "${OMNIA_FEED_SOURCES[@]}"; do
-			readSourcesAndBroadcastPriceMessage "$_assetPair" "$_src"
+			_message=$(readSourcesAndConstructPriceMessage "$_src" "$_assetPair")
+
+			if [[ -z "$_message" ]]; then
+				error "Failed constructing $_assetPair price from $_src"
+				continue
+			fi
+			verbose "$_message"
+			break
+		done
+
+		if [[ -z "$_message" ]]; then
+			error "Failed constructing $_assetPair price message"
+			continue
+		fi
+
+		local _publisher
+		for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
+			log "Publishing $_assetPair price message with $_publisher"
+			"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
 		done
 	done
 }
 
-readSourcesAndBroadcastPriceMessage() {
-	local _assetPair="$1"
-	local _src="$2"
+readSourcesAndConstructPriceMessage() {
+	local _src="$1"
+	local _assetPair="$2"
 
 	validSources=()
 	validPrices=()
 	median=0
 
 	log "Querying ${_assetPair} prices and calculating median..."
-	readSources "$_assetPair" "$_src"
+	readSource "$_assetPair" "$_src"
 
 	if [[ "$(isPriceValid "$median")" == "false" ]]; then
 		error "Error - Failed to calculate valid median: ($median)"
 		debug "Sources = ${validSources[*]}"
 		debug "Prices = ${validPrices[*]}"
-		return
+		return 1
 	fi
 
 	if [[ "${#validPrices[@]}" -lt 2 ]] || [[ "${#validSources[@]}" -lt 2 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
 		error "Error - Failed to fetch sufficient valid prices from sources."
-		return
+		return 1
 	fi
 
 	#Get latest message for asset pair
@@ -44,7 +64,7 @@ readSourcesAndBroadcastPriceMessage() {
 		&& [ "$(isAssetPair "$_assetPair" "$latestMsg")" == "true" ] \
 		&& [ "$(isMsgExpired "$_assetPair" "$latestMsg")" == "false" ] \
 		&& [ "$(isMsgStale "$_assetPair" "$latestMsg" "$median")" == "false" ]; then
-		return
+		return 1
 	fi
 
 	#Get timestamp
@@ -52,7 +72,7 @@ readSourcesAndBroadcastPriceMessage() {
 	if [[ ! "$time" =~ ^[1-9]{1}[0-9]{9}$ ]]; then
 		error "Error - Got invalid timestamp"
 		debug "Invalid Timestamp = $time"
-		return
+		return 1
 	fi
 
 	#Convert timestamp to hex
@@ -62,7 +82,7 @@ readSourcesAndBroadcastPriceMessage() {
 		error "Error - Failed to convert timestamp to hex"
 		debug "Timestamp = $time"
 		debug "Invalid Timestamp Hex = $timeHex"
-		return
+		return 1
 	fi
 
 	#Convert median to hex
@@ -72,7 +92,7 @@ readSourcesAndBroadcastPriceMessage() {
 		error "Error - Failed to convert median to hex:"
 		debug "Median = $median"
 		debug "Invalid Median Hex = $medianHex"
-		return
+		return 1
 	fi
 
 	#Convert asset pair to hex
@@ -82,7 +102,7 @@ readSourcesAndBroadcastPriceMessage() {
 		error "Error - Failed to convert asset pair to hex:"
 		debug "Asset Pair = $_assetPair"
 		debug "Invalid Asset Pair Hex = $assetPairHex"
-		return
+		return 1
 	fi
 
 	#Create hash
@@ -93,7 +113,7 @@ readSourcesAndBroadcastPriceMessage() {
 		debug "Timestamp Hex = $timeHex"
 		debug "Asset Pair Hex = $assetPairHex"
 		debug "Invalid Hash = $hash"
-		return
+		return 1
 	fi
 
 	#Sign hash
@@ -102,7 +122,7 @@ readSourcesAndBroadcastPriceMessage() {
 		error "Error - Failed to generate valid signature"
 		debug "Hash = $hash"
 		debug "Invalid Signature = $sig"
-		return
+		return 1
 	fi
 
 	#generate stark hash message
@@ -128,13 +148,15 @@ readSourcesAndBroadcastPriceMessage() {
 	starkSigR=$(echo "$starkSig" | cut -d " " -f1)
 	starkSigS=$(echo "$starkSig" | cut -d " " -f2)
 
-	#broadcast message to scuttelbot
-	broadcastPriceMsg "$_assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "$starkSigR" "$starkSigS" "$STARK_PUBLIC_KEY" "${validSources[@]}" "${validPrices[@]}"
+	verbose "Constructing message..."
+	constructMessage "$_assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "$starkSigR" "$starkSigS" "$STARK_PUBLIC_KEY" \
+		"${validSources[*]}" \
+		"${validPrices[*]}"
 }
 
-readSources() {
-	local _assetPair="$1"
-	local _src="${2,,}"
+readSource() {
+	local _src="${1,,}"
+	local _assetPair="$2"
 
 	if [[ "$_src" == "setzer" ]]; then
 		_assetPair="${_assetPair,,}"
@@ -145,6 +167,46 @@ readSources() {
 		readSourcesWithGofer "$_assetPair"
 	else
 		error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
-		return
+		return 1
 	fi
+}
+
+constructMessage() {
+	local _assetPair="$1"
+	local _price="$2"
+	local _priceHex="$3"
+	local _time="$4"
+	local _timeHex="$5"
+	local _hash="$6"
+	local _signature="$7"
+  local _starkSignatureR="$8"
+  local _starkSignatureS="$9"
+  local _starkPublicKey="$10"
+	local _validSources=($11)
+	local _validPrices=($12)
+  local _sourcePrices
+  local _jqArgs=()
+  local _json
+
+	# generate JSON for transpose of sources with prices
+	if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${_validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${_validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
+			error "Error - failed to transpose sources with prices"
+			return 1
+	fi
+
+	#format starkware sig
+	_starkSignature=( --arg r "$_starkSignatureR" --arg s "$_starkSignatureS" --arg publicKey "$_starkPublicKey" )
+	if ! _starkSignatureJson=$(jq -nce  "${_starkSignature[@]}" '{r: $r, s:$s, publicKey:$publicKey}'); then
+	    error "Error - failed to generate stark signature json"
+	fi
+	#compose jq message arguments
+	_jqArgs=( --arg assetPair "$_assetPair" --arg version "$OMNIA_VERSION" --arg price "$_price" --arg priceHex "$_priceHex" --arg time "$_time" --arg timeHex "$_timeHex" --arg hash "${_hash:2}" --arg signature "${_signature:2}" --argjson starkSignature "$_starkSignatureJson" --argjson sourcePrices "$_sourcePrices" )
+
+	#generate JSON msg
+	if ! _json=$(jq -ne "${_jqArgs[@]}" '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, starkSignature: $starkSignature, sources: $sourcePrices}'); then
+	    error "Error - failed to generate JSON msg"
+	    return 1
+	fi
+
+	echo "$_json"
 }

@@ -4,7 +4,7 @@
 
 stdenv.mkDerivation rec {
   name = "install-omnia-${version}";
-  version = lib.fileContents ../omnia/version;
+  version = lib.fileContents ../omnia/lib/version;
   src = ./.;
 
   passthru.runtimeDeps =  [
