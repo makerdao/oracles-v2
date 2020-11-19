@@ -22,7 +22,7 @@ pkgs.mkShell rec {
 
     oracles.omnia
     oracles.install-omnia
-  ] ++ oracles.omnia.runtimeDeps;
+  ] ++ oracles.omnia.buildInputs;
 
   RESULTS_DIR = "${toString ./.}/test-results";
   SMOKE_TEST = toString ./smoke/test;
