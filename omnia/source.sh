@@ -10,8 +10,7 @@ readSourcesWithSetzer()  {
 			-j${OMNIA_SOURCE_PARALLEL:-0} \
 			--termseq KILL \
 			--timeout "$OMNIA_SRC_TIMEOUT" \
-			mapSetzer "$_assetPair" \
-			#2>/dev/null
+			_mapSetzer "$_assetPair"
 	)
 
 	local _price
@@ -62,7 +61,7 @@ readSourcesWithGofer()   {
 
 _addPriceFromSource()  {
 	local _source="$1"
-	local _price="$(LC_ALL=POSIX printf "%f" "$2")"
+	local _price="$(LC_ALL=POSIX printf "%.10f" "$2")"
 	if [[ "$(isPriceValid "$_price")" == "true" ]]; then
 		validSources+=("$_source")
 		validPrices+=("$_price")

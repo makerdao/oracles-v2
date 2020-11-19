@@ -11,11 +11,12 @@ stdenv.mkDerivation rec {
     coreutils bash parallel bc jq gnused datamash gnugrep
     ssb-server ethsign seth setzer-mcd stark-cli
   ];
+  buildInputs = passthru.runtimeDeps;
   nativeBuildInputs = [ makeWrapper ];
 
   buildPhase = "true";
   installPhase = let
-    path = lib.makeBinPath buildInputs;
+    path = lib.makeBinPath passthru.runtimeDeps;
     locales = lib.optionalString (glibcLocales != null)
       "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
   in ''
@@ -39,7 +40,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
   checkPhase = ''
-    cp ${../smoke-tests/tap.sh} ./tap.sh
+    cp ${../tests/lib/tap.sh} ./tap.sh
     find ./test -name '*.sh' | while read -r x; do
       patchShebangs $x
       $x
