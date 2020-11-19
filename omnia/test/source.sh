@@ -28,7 +28,7 @@ export -f gofer
 
 OMNIA_SRC_TIMEOUT=60
 
-. "$tpath/../tap.sh" 2>/dev/null || . "$tpath/../../smoke-tests/tap.sh"
+. "$tpath/../tap.sh" 2>/dev/null || . "$tpath/../../tests/lib/tap.sh"
 
 validSources=()
 validPrices=()
