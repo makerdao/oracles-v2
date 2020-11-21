@@ -61,11 +61,13 @@ for target in "${targets[@]}"; do
   echo >&2 "# Killing proxy"
   pkill mitmdump
 
-  if [[ $update ]]; then
-    if "$t_path/test" "$output"; then
-      cp -f "$output" "$t_path/ssb-messages.json"
+  {
+    if [[ $update ]]; then
+      if "$t_path/test" "$output"; then
+        cp -f "$output" "$t_path/ssb-messages.json"
+      fi
+    else
+      "$t_path/regression" "$output"
     fi
-  else
-    "$t_path/regression" "$output"
-  fi
+  } | tee "./$target.tap"
 done
