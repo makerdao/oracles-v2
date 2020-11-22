@@ -1,11 +1,11 @@
 { stdenv, makeWrapper, runCommand, lib, glibcLocales
 , coreutils, bash, parallel, bc, jq, gnused, datamash, gnugrep
-, ssb-server, ethsign, seth, setzer-mcd, stark-cli }:
+, ssb-server, ethsign, seth, setzer-mcd, stark-cli, gofer }:
 
 let
   deps = [
     coreutils bash parallel bc jq gnused datamash gnugrep
-    ssb-server ethsign seth setzer-mcd stark-cli
+    ssb-server ethsign seth setzer-mcd stark-cli gofer
   ];
 in
 
@@ -18,33 +18,33 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ makeWrapper ];
   passthru.runtimeDeps = buildInputs;
 
-  buildPhase = let
-    path = lib.makeBinPath passthru.runtimeDeps;
-    locales = lib.optionalString (glibcLocales != null)
-      "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
-  in ''
-    find ./bin -type f | while read -r x; do
-      patchShebangs "$x"
-      wrapProgram "$x" \
-        --set PATH "$out/bin:${path}" \
-        ${locales}
-    done
-  '';
-
-  installPhase = ''
-    mkdir -p $out/{bin,lib}
-    cp -r -t $out/bin ./bin
-    cp -r -t $out/lib ./lib
+  buildPhase = ''
+    find ./bin -type f | while read -r x; do patchShebangs "$x"; done
   '';
 
   doCheck = true;
   checkPhase = ''
     cp ${../tests/lib/tap.sh} ./tap.sh
     find . -name '*_test*' -or -path "*/test/*.sh" | while read -r x; do
-      patchShebangs "$x"
-      $x
+      patchShebangs "$x"; $x
     done
   '';
+
+  installPhase = let
+    path = lib.makeBinPath passthru.runtimeDeps;
+    locales = lib.optionalString (glibcLocales != null)
+      "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
+  in ''
+    mkdir -p $out
+    cp -r ./lib $out/lib
+    cp -r ./bin $out/bin
+    find $out/bin -type f | while read -r x; do
+      wrapProgram "$x" \
+        --set PATH "$out/bin:${path}" \
+        ${locales}
+    done
+  '';
+
 
   meta = with lib; {
     description = "Omnia is a smart contract oracle client";

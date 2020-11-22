@@ -33,18 +33,10 @@ OMNIA_SRC_TIMEOUT=60
 
 . "$root_path/tap.sh" 2>/dev/null || . "$root_path/../tests/lib/tap.sh"
 
-validSources=()
-validPrices=()
-median=0
-assert "read sources from setzer" run readSourcesWithSetzer batusd
-assert "length of validSources" test 3 = ${#validSources[@]}
-assert "length of validPrices" test 3 = ${#validPrices[@]}
-assert "median of validPrices" test 0.2 = "$median"
+assert "read sources from setzer" run_json readSourcesWithSetzer BAT/USD
+assert "length of sources" json -s '.[].sources|length' <<<"3"
+assert "median" json -s '.[].median' <<<"0.2"
 
-validSources=()
-validPrices=()
-median=0
-assert "read sources from gofer" run readSourcesWithGofer BAT/USD
-assert "length of validSources" test 9 = ${#validSources[@]}
-assert "length of validPrices" test 9 = ${#validPrices[@]}
-assert "median of validPrices" test 0.2 = "$median"
+assert "read sources from gofer" run_json readSourcesWithGofer BAT/USD
+assert "length of sources" json -s '.[].sources|length' <<<"9"
+assert "median" json -s '.[].median' <<<"0.2"
