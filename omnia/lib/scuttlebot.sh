@@ -34,7 +34,7 @@ pullPreviousFeedMsg() {
 #optimized message search algorithm
 pullLatestFeedMsgOfType() {
 	local	_feed=$1
-	local	_assetPair=$2
+	local	_assetPair=${2/\/}
 	ssb-server createUserStream \
 		--id "$_feed" --limit "$OMNIA_MSG_LIMIT" \
 		--reverse --fillCache 1 \

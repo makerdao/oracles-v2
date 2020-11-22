@@ -3,7 +3,7 @@
 _here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 _command="$1"
 
-. "$_here/../source.sh"
+. "$_here/../lib/source.sh"
 
 OMNIA_MSG_LIMIT=20
 

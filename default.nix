@@ -3,6 +3,7 @@ let
 in
 
 { pkgs ? srcs.pkgs
+, gofer ? srcs.gofer
 }: with pkgs;
 
 let
