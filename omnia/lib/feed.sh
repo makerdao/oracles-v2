@@ -7,43 +7,126 @@ readSourcesAndBroadcastAllPriceMessages()  {
 		return 1
 	fi
 
+	local -A _unpublishedPairs
+	local _assetPair
 	for _assetPair in "${assetPairs[@]}"; do
-		local _message
+		_unpublishedPairs[$_assetPair]=
+	done
 
-		for _src in "${OMNIA_FEED_SOURCES[@]}"; do
-			_message=$(readSourcesAndConstructPriceMessage "$_src" "$_assetPair")
-
-			if [[ -z "$_message" ]]; then
-				error "Failed constructing $_assetPair price from $_src"
-				continue
-			fi
-			verbose "$_message"
+	local _src
+	for _src in "${OMNIA_FEED_SOURCES[@]}"; do
+		if [[ "${#_unpublishedPairs[@]}" == 0 ]]; then
 			break
-		done
-
-		if [[ -z "$_message" ]]; then
-			error "Failed constructing $_assetPair price message"
-			continue
 		fi
 
-		local _publisher
-		for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
-			log "Publishing $_assetPair price message with $_publisher"
-			"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
+		readarray -t _prices < <(readSource "$_src" "${!_unpublishedPairs[@]}")
+
+		for json in "${_prices[@]}"; do
+			local _assetPair=$(jq -r .asset <<<"$json")
+			local _median=$(jq -r .median <<<"$json")
+			local _sources=$(jq -r '.sources|keys|.[]' <<<"$json")
+			local _prices=$(jq -r '.sources[]' <<<"$json")
+		  local _message=$(validateAndConstructMessage "$_assetPair" "$_median" "$_sources" "$_prices")
+
+			if [[ -z "$_message" ]]; then
+				error "Failed constructing $_assetPair price message"
+				continue
+			fi
+
+			unset _unpublishedPairs[$_assetPair]
+
+			local _publisher
+			for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
+				log "Publishing $_assetPair price message with $_publisher"
+				"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
+			done
 		done
 	done
+	#for _assetPair in "${assetPairs[@]}"; do
+	#	local _message
+
+	#	for _src in "${OMNIA_FEED_SOURCES[@]}"; do
+	#		_message=$(readSourcesAndConstructPriceMessage "$_src" "$_assetPair")
+
+	#		if [[ -z "$_message" ]]; then
+	#			error "Failed constructing $_assetPair price from $_src"
+	#			continue
+	#		fi
+	#		verbose "$_message"
+	#		break
+	#	done
+
+	#	if [[ -z "$_message" ]]; then
+	#		error "Failed constructing $_assetPair price message"
+	#		continue
+	#	fi
+
+	#	local _publisher
+	#	for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
+	#		log "Publishing $_assetPair price message with $_publisher"
+	#		"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
+	#	done
+	#done
 }
 
-readSourcesAndConstructPriceMessage() {
-	local _src="$1"
-	local _assetPair="$2"
+readSource() {
+	local _src="${1,,}"
+	local _assetPairs=("${@:2}")
 
-	validSources=()
-	validPrices=()
-	median=0
+	case "$_src" in
+		setzer)
+			for _assetPair in "${_assetPairs[@]}"; do
+				log "Querying ${_assetPair} prices and calculating median with setzer..."
+				readSourcesWithSetzer "$_assetPair"
+			done | jq -cs
+			;;
+		gofer)
+			log "Querying ${_assetPairs[*]} prices and calculating medians with gofer..."
+			readSourcesWithGofer "${_assetPairs[@]}"
+			;;
+		*)
+			error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
+			return 1
+			;;
+	esac
+}
 
-	log "Querying ${_assetPair} prices and calculating median..."
-	readSource "$_assetPair" "$_src"
+constructMessage() {
+	local _assetPair="${1/\/}"
+	local _price="$2"
+	local _priceHex="$3"
+	local _time="$4"
+	local _timeHex="$5"
+	local _hash="$6"
+	local _signature="$7"
+	local _validSources=($8)
+	local _validPrices=($9)
+
+
+	# generate JSON for transpose of sources with prices
+	if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${_validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${_validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
+			error "Error - failed to transpose sources with prices"
+			return 1
+	fi
+
+	# compose jq message arguments
+	_jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
+
+	# generate JSON msg
+	#shellcheck disable=2068
+	if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}'); then
+			error "Error - failed to generate JSON msg"
+			return 1
+	fi
+
+	echo "$_json"
+}
+
+validateAndConstructMessage() {
+	local _assetPair="$1"
+	local median="$2"
+	local validSources=($3)
+	local validPrices=($4)
 
 	if [[ "$(isPriceValid "$median")" == "false" ]]; then
 		error "Error - Failed to calculate valid median: ($median)"
@@ -52,7 +135,7 @@ readSourcesAndConstructPriceMessage() {
 		return 1
 	fi
 
-	if [[ "${#validPrices[@]}" -lt 2 ]] || [[ "${#validSources[@]}" -lt 2 ]] || [[ "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
+	if [[ "${#validPrices[@]}" -lt 2 || "${#validSources[@]}" -lt 2 || "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
 		error "Error - Failed to fetch sufficient valid prices from sources."
 		return 1
 	fi
@@ -129,52 +212,4 @@ readSourcesAndConstructPriceMessage() {
 	constructMessage "$_assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" \
 		"${validSources[*]}" \
 		"${validPrices[*]}"
-}
-
-readSource() {
-	local _src="${1,,}"
-	local _assetPair="$2"
-
-	if [[ "$_src" == "setzer" ]]; then
-		_assetPair="${_assetPair,,}"
-		_assetPair="${_assetPair/\/}"
-		readSourcesWithSetzer "$_assetPair"
-	elif [[ "$_src" == "gofer" ]]; then
-		_assetPair="${_assetPair^^}"
-		readSourcesWithGofer "$_assetPair"
-	else
-		error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
-		return 1
-	fi
-}
-
-constructMessage() {
-	local _assetPair="$1"
-	local _price="$2"
-	local _priceHex="$3"
-	local _time="$4"
-	local _timeHex="$5"
-	local _hash="$6"
-	local _signature="$7"
-	local _validSources=($8)
-	local _validPrices=($9)
-
-
-	# generate JSON for transpose of sources with prices
-	if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${_validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${_validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
-			error "Error - failed to transpose sources with prices"
-			return 1
-	fi
-
-	# compose jq message arguments
-	_jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
-
-	# generate JSON msg
-	#shellcheck disable=2068
-	if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}'); then
-			error "Error - failed to generate JSON msg"
-			return 1
-	fi
-
-	echo "$_json"
 }
