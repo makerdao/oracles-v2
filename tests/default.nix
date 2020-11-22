@@ -4,7 +4,7 @@ let
 in
 
 { pkgs ? import sources.nixpkgs {}
-, makerpkgs ? srcs.makerpkgs {}
+, makerpkgs ? import sources.makerpkgs {}
 , nodepkgs ? srcs.nodepkgs { inherit pkgs; }
 }@args:
 
@@ -53,7 +53,7 @@ pkgs.mkShell rec {
     }
 
     testSmoke() { "$SMOKE_TEST" | xunit smoke; }
-    testE2E() { "$E2E_TEST"; xunit e2e *.tap; }
-    updateE2E() { "$E2E_TEST" --update; xunit e2e-update *.tap; }
+    testE2E() { "$E2E_TEST" "$@"; xunit e2e *.tap; }
+    updateE2E() { "$E2E_TEST" --update "$@"; xunit e2e-update *.tap; }
   '';
 }

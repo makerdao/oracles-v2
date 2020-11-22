@@ -4,7 +4,7 @@ let
 in
 
 { pkgs ? import sources.nixpkgs {}
-, makerpkgs ? srcs.makerpkgs {}
+, makerpkgs ? import sources.makerpkgs {}
 }@args:
 
 let oracles = import ./. args; in

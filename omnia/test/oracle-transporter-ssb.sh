@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 root_path=$(cd "${BASH_SOURCE[0]%/*}/.." && pwd)
-lib_path="$root_path/lib"
 bin_path="$root_path/bin"
 
-. "$lib_path/log.sh"
-. "$lib_path/util.sh"
-. "$lib_path/status.sh"
-. "$lib_path/source.sh"
-
+# Mock ssb-server
 export wdir
 ssb-server() {
 	echo "$1-$2"

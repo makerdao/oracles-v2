@@ -5,5 +5,7 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 export OMNIA_CONFIG="$_path/omnia.conf"
 export OMNIA_SOURCE_PARALLEL=1
+export OMNIA_DEBUG=1
+export OMNIA_VERBOSE=1
 
 runOmnia

@@ -4,9 +4,10 @@ let
 in
 
 { pkgs ? import sources.nixpkgs {}
-, makerpkgs ? srcs.makerpkgs {}
+, makerpkgs ? import sources.makerpkgs {}
 , nodepkgs ? srcs.nodepkgs { inherit pkgs; }
 , setzer-mcdSrc ? sources.setzer-mcd
+, gofer ? srcs.gofer
 }: with makerpkgs.pkgs;
 
 let
@@ -17,6 +18,6 @@ let
   setzer-mcd = callPackage setzer-mcdSrc {};
 in rec {
   inherit ssb-server;
-  omnia = callPackage ./omnia { inherit ssb-server setzer-mcd; };
+  omnia = callPackage ./omnia { inherit ssb-server setzer-mcd gofer; };
   install-omnia = callPackage ./systemd { inherit ssb-server omnia; };
 }
