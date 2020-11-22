@@ -21,6 +21,7 @@ rec {
   makerpkgs = import sources.makerpkgs {
     dapptoolsOverrides.default = ./dapptools.nix;
   };
+  gofer = import ../../gofer {};
 
   nodepkgs = let
     nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
