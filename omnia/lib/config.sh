@@ -43,19 +43,19 @@ importMode () {
 
 importSources () {
 	local _config="$1"
-	readarray -t OMNIA_FEED_SOURCES < <(echo "$_config" | jq -r '.sources | .[]')
+	readarray -t OMNIA_FEED_SOURCES < <(jq -r '.sources[]' "$_config")
 	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
 }
 
 importPublishers () {
 	local _config="$1"
-	readarray -t OMNIA_FEED_PUBLISHERS < <(echo "$_config" | jq -r '.publishers | .[]')
+	readarray -t OMNIA_FEED_PUBLISHERS < <(jq -r '.publishers[]' "$_config")
 	[[ "${#OMNIA_FEED_PUBLISHERS[@]}" -gt 0 ]] || OMNIA_FEED_PUBLISHERS=("oracle-transporter-ssb")
 }
 
 importPullers () {
 	local _config="$1"
-	readarray -t OMNIA_MESSAGE_PULLERS < <(echo "$_config" | jq -r '.pullers | .[]')
+	readarray -t OMNIA_MESSAGE_PULLERS < <(jq -r '.pullers[]' "$_config")
 	[[ "${#OMNIA_MESSAGE_PULLERS[@]}" -gt 0 ]] || OMNIA_MESSAGE_PULLERS=("oracle-transporter-ssb")
 }
 
@@ -220,6 +220,13 @@ importOptionsEnv () {
 		SETZER_MIN_MEDIAN="$(echo "$_json" | jq -S '.setzerMinMedian')"
 		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
 		export SETZER_MIN_MEDIAN
+
+		local usesGofer=$(jq '.sources | index("gofer") != null' <<<"$_json")
+		if [[ $usesGofer == true ]]; then
+			OMNIA_GOFER_CONFIG="${OMNIA_GOFER_CONFIG:-$(echo "$_json" | jq -r '.goferConfig // "./gofer.json"')}"
+			[[ -e "$OMNIA_GOFER_CONFIG" ]] || errors+=("Error - Gofer config file '$OMNIA_GOFER_CONFIG' doesn't exist.")
+			export OMNIA_GOFER_CONFIG
+		fi
 	fi
 	
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
