@@ -1,6 +1,6 @@
 { stdenv, makeWrapper, runCommand, lib, glibcLocales
 , coreutils, bash, parallel, bc, jq, gnused, datamash, gnugrep
-, ssb-server, ethsign, seth, setzer-mcd, gofer }:
+, ssb-server, ethsign, seth, setzer-mcd, gofer ? null }:
 
 let
   deps = [
@@ -38,9 +38,10 @@ stdenv.mkDerivation rec {
     mkdir -p $out
     cp -r ./lib $out/lib
     cp -r ./bin $out/bin
+    cp -r ./config $out/config
     find $out/bin -type f | while read -r x; do
       wrapProgram "$x" \
-        --set PATH "$out/bin:${path}" \
+        --prefix PATH : "$out/bin:${path}" \
         ${locales}
     done
   '';

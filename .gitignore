@@ -1,3 +1,4 @@
 *.out
 test-results/
 .env
+logs/

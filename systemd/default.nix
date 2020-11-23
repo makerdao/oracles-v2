@@ -25,6 +25,7 @@ stdenv.mkDerivation rec {
       --prefix PATH : "${path}" \
       --set OMNIA_PATH "${omnia}/bin/omnia" \
       --set OMNIA_LIB_PATH "${omnia}/lib" \
+      --set OMNIA_CONF_PATH "${omnia}/config" \
       --set SSB_PATH "${ssb-server}/bin/ssb-server" \
       ${locales}
   '';

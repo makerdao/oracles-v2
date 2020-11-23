@@ -4,7 +4,7 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 . "$_path/../../lib/include.sh"
 
 conf=$(cat "$_path/omnia.conf")
-mapfile -t pairs < <(jq -r '.pairs|keys|.[]|sub("/";"")|select(. != "ETHBTC")' <<<"$conf")
+mapfile -t pairs < <(jq -r '.pairs|keys|.[]|select(. != "ETH/BTC")' <<<"$conf")
 
 export OMNIA_CONFIG="$_path/_omnia.conf"
 export OMNIA_SOURCE_PARALLEL=1
@@ -27,7 +27,7 @@ jq -c '.[].value.content' "$_path/ssb-messages.json" \
 
 # Update omnia config
 for pair in "${pairs[@]}"; do
-  address=$(jq -r ".$pair" <<<"$oracles")
+  address=$(jq -r --arg p $pair '.[$p]' <<<"$oracles")
   conf=$(
     jq --arg p $pair --arg a $address \
       '.pairs[$p] = .pairs[$p] * { oracle: $a, msgExpiration: 180000000000, oracleExpiration: 180000000000 }' \
@@ -42,7 +42,7 @@ startOmnia
 
 echo >&2 "# Read oracle prices"
 for pair in "${pairs[@]}"; do
-  address=$(jq -r ".$pair" <<<"$oracles")
+  address=$(jq -r --arg p $pair '.[$p]' <<<"$oracles")
   rawStorage=$(seth storage $address 0x1)
   jq -n \
     --arg p $pair \

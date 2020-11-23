@@ -3,7 +3,7 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 . "$_path/../../lib/tap.sh"
 
-mapfile -t pairs < <(jq -r '.pairs|keys|.[]|sub("/";"")|select(. != "ETHBTC")' <"$_path/omnia.conf")
+mapfile -t pairs < <(jq -r '.pairs|keys|.[]|select(. != "ETH/BTC")' <"$_path/omnia.conf")
 
 cp -f "$1" $wdir/output
 
@@ -13,7 +13,7 @@ note <<<"Relayer Regression Assertions"
 
 for pair in "${pairs[@]}"; do
   assert "Oracle price for $pair not null" \
-    json ".$pair != null" <<<"true"
+    json --arg p $pair '.[$p] != null' <<<"true"
   assert "Oracle price for $pair" \
-    json ".$pair" <<<$(jq ".$pair" "$_path/good.json")
+    json --arg p $pair '.[$p]' <<<$(jq --arg p $pair '.[$p]' "$_path/good.json")
 done

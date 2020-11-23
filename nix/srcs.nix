@@ -20,7 +20,6 @@ rec {
   makerpkgs = import sources.makerpkgs {
     dapptoolsOverrides.default = ./dapptools.nix;
   };
-  gofer = import ../../gofer {};
 
   nodepkgs = let
     nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
@@ -36,7 +35,10 @@ rec {
 
   setzer-mcd = makerpkgs.callPackage sources.setzer-mcd {};
 
-  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd; };
+  omnia = { gofer ? null }: makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd gofer; };
 
-  install-omnia = makerpkgs.callPackage ../systemd { inherit ssb-server omnia; };
+  install-omnia = { gofer ? null }@args: makerpkgs.callPackage ../systemd {
+    inherit ssb-server;
+    omnia = omnia args;
+  };
 }
