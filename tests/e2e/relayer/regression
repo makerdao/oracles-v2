@@ -21,7 +21,7 @@ note <<<"Relayer Regression Assertions"
 
 for pair in "${pairs[@]}"; do
   assert "Oracle price for $pair not null" \
-    json ".$pair != null" <<<"true"
+    json --arg p $pair '.[$p] != null' <<<"true"
   assert "Oracle price for $pair" \
-    json ".$pair" <<<$(jq ".$pair" "$_path/good.json")
+    json --arg p $pair '.[$p]' <<<$(jq --arg p $pair '.[$p]' "$_path/good.json")
 done

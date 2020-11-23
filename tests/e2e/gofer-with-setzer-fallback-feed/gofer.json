@@ -1,0 +1,92 @@
+{
+  "origins": {
+  },
+  "priceModels": {
+    "BTC/USD": {
+      "method": "median",
+      "ttl": 1000000000000,
+      "sources": [
+        [{ "origin": "bitstamp", "pair": "BTC/USD" }],
+        [{ "origin": "bittrex", "pair": "BTC/USD" }],
+        [{ "origin": "coinbasepro", "pair": "BTC/USD" }],
+        [{ "origin": "gemini", "pair": "BTC/USD" }],
+        [{ "origin": "kraken", "pair": "BTC/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 3
+      }
+    },
+    "ETH/BTC": {
+      "method": "median",
+      "ttl": 1000000000000,
+      "sources": [
+        [{ "origin": "binance", "pair": "ETH/BTC" }],
+        [{ "origin": "bitfinex", "pair": "ETH/BTC" }],
+        [{ "origin": "coinbasepro", "pair": "ETH/BTC" }],
+        [{ "origin": "huobi", "pair": "ETH/BTC" }],
+        [{ "origin": "poloniex", "pair": "ETH/BTC" }],
+        [{ "origin": "kraken", "pair": "ETH/BTC" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 4
+      }
+    },
+    "ETH/USD": {
+      "method": "median",
+      "ttl": 1000000000000,
+      "sources": [
+        [{ "origin": "binance", "pair": "ETH/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "bitstamp", "pair": "ETH/USD" }],
+        [{ "origin": "coinbasepro", "pair": "ETH/USD" }],
+        [{ "origin": "ftx", "pair": "ETH/USD" }],
+        [{ "origin": "gemini", "pair": "ETH/USD" }],
+        [{ "origin": "kraken", "pair": "ETH/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 4
+      }
+    },
+    "USDT/USD": {
+      "method": "median",
+      "ttl": 1000000000000,
+      "sources": [
+        [{ "origin": "binance", "pair": "BTC/USDT" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "okex", "pair": "BTC/USDT" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "bitfinex", "pair": "USDT/USD" }],
+        [{ "origin": "ftx", "pair": "ETH/USDT" },{ "origin": ".", "pair": "ETH/USD" }],
+        [{ "origin": "huobi", "pair": "ETH/USDT" },{ "origin": ".", "pair": "ETH/USD" }],
+        [{ "origin": "kraken", "pair": "USDT/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 3
+      }
+    },
+    "YFI/USD": {
+      "method": "median",
+      "ttl": 1000000000000,
+      "sources": [
+        [{ "origin": "binance", "pair": "YFI/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "huobi", "pair": "YFI/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "coinbasepro", "pair": "YFI/USD" }],
+        [{ "origin": "ftx", "pair": "YFI/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 2
+      }
+    },
+    "ZRX/USD": {
+      "method": "median",
+      "ttl": 1000000000000,
+      "sources": [
+        [{ "origin": "binance", "pair": "ZRX/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "okex", "pair": "ZRX/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "bitfinex", "pair": "ZRX/USD" }],
+        [{ "origin": "coinbasepro", "pair": "ZRX/USD" }],
+        [{ "origin": "upbit", "pair": "ZRX/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 3
+      }
+    }
+  }
+}

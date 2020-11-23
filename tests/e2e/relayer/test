@@ -7,7 +7,7 @@ plan 3
 cp -f "$1" $wdir/output
 
 assert "has all asset pairs" \
-  json 'keys|sort' <<<$(jq '[.pairs|keys|.[]|sub("/";"")|select(. != "ETHBTC")]|sort' "$_path/omnia.conf")
+  json 'keys|sort' <<<$(jq '[.pairs|keys|.[]|select(. != "ETH/BTC")]|sort' "$_path/omnia.conf")
 assert "asset pairs not null" \
   json '[.[] != null]|all' <<<"true"
 assert "asset pairs not 0" \
