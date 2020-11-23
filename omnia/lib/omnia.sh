@@ -6,15 +6,15 @@ if [[ -n $OMNIA_DEBUG ]]; then
 fi
 
 # shellcheck source=./config.sh
-. config.sh
-. ethereum.sh
-. log.sh
-. scuttlebot.sh
-. source.sh
-. status.sh
-. util.sh
-. feed.sh
-. relayer.sh
+. ./config.sh
+. ./ethereum.sh
+. ./log.sh
+. ./scuttlebot.sh
+. ./source.sh
+. ./status.sh
+. ./util.sh
+. ./feed.sh
+. ./relayer.sh
 
 #initialize environment
 initEnv () {

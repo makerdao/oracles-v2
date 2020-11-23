@@ -41,6 +41,7 @@ updateOracle () {
 #pulls latest price of an asset from each feed
 pullLatestPricesOfAssetPair () {
     local _assetPair="$1"
+    _assetPair="${_assetPair^^}"
     local _quorum="$2"
     local _randomizedFeeds=()
 

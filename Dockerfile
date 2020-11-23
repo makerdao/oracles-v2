@@ -12,6 +12,7 @@ RUN nix run -f https://cachix.org/api/v1/install cachix \
 COPY omnia /src/omnia
 COPY nix /src/nix
 COPY docker /src/docker
+COPY gofer /src/gofer
 COPY systemd/ssb-config.json /src/ssb-config.json
 
 # Install Omnia runner and dependencies
