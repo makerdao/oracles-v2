@@ -6,6 +6,7 @@ in
 { pkgs ? import sources.nixpkgs {}
 , makerpkgs ? import sources.makerpkgs {}
 , nodepkgs ? srcs.nodepkgs { inherit pkgs; }
+, gofer ? null
 }@args:
 
 let oracles = import ./.. args; in
@@ -35,7 +36,7 @@ pkgs.mkShell rec {
       mkdir -p "$RESULTS_DIR/$name"
       tap-xunit < "$tap" \
         > "$RESULTS_DIR/$name/results.xml"
-      mv "$tap" "$RESULTS_DIR/$name/"
+      cp "$tap" "$RESULTS_DIR/$name/"
     }
 
     xunit() {
@@ -52,8 +53,16 @@ pkgs.mkShell rec {
       fi
     }
 
-    testSmoke() { "$SMOKE_TEST" | xunit smoke; }
-    testE2E() { "$E2E_TEST" "$@"; xunit e2e *.tap; }
-    updateE2E() { "$E2E_TEST" --update "$@"; xunit e2e-update *.tap; }
+    _runTest() {
+      local ecode=0
+      "''${@:2}"
+      ecode=$?
+      xunit "$1" logs/*.tap || true
+      return $ecode
+    }
+
+    testSmoke() { _runTest smoke sh -c 'mkdir -p logs && "$1" > logs/smoke.tap' _ "$SMOKE_TEST"; }
+    testE2E() { _runTest e2e "$E2E_TEST" "$@"; }
+    updateE2E() { _runTest e2e-update "$E2E_TEST" --update "$@"; }
   '';
 }

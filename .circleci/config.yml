@@ -4,8 +4,10 @@ workflows:
   version: 2
   build-test-cache:
     jobs:
-      - smoke-test
-      - regression
+      - smoke-test:
+          context: clone-gofer-sh
+      - regression:
+          context: clone-gofer-sh
       - cache:
           requires:
             - smoke-test
@@ -43,7 +45,7 @@ commands:
       - run-nix:
           name_: Install dependencies
           command: |
-            nix-env -iA nixpkgs.gitMinimal
+            nix-env -iA nixpkgs.gitMinimal nixpkgs.curl
             nix-env -iA cachix -f https://cachix.org/api/v1/install
       - run-nix:
           name_: Add build caches
@@ -75,7 +77,13 @@ commands:
           name_: Pre-fetch dependencies for << parameters.path >>
           command: |
             nix-shell "<< parameters.path >>" --run true
-
+  clone-gofer:
+    description: Copy gofer code
+    steps:
+      - run:
+          name: Copying gofer source code to ./gofer
+          command: |
+            sh -c "$GOFER_CLONE_SH" _ ./gofer "$(cat ./nix/gofer-rev)"
 executors:
   nix-executor:
     docker:
@@ -91,12 +99,13 @@ jobs:
       - setup-nix
       - setup-cachix
       - checkout
+      - clone-gofer
       - pre-fetch:
           path: tests
       - run-nix:
           name_: Smoke test
           command: |
-            nix-shell tests --run testSmoke
+            nix-shell tests --run testSmoke --arg gofer "import ./gofer {}"
       - store_test_results:
           path: tests/test-results
   regression:
@@ -104,6 +113,7 @@ jobs:
     steps:
       - setup-cachix
       - checkout
+      - clone-gofer
       - setup-ca:
           cert: tests/resources/mitmproxy/mitmproxy-ca-cert.cer
       - pre-fetch:
@@ -111,7 +121,7 @@ jobs:
       - run-nix:
           name_: End 2 end regression test
           command: |
-            nix-shell tests --run testE2E
+            nix-shell tests --run testE2E --arg gofer "import ./gofer {}"
       - store_test_results:
           path: ./tests/test-results
       - store_artifacts:

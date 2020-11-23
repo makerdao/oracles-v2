@@ -16,10 +16,6 @@ in
 
 rec {
   makerpkgs = import sources.makerpkgs {};
-  #makerpkgs = { system ? currentSystem }: import sources.makerpkgs {
-  #  #dapptoolsOverrides = { current = ./dapptools.nix; };
-  #};
-  gofer = import ../../gofer {};
 
   nodepkgs = { pkgs ? makerpkgs.pkgs, system ? currentSystem }: let
     nodepkgs' = import ./nodepkgs.nix { inherit pkgs system; };

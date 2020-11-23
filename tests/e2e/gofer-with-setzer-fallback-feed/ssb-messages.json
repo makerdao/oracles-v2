@@ -1,0 +1,257 @@
+[
+  {
+    "key": "%wYVd34S0mUkJ7s2JK37qk2/plVIsEz5GSS3BeDgnNXE=.sha256",
+    "value": {
+      "previous": "%+Wu7/dmVENtAGBT5RQKnTeQp/ZxlLIIkZMU3PK1lGNQ=.sha256",
+      "sequence": 8,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208366003,
+      "hash": "sha256",
+      "content": {
+        "type": "BALUSD",
+        "version": "1.4.0",
+        "price": 17.14399,
+        "priceHex": "000000000000000000000000000000000000000000000000edebb0127ed96000",
+        "time": 1606208365,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb6d",
+        "hash": "77fa448378692185f27cb08e4a0501ca2fd9f757753c9dd6a92565a64763e936",
+        "signature": "56af4da9d66c7e004d594da00d922294071f11daaf2e9ad714b73fe39ac6d0cc389066dd3b612ddb193a4c180f47e76537521b5e49ca90a064d9679df448b5a51b",
+        "sources": {
+          "balancer": "16.9897124087",
+          "binance": "17.1881265160",
+          "coinbase": "17.1439900000"
+        }
+      },
+      "signature": "a0wBhyGNIhfIqX7a5nY2k1qBHXsTEwDuw0L+UzgvzOxyJ8aQHZC4pZV7Ww84o5c+ExEMKUjph4aBSQp+DRW+DA==.sig.ed25519"
+    },
+    "timestamp": 1606208366003.001
+  },
+  {
+    "key": "%+Wu7/dmVENtAGBT5RQKnTeQp/ZxlLIIkZMU3PK1lGNQ=.sha256",
+    "value": {
+      "previous": "%APGKFtIRNZ0uBP7DKdaljYhJY6e7hyQKVuygqDxU95g=.sha256",
+      "sequence": 7,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208364572,
+      "hash": "sha256",
+      "content": {
+        "type": "BATUSD",
+        "version": "1.4.0",
+        "price": 0.2734099536,
+        "priceHex": "00000000000000000000000000000000000000000000000003cb58e77a625000",
+        "time": 1606208363,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb6b",
+        "hash": "6fdc2baf52346bec2817cf175dad1e2ede091ef91c305a2b8abb6fe4ede1e543",
+        "signature": "6a5b624a1f500b09d0131f136bd0848b3c8ec6e09dbf09bea6c0031b3331643a4cdf2363326666c04216800bedae20c94109362b7cc02243eb7f495ea0bdab521b",
+        "sources": {
+          "binance": "0.2735871476",
+          "bittrex": "0.2734009072",
+          "coinbase": "0.2734190000",
+          "upbit": "0.2688973378"
+        }
+      },
+      "signature": "sExeKE5geXYbeLebJhnKAWYzQyD1FCzUGD9Kerw3++kg/Lu5adV2yCEOk6cbmcVKK8FVKlIsLfo8X9ICFNY2BQ==.sig.ed25519"
+    },
+    "timestamp": 1606208364572.001
+  },
+  {
+    "key": "%APGKFtIRNZ0uBP7DKdaljYhJY6e7hyQKVuygqDxU95g=.sha256",
+    "value": {
+      "previous": "%OQLNFLv7Bfz4au2Ju9ukX3x1vptrP2e9ITYUNWpE0GY=.sha256",
+      "sequence": 6,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208361898,
+      "hash": "sha256",
+      "content": {
+        "type": "ETHBTC",
+        "version": "1.4.0",
+        "price": 0.0334165,
+        "priceHex": "0000000000000000000000000000000000000000000000000076b82134230800",
+        "time": 1606208360,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb68",
+        "hash": "31e00b6a94efd9aa436d19fa812a26eb0cbf8be28710a06dec74b09f9ef41d20",
+        "signature": "96858e5637e4a2d96e3a2e0a4b9c09cefe494a4ff7ac6eb7b68892f73754a9534ceb592f8852fe9d726442fbae4eaaac494480ceb8b96fa04385b0bd304d1d951c",
+        "sources": {
+          "ETH/BTC@binance": "0.033413",
+          "ETH/BTC@coinbasepro": "0.03342",
+          "ETH/BTC@huobi": "0.033403",
+          "ETH/BTC@poloniex": "0.033455"
+        }
+      },
+      "signature": "gvT6uMR9Qjm9hiYU817025RR/RRIqvuaBBZIQ6EbmSQXGDT2G40wokbgAPPJYg7vfbq9cxiXtyJi0Hw1Q5FFCg==.sig.ed25519"
+    },
+    "timestamp": 1606208361898.001
+  },
+  {
+    "key": "%OQLNFLv7Bfz4au2Ju9ukX3x1vptrP2e9ITYUNWpE0GY=.sha256",
+    "value": {
+      "previous": "%jv0u8RcGMuVdVeokKfXFvN7GEyfJJuJiWQ1wTmdnj0A=.sha256",
+      "sequence": 5,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208360232,
+      "hash": "sha256",
+      "content": {
+        "type": "ZRXUSD",
+        "version": "1.4.0",
+        "price": 0.4719488839375,
+        "priceHex": "000000000000000000000000000000000000000000000000068cb3026b3c9b60",
+        "time": 1606208358,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb66",
+        "hash": "852a5b572ae6b566ddc5dfb91938996e81fbb560ec062137d97242e1d9d3dc64",
+        "signature": "b64777379cf158c14fc773e1b70fc7eee4bbb03ccb1e4910f2250bfc80ec192f337f6a8a886869dc764df464d560e582048857a135e900dffd32f1b620f125001c",
+        "sources": {
+          "BTC/USD@bitstamp": "18614.85",
+          "BTC/USD@bittrex": "18615.705",
+          "BTC/USD@coinbasepro": "18626.01",
+          "BTC/USD@gemini": "18624.04",
+          "KRW/USD@fx": "0.0008993222",
+          "ZRX/BTC@binance": "2.539e-05",
+          "ZRX/BTC@okex": "2.535e-05",
+          "ZRX/KRW@upbit": "517",
+          "ZRX/USD@coinbasepro": "0.471884"
+        }
+      },
+      "signature": "EEwCJtrmPK7yNQD5Pg/CBFLlPOM0bZaSeoF5s/aHarD4wLW8WJnkDXzREwjjVxGyFKd1NlXr8pAN9+nHVT2sBg==.sig.ed25519"
+    },
+    "timestamp": 1606208360232.001
+  },
+  {
+    "key": "%jv0u8RcGMuVdVeokKfXFvN7GEyfJJuJiWQ1wTmdnj0A=.sha256",
+    "value": {
+      "previous": "%nDrZfBVfgReJwEPYwsVhGCazffu2MNsh72RaR7Nz9RY=.sha256",
+      "sequence": 4,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208358361,
+      "hash": "sha256",
+      "content": {
+        "type": "BTCUSD",
+        "version": "1.4.0",
+        "price": 18619.8725,
+        "priceHex": "0000000000000000000000000000000000000000000003f162a3ba6ffc934000",
+        "time": 1606208357,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb65",
+        "hash": "f5c9289892368b7af94e02bd34d65b31fe11d21e8c671096728e56d551bfd505",
+        "signature": "f0b488f1e00064db3190beaba7dac7dc50444f59b5f98c99de62837a094f2c145ea02b50264961a70bbcb2fe2bc25652e5413a584cb0426f96afcdfbb04ce6fe1c",
+        "sources": {
+          "BTC/USD@bitstamp": "18614.85",
+          "BTC/USD@bittrex": "18615.705",
+          "BTC/USD@coinbasepro": "18626.01",
+          "BTC/USD@gemini": "18624.04"
+        }
+      },
+      "signature": "tS410t+zDm4vGYvYuwAhVjpMFyXpsVG0eJsYgKdGGd9o2RI76qgB1j7vWQRkycfDle4wBjlz5XT4Ze/NBB6ECw==.sig.ed25519"
+    },
+    "timestamp": 1606208358362
+  },
+  {
+    "key": "%nDrZfBVfgReJwEPYwsVhGCazffu2MNsh72RaR7Nz9RY=.sha256",
+    "value": {
+      "previous": "%sSBO9rjzmiNkE3Hvp1GdKQ/viOSUp/vJhqdQnJYSG+I=.sha256",
+      "sequence": 3,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208356731,
+      "hash": "sha256",
+      "content": {
+        "type": "USDTUSD",
+        "version": "1.4.0",
+        "price": 1.0013346351490096,
+        "priceHex": "0000000000000000000000000000000000000000000000000de5748b9d5a22c0",
+        "time": 1606208355,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb63",
+        "hash": "ad4f9180389e552bba1f4243dfdb274025fb85de2c9aacde342e5aa2be9b7eb4",
+        "signature": "028f5589849c5842c67e170dd9fbbeb8c922ff4f00f18204628203bbe570858a71decf536e7a20e26f5733fcb358d69c243ec32c91fc9750cc11da137853d8b41c",
+        "sources": {
+          "BTC/USD@bitstamp": "18614.85",
+          "BTC/USD@bittrex": "18615.705",
+          "BTC/USD@coinbasepro": "18626.01",
+          "BTC/USD@gemini": "18624.04",
+          "BTC/USDT@binance": "18596.51",
+          "BTC/USDT@okex": "18593.6",
+          "ETH/BTC@binance": "0.033413",
+          "ETH/USD@bitstamp": "622.58",
+          "ETH/USD@coinbasepro": "622.14",
+          "ETH/USD@ftx": "622.34",
+          "ETH/USD@gemini": "622.3",
+          "ETH/USDT@ftx": "621.63",
+          "ETH/USDT@huobi": "620.96"
+        }
+      },
+      "signature": "mNE6MLgQ0RANQXdeLIbalAqBIWhkmK+/5giGOIUyfXBraxwXaxgLHzNLfLmJ2VytMNgNzOuOBSqngk2L3M2dDg==.sig.ed25519"
+    },
+    "timestamp": 1606208356731.001
+  },
+  {
+    "key": "%sSBO9rjzmiNkE3Hvp1GdKQ/viOSUp/vJhqdQnJYSG+I=.sha256",
+    "value": {
+      "previous": "%ZS/V3sCFbR2h7Wuw5zMAXhyLFEZdfBj0U9OkPVDMmLw=.sha256",
+      "sequence": 2,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208355137,
+      "hash": "sha256",
+      "content": {
+        "type": "ETHUSD",
+        "version": "1.4.0",
+        "price": 622.3,
+        "priceHex": "000000000000000000000000000000000000000000000021bc25b8e9cd960000",
+        "time": 1606208354,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb62",
+        "hash": "8b50c713b35b9a7cbc8cfde37fec3fc789d96977490fbd754fd4fb9bfea875de",
+        "signature": "041f2bfaa7de128f72944824982d0d296a0500334eb699489a52ce36def5b655454eb51725254b1eb232a623e553c7671cce7b4b7c2d53e0915a91a06af35dc61b",
+        "sources": {
+          "BTC/USD@bitstamp": "18614.85",
+          "BTC/USD@bittrex": "18615.705",
+          "BTC/USD@coinbasepro": "18626.01",
+          "BTC/USD@gemini": "18624.04",
+          "ETH/BTC@binance": "0.033413",
+          "ETH/USD@bitstamp": "622.58",
+          "ETH/USD@coinbasepro": "622.14",
+          "ETH/USD@ftx": "622.34",
+          "ETH/USD@gemini": "622.3"
+        }
+      },
+      "signature": "drjIdNMxXO1q++qcX2F2NBe+QPi+MNTV2NNf6t1FSWTuZUkOCNxzetIBq+YD8DQ9X5AfiASO61OHvxnijWp/BA==.sig.ed25519"
+    },
+    "timestamp": 1606208355137.001
+  },
+  {
+    "key": "%ZS/V3sCFbR2h7Wuw5zMAXhyLFEZdfBj0U9OkPVDMmLw=.sha256",
+    "value": {
+      "previous": null,
+      "sequence": 1,
+      "author": "@BMASjR51dAoosAa5/XtRBf3tOU+l6PD7ouhivrdne/E=.ed25519",
+      "timestamp": 1606208353755,
+      "hash": "sha256",
+      "content": {
+        "type": "YFIUSD",
+        "version": "1.4.0",
+        "price": 25321.95098278194,
+        "priceHex": "00000000000000000000000000000000000000000000055cb4a9a164db0fe500",
+        "time": 1606208352,
+        "timeHex": "000000000000000000000000000000000000000000000000000000005fbccb60",
+        "hash": "c02b302ac8c0ac124995c27cb3670849db9c1f7584807ed6b0871565a552f4e0",
+        "signature": "781b2c67ee7e9a65cc704bcb7918a7005a7f456488fdb931d7e804bc1a00a6707ed8a95adba76111fc00d432b5c958613278afa8bd0f783438f5d1c5daf462f61b",
+        "sources": {
+          "BTC/USD@bitstamp": "18614.85",
+          "BTC/USD@bittrex": "18615.705",
+          "BTC/USD@coinbasepro": "18626.01",
+          "BTC/USD@gemini": "18624.04",
+          "BTC/USDT@binance": "18596.51",
+          "BTC/USDT@okex": "18593.6",
+          "ETH/BTC@binance": "0.033413",
+          "ETH/USD@bitstamp": "622.58",
+          "ETH/USD@coinbasepro": "622.14",
+          "ETH/USD@ftx": "622.34",
+          "ETH/USD@gemini": "622.3",
+          "ETH/USDT@ftx": "621.63",
+          "ETH/USDT@huobi": "620.96",
+          "YFI/USD@coinbasepro": "25328.37",
+          "YFI/USD@ftx": "25330",
+          "YFI/USDT@binance": "25281.79",
+          "YFI/USDT@huobi": "25267.535"
+        }
+      },
+      "signature": "NXE85gZ2ouCpZ2qMgjcIcNTGnkApwCYFlQhlc/QrKIUjc2GcaITnbngSwpFs1E7EWfBv0h44FaPUSDBaGElfCQ==.sig.ed25519"
+    },
+    "timestamp": 1606208353756
+  }
+]

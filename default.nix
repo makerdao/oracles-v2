@@ -7,7 +7,7 @@ in
 , makerpkgs ? import sources.makerpkgs {}
 , nodepkgs ? srcs.nodepkgs { inherit pkgs; }
 , setzer-mcdSrc ? sources.setzer-mcd
-, gofer ? srcs.gofer
+, gofer ? null
 }: with makerpkgs.pkgs;
 
 let
