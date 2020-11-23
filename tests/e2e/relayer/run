@@ -35,7 +35,7 @@ jq -c '.[].value.content' "$_path/ssb-messages.json" \
 
 # Update omnia config
 for pair in "${pairs[@]}"; do
-  address=$(jq -r ".$pair" <<<"$oracles")
+  address=$(jq -r --arg p $pair '.[$p]' <<<"$oracles")
   conf=$(
     jq --arg p $pair --arg a $address \
       '.pairs[$p] = .pairs[$p] * { oracle: $a, msgExpiration: 180000000000, oracleExpiration: 180000000000 }' \
@@ -50,7 +50,7 @@ startOmnia
 
 echo >&2 "# Read oracle prices"
 for pair in "${pairs[@]}"; do
-  address=$(jq -r ".$pair" <<<"$oracles")
+  address=$(jq -r --arg p $pair '.[$p]' <<<"$oracles")
   rawStorage=$(seth storage $address 0x1)
   jq -n \
     --arg p $pair \

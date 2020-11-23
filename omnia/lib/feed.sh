@@ -19,14 +19,14 @@ readSourcesAndBroadcastAllPriceMessages()  {
 			break
 		fi
 
-		readarray -t _prices < <(readSource "$_src" "${!_unpublishedPairs[@]}")
-
-		for json in "${_prices[@]}"; do
-			local _assetPair=$(jq -r .asset <<<"$json")
-			local _median=$(jq -r .median <<<"$json")
-			local _sources=$(jq -r '.sources|keys|.[]' <<<"$json")
-			local _prices=$(jq -r '.sources[]' <<<"$json")
-		  local _message=$(validateAndConstructMessage "$_assetPair" "$_median" "$_sources" "$_prices")
+		while IFS= read -r _json; do
+			if [[ -z "$_json" ]]; then
+				continue
+			fi
+			local _assetPair=$(jq -r .asset <<<"$_json")
+			local _median=$(jq -r .median <<<"$_json")
+			local _sources=$(jq -rS '.sources' <<<"$_json")
+			local	_message=$(validateAndConstructMessage "$_assetPair" "$_median"	"$_sources")
 
 			if [[ -z "$_message" ]]; then
 				error "Failed constructing $_assetPair price message"
@@ -40,33 +40,8 @@ readSourcesAndBroadcastAllPriceMessages()  {
 				log "Publishing $_assetPair price message with $_publisher"
 				"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
 			done
-		done
+		done < <(readSource "$_src" "${!_unpublishedPairs[@]}")
 	done
-	#for _assetPair in "${assetPairs[@]}"; do
-	#	local _message
-
-	#	for _src in "${OMNIA_FEED_SOURCES[@]}"; do
-	#		_message=$(readSourcesAndConstructPriceMessage "$_src" "$_assetPair")
-
-	#		if [[ -z "$_message" ]]; then
-	#			error "Failed constructing $_assetPair price from $_src"
-	#			continue
-	#		fi
-	#		verbose "$_message"
-	#		break
-	#	done
-
-	#	if [[ -z "$_message" ]]; then
-	#		error "Failed constructing $_assetPair price message"
-	#		continue
-	#	fi
-
-	#	local _publisher
-	#	for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
-	#		log "Publishing $_assetPair price message with $_publisher"
-	#		"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
-	#	done
-	#done
 }
 
 readSource() {
@@ -78,14 +53,14 @@ readSource() {
 			for _assetPair in "${_assetPairs[@]}"; do
 				log "Querying ${_assetPair} prices and calculating median with setzer..."
 				readSourcesWithSetzer "$_assetPair"
-			done | jq -cs
+			done
 			;;
 		gofer)
 			log "Querying ${_assetPairs[*]} prices and calculating medians with gofer..."
 			readSourcesWithGofer "${_assetPairs[@]}"
 			;;
 		*)
-			error "Error - Unknown Feed Source: $OMNIA_FEED_SOURCE"
+			error "Error - Unknown Feed Source: $_src"
 			return 1
 			;;
 	esac
@@ -99,33 +74,43 @@ constructMessage() {
 	local _timeHex="$5"
 	local _hash="$6"
 	local _signature="$7"
-  local _starkSignatureR="$8"
-  local _starkSignatureS="$9"
-  local _starkPublicKey="$10"
-	local _validSources=($11)
-	local _validPrices=($12)
-  local _sourcePrices
-  local _jqArgs=()
-  local _json
-
-	# generate JSON for transpose of sources with prices
-	if ! _sourcePrices=$(jq -nce --argjson vs "$(printf '%s\n' "${_validSources[@]}" | jq -nR '[inputs]')" --argjson vp "$(printf '%s\n' "${_validPrices[@]}" | jq -nR '[inputs]')" '[$vs, $vp] | transpose | map({(.[0]): .[1]}) | add'); then
-			error "Error - failed to transpose sources with prices"
-			return 1
-	fi
+	local _sourcePrices="$8"
+	local _starkSignatureR="$9"
+	local _starkSignatureS="$10"
+	local _starkPublicKey="$11"
+	local _starkSignature
+	local _jqArgs=()
+	local _json
 
 	#format starkware sig
-	_starkSignature=( --arg r "$_starkSignatureR" --arg s "$_starkSignatureS" --arg publicKey "$_starkPublicKey" )
-	if ! _starkSignatureJson=$(jq -nce  "${_starkSignature[@]}" '{r: $r, s:$s, publicKey:$publicKey}'); then
-	    error "Error - failed to generate stark signature json"
-	fi
-	#compose jq message arguments
-	_jqArgs=( --arg assetPair "$_assetPair" --arg version "$OMNIA_VERSION" --arg price "$_price" --arg priceHex "$_priceHex" --arg time "$_time" --arg timeHex "$_timeHex" --arg hash "${_hash:2}" --arg signature "${_signature:2}" --argjson starkSignature "$_starkSignatureJson" --argjson sourcePrices "$_sourcePrices" )
+	_starkSignature=(
+		--arg r "$_starkSignatureR"
+		--arg s "$_starkSignatureS"
+		--arg publicKey "$_starkPublicKey"
+	)
 
-	#generate JSON msg
-	if ! _json=$(jq -ne "${_jqArgs[@]}" '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, starkSignature: $starkSignature, sources: $sourcePrices}'); then
-	    error "Error - failed to generate JSON msg"
-	    return 1
+	if ! _starkSignatureJson=$(jq -nce  "${_starkSignature[@]}" '{r: $r, s:$s, publicKey:$publicKey}'); then
+		error "Error - failed to generate stark signature json"
+	fi
+
+	# compose jq message arguments
+	_jqArgs=(
+		--arg assetPair "$_assetPair"
+		--arg version "$OMNIA_VERSION"
+		--arg price "$_price"
+		--arg priceHex "$_priceHex"
+		--arg time "$_time"
+		--arg timeHex "$_timeHex"
+		--arg hash "${_hash:2}"
+		--arg signature "${_signature:2}"
+		--argjson sourcePrices "$_sourcePrices"
+		--argjson starkSignature "$_starkSignatureJson"
+	)
+
+	# generate JSON msg
+	if ! _json=$(jq -ne "${_jqArgs[@]}" '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices, starkSignature: $starkSignature}'); then
+			error "Error - failed to generate JSON msg"
+			return 1
 	fi
 
 	echo "$_json"
@@ -133,19 +118,14 @@ constructMessage() {
 
 validateAndConstructMessage() {
 	local _assetPair="$1"
+	_assetPair="${_assetPair/\/}"
+	_assetPair="${_assetPair^^}"
 	local median="$2"
-	local validSources=($3)
-	local validPrices=($4)
+	local sourcePrices="$3"
 
 	if [[ "$(isPriceValid "$median")" == "false" ]]; then
 		error "Error - Failed to calculate valid median: ($median)"
-		debug "Sources = ${validSources[*]}"
-		debug "Prices = ${validPrices[*]}"
-		return 1
-	fi
-
-	if [[ "${#validPrices[@]}" -lt 2 || "${#validSources[@]}" -lt 2 || "${#validPrices[@]}" -ne "${#validSources[@]}" ]]; then
-		error "Error - Failed to fetch sufficient valid prices from sources."
+		debug "Sources = $sourcePrices"
 		return 1
 	fi
 
@@ -241,7 +221,6 @@ validateAndConstructMessage() {
 	starkSigS=$(echo "$starkSig" | cut -d " " -f2)
 
 	verbose "Constructing message..."
-	constructMessage "$_assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "$starkSigR" "$starkSigS" "$STARK_PUBLIC_KEY" \
-		"${validSources[*]}" \
-		"${validPrices[*]}"
+	constructMessage "$_assetPair" "$median" "$medianHex" "$time" "$timeHex" \
+		"$hash" "$sig" "$sourcePrices" "$starkSigR" "$starkSigS" "$STARK_PUBLIC_KEY"
 }
