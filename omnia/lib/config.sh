@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 importEnv () {
+	local _here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 	local config
 	if [[ -f "$OMNIA_CONFIG" ]]; then
 		config="$OMNIA_CONFIG"
 	elif [[ -f /etc/omnia.conf ]]; then
 		config="/etc/omnia.conf"
-	elif [[ -f ./config/omnia.conf ]]; then 
-		config="./config/omnia.conf"
+	elif [[ -f "$_here/../config/omnia.conf" ]]; then
+		config="$_here/../config/omnia.conf"
 	else
 		error "Error Could not find omnia.conf config file to load parameters."
 		error "Please create /etc/omnia.conf or put it in the config directory."

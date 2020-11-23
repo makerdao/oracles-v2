@@ -7,7 +7,6 @@ _command="$1"
 
 OMNIA_MSG_LIMIT=20
 
-#TODO: maybe use `exec`, but exported unctions won't work probably
 case "$_command" in
 	publish) ssb-server publish . <<< "$2";;
 	pull) pullLatestFeedMsgOfType "$2" "$3";;
