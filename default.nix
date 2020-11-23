@@ -3,12 +3,13 @@ let
 in
 
 { pkgs ? srcs.pkgs
-, gofer ? srcs.gofer
+, gofer ? (if builtins.pathExists ./gofer then import ./gofer {} else null)
 }: with pkgs;
 
 let
   ssb-server = lib.setPrio 9 srcs.ssb-server;
+  omnia = srcs.omnia { inherit gofer; };
+  install-omnia = srcs.install-omnia { inherit gofer; };
 in {
-  inherit ssb-server;
-  inherit (srcs) omnia install-omnia stark-cli;
+  inherit ssb-server omnia install-omnia;
 }

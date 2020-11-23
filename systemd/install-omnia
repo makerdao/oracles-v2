@@ -5,7 +5,8 @@ SCRIPT_DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 TARGET_DIR=${TARGET_DIR:-/etc/systemd/system}
 SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
 OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
-OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia}
+OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia/lib}
+OMNIA_CONF_PATH=${OMNIA_CONF_PATH:-$SCRIPT_DIR/../omnia/config}
 
 usage() {
   cat >&2 <<EOF
@@ -59,7 +60,7 @@ copyOmniaConf() {
     savedFrom=$(jq '{ethereum,services} | del(.. | nulls)' "/etc/omnia.conf")
   fi
 
-  sudo cp -v "$OMNIA_LIB_PATH/config/$1" "/etc/omnia.conf" >&2
+  sudo cp -v "$OMNIA_CONF_PATH/$1" "/etc/omnia.conf" >&2
   sudo chmod u+w "/etc/omnia.conf"
 
   if [[ -n "$savedFrom" ]]; then
