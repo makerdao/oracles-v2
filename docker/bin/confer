@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+prefix="$1"
+
+for confVar in $(eval "echo \${!${prefix}_STR_*}"); do
+  confPath=$(eval "echo \"\${confVar#${prefix}_STR_}\"")
+  eval "${prefix}_SET_${confPath}=\""'\"'"${!confVar}"'\""'
+done
+
+query="."
+for confVar in $(eval "echo \${!${prefix}_SET_*}"); do
+  confPath=$(eval "echo \"\${confVar#${prefix}_SET_}\"")
+  confPath="${confPath//__/[].}"
+  confPath="${confPath//_/.}"
+  query+="
+  | .$confPath = ${!confVar}"
+done
+
+conf="$(eval "echo \"\${${prefix}_SET:-\$(cat \"\${${prefix}_FILE_SET:-/dev/null}\")}\"")"
+[ -n "$conf" ] || {
+  echo >&2 "Error: Both ${prefix}_SET and ${prefix}_FILE_SET are empty."
+  exit 1;
+}
+jq "$query" <<<"$conf"

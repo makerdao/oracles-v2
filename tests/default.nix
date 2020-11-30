@@ -1,14 +1,16 @@
 let
-  srcs = import ../nix/srcs.nix;
   sources = import ../nix/sources.nix;
 in
 
-{ pkgs ? import sources.nixpkgs {}
-, makerpkgs ? srcs.makerpkgs {}
-, nodepkgs ? srcs.nodepkgs { inherit pkgs; }
+{ pkgs ? import sources.dapptools {}
+, srcs ? import ../nix/srcs.nix { inherit pkgs; }
+, nodepkgs ? srcs.nodepkgs
 }@args:
 
-let oracles = import ./.. args; in
+let
+  oracles = import ./.. args;
+  inherit (import sources.nixpkgs {}) mitmproxy;
+in
 
 pkgs.mkShell rec {
   name = "oracle-smoke-test-shell";
@@ -18,7 +20,7 @@ pkgs.mkShell rec {
 
     nodepkgs.tap-xunit
 
-    makerpkgs.pkgs.dapp
+    pkgs.dapp
 
     oracles.omnia
     oracles.install-omnia

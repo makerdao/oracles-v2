@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+log() { "${@:2}" 2> >(sed "s/^/[$1] /" >&2) | sed "s/^/[$1] /"; }
+
+filer
+
+echo >&2 "Creating Scuttlebot config file -> $HOME/.ssb/config"
+mkdir -p $HOME/.ssb
+confer SSB > $HOME/.ssb/config
+
+export OMNIA_CONFIG=$HOME/omnia.conf
+echo >&2 "Creating Omnia config file -> $OMNIA_CONFIG"
+confer OMNIA > $OMNIA_CONFIG
+
+# Kill script process group on exit
+trap "trap - EXIT; kill -- -$$" EXIT
+
+echo >&2 "Starting Scuttlebot server"
+log SSB ssb-server start &
+sleep 5
+
+test -z "$SSB_INVITE" || {
+  echo >&2 "Accepting Scuttlebot invite"
+  log SSB_INVITE ssb-server invite.accept "$SSB_INVITE" || true
+  sleep 1
+}
+
+# SSB server becomes unresponsive after accepting an invite
+# As it spends all its single thread resources to index new data.
+# Wait for SSB server to index data only then move on.
+until ssb-server whoami &> /dev/null; do
+  echo >&2 "Waiting for Scuttlebot server indexing to finish..."
+  sleep 30
+done
+
+echo >&2 "Starting Omnia"
+log OMNIA omnia

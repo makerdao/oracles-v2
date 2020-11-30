@@ -1,0 +1,38 @@
+version: "3.6"
+
+x-omnia: &default
+  image: makerdao/omnia:latest
+  expose:
+    - ${SSB_NET_PORT}
+    - ${SSB_WS_PORT}
+  environment: &env
+    ETH_GAS: 7000000
+    SSB_INVITE: ${SSB_INVITE}
+    SSB_FILE_SET: /src/ssb-config.json
+    SSB_STR_connections_incoming_net__external: ${EXT_IP}
+    SSB_SET_connections_incoming_net__port: ${SSB_NET_PORT}
+    SSB_STR_connections_incoming_ws__external: ${EXT_IP}
+    SSB_SET_connections_incoming_ws__port: ${SSB_WS_PORT}
+    SSB_SET_caps: ${SSB_CAPS}
+    OMNIA_STR_ethereum_from: ${ETH_FROM}
+    OMNIA_STR_ethereum_keystore: /home/omnia/keys
+    OMNIA_STR_ethereum_password: /home/omnia/password
+    OMNIA_STR_ethereum_network: ${ETH_NET-mainnet}
+    OMNIA_STR_ethereum_infuraKey: ${INFURAKEY}
+    FILE_PATH_ETH_PASSWORD: /home/omnia/password
+    FILE_CONT_ETH_PASSWORD: ${ETH_PASSWORD}
+    FILE_PATH_ETH_KEY: /home/omnia/keys/key.json
+    FILE_CONT_ETH_KEY: ${ETH_KEY}
+
+services:
+  feed:
+    <<: *default
+    environment:
+      <<: *env
+      OMNIA_FILE_SET: /src/omnia/config/feed.conf
+
+  relay:
+    <<: *default
+    environment:
+      <<: *env
+      OMNIA_FILE_SET: /src/omnia/config/relayer-${ETH_NET-mainnet}.conf

@@ -21,7 +21,7 @@ readSources () {
 			--termseq KILL \
 			--timeout "$OMNIA_SRC_TIMEOUT" \
 			mapSetzer "$_assetPair" \
-			2>/dev/null
+			#2>/dev/null
 	)
 
 	for i in "${!_prices[@]}"; do

@@ -45,13 +45,13 @@ keccak256Hash () {
 price2Hex () {
 	local _price="$1"
 	#convert price to 32 byte hex
-	seth --to-uint256 "$(seth --to-wei "$_price" eth)"
+	seth --to-uint256 "$(seth --to-wei "$_price" eth)" | sed s/0x//
 }
 
 #converts timestamp to 32 byte hex
 time2Hex () {
 	local _time="$1"
-	seth --to-uint256 "$_time"
+	seth --to-uint256 "$_time" | sed s/0x//
 }
 
 getMsgExpiration () {

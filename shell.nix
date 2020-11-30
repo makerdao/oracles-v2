@@ -3,8 +3,7 @@ let
   sources = import ./nix/sources.nix;
 in
 
-{ pkgs ? import sources.nixpkgs {}
-, makerpkgs ? srcs.makerpkgs {}
+{ pkgs ? import sources.dapptools {}
 }@args:
 
 let oracles = import ./. args; in
