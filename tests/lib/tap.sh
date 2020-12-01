@@ -30,6 +30,15 @@ run() {
   if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
   return $ecode
 }
+run_json() {
+  ecode=0
+  { set -x
+    "$@" || ecode=$?
+    { set +x; } >/dev/null 2>&1
+  } 2>$wdir/log >$wdir/output </dev/null
+  if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
+  return $ecode
+}
 capture() {
   { set -x
     "$@"
@@ -147,11 +156,11 @@ assert() {
 }
 
 output(){
-  jq 2>&1 -S "${*-.}" < $wdir/output
+  jq 2>&1 -S "${@-.}" < $wdir/output
 }
 json() {
   jq 2>&1 -S . > $wdir/expect-$test_count.json
-  output "${*-.}" > $wdir/got-$test_count.json
+  output "${@-.}" > $wdir/got-$test_count.json
   local res="$(diff -u $wdir/expect-$test_count.json $wdir/got-$test_count.json)"
   [[ ! $res ]] || { cat <<EOF
 diff: |-
