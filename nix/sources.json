@@ -1,14 +1,14 @@
 {
-    "dapptools": {
+    "makerpkgs": {
         "branch": "master",
-        "description": "Dapp, Seth, Hevm, and more",
-        "homepage": "https://dapp.tools",
-        "owner": "dapphub",
-        "repo": "dapptools",
-        "rev": "9d9dbcc7656f389bdb8fd99a52475c480c8e841d",
-        "sha256": "0j10p4s6z041aajlx17rbf3pcflhxxd05c8y2qfsb06mv5ci24fd",
+        "description": "Common nixpkgs",
+        "homepage": "",
+        "owner": "makerdao",
+        "repo": "makerpkgs",
+        "rev": "0cdc0e74ca1b4c2548d4eb36784ded03b416e8a6",
+        "sha256": "0f58fcn12vmr0l9c151fpymx7y489943gmb5sq5xwn3m5wk33hqs",
         "type": "tarball",
-        "url": "https://github.com/dapphub/dapptools/archive/9d9dbcc7656f389bdb8fd99a52475c480c8e841d.tar.gz",
+        "url": "https://github.com/makerdao/makerpkgs/archive/0cdc0e74ca1b4c2548d4eb36784ded03b416e8a6.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "niv": {

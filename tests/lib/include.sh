@@ -29,11 +29,11 @@ runOmnia() {
     mkdir -p "$_tmp/.ssb"
 
     echo >&2 "# Starting SSB server"
-    ssb-server start >logs/ssb.out 2>&1 &
+    ssb-server start >"logs/${E2E_TARGET-test}-ssb.out" 2>&1 &
     sleep 3
 
     echo >&2 "# Starting Omnia"
-    omnia 2>&1 | tee logs/omnia.out >"$_tmp/omnia.out" &
+    omnia 2>&1 | tee logs/${E2E_TARGET-test}-omnia.out >"$_tmp/omnia.out" &
     grep -q "${E2E_OMNIA_STOP_PHRASE:-Sleeping}" \
       <(tail -f "$_tmp/omnia.out")
     echo >&2 "# Killing Omnia"

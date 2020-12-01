@@ -5,15 +5,17 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 cp -f "$1" $wdir/output
 jqf=".[].value.content|{type,sources,price,priceHex}"
-mapfile -t symbols < <(jq -r "$jqf|.type" "$_path/ssb-messages.json")
+mapfile -t symbols < <(jq -r '.pairs|keys|.[]|sub("/";"")' "$_path/omnia.conf")
 
-plan ${#symbols[@]}
+plan $((${#symbols[@]} * 2))
 
-note <<<"Regression assertions"
+note <<<"Setzer Regression Assertions"
 
 for symbol in "${symbols[@]}"; do
   jqfs="$jqf|select(.type == \"$symbol\")"
 
+  assert "ssb message for $symbol isn't empty" \
+    json "$jqfs != null" <<<"true"
   assert "regression of ssb message for $symbol" \
     json "$jqfs" <<<$(jq "$jqfs" "$_path/ssb-messages.json")
 done

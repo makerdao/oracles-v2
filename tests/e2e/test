@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+set -o pipefail
 
 _path="$(cd ${BASH_SOURCE[0]%/*}; pwd)"
+ecode=0
 proxyUrl=http://localhost:8080
 
 while [[ "$1" ]]; do
@@ -18,17 +20,18 @@ if [[ -z $targets ]]; then
 fi
 
 for target in "${targets[@]}"; do
+  export E2E_TARGET="$target"
   t_path="$_path/$target"
   mkdir -p logs
 
   if [[ $update ]]; then
+    echo >&2 "# Updating regression for target '$target'"
     echo >&2 "# Recording through proxy"
     rm -f "$t_path/replay.mitm"
     mitmdump \
       -w "$t_path/replay.mitm" \
       --set "confdir=$_path/../resources/mitmproxy" \
-      --set upstream_cert=false \
-      >logs/mitm.out 2>&1 &
+      >"logs/$target-rec-mitm.out" 2>&1 &
     sleep 1
 
     (
@@ -38,6 +41,8 @@ for target in "${targets[@]}"; do
     )
     pkill mitmdump
     "$_path/../lib/dedup-mitm" "$t_path/replay.mitm"
+  else
+    echo >&2 "# Testing regression for target '$target'"
   fi
 
   echo >&2 "# Replaying through proxy"
@@ -49,7 +54,7 @@ for target in "${targets[@]}"; do
     --server-replay-refresh \
     --server-replay-kill-extra \
     --server-replay-nopop \
-    >logs/mitm.out 2>&1 &
+    >"logs/$target-replay-mitm.out" 2>&1 &
   sleep 1
 
   output=$(mktemp)
@@ -61,11 +66,14 @@ for target in "${targets[@]}"; do
   echo >&2 "# Killing proxy"
   pkill mitmdump
 
-  if [[ $update ]]; then
-    if "$t_path/test" "$output"; then
-      cp -f "$output" "$t_path/ssb-messages.json"
+  {
+    if [[ $update ]]; then \
+      "$t_path/test" "$output" \
+        && cp -f "$output" "$t_path/ssb-messages.json"
+    else
+      "$t_path/regression" "$output"
     fi
-  else
-    "$t_path/regression" "$output"
-  fi
+  } | tee "logs/$target.tap" || ecode=1
 done
+
+exit $ecode

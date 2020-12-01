@@ -1,8 +1,8 @@
 let
   inherit (builtins) map filter listToAttrs attrValues isString currentSystem;
-  dappPkgs = import sources.dapptools {};
-  inherit (dappPkgs) fetchgit;
-  inherit (dappPkgs.lib.strings) removePrefix;
+  inherit (import sources.nixpkgs {}) pkgs;
+  inherit (pkgs) fetchgit;
+  inherit (pkgs.lib.strings) removePrefix;
 
   getName = x:
    let
@@ -14,20 +14,14 @@ let
   sources = import ./sources.nix;
 in
 
-{ pkgs ? dappPkgs, system ? currentSystem }: rec {
-  nodepkgs = let
+rec {
+  makerpkgs = import sources.makerpkgs {};
+
+ nodepkgs = { pkgs ? makerpkgs.pkgs, system ? currentSystem }: let
     nodepkgs' = import ./nodepkgs.nix { inherit pkgs system; };
     shortNames = listToAttrs (map
       (x: { name = removePrefix "node_" (getName x.name); value = x; })
       (attrValues nodepkgs')
     );
   in nodepkgs' // shortNames;
-
-  ssb-server = nodepkgs.ssb-server.override {
-    buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build ];
-  };
-
-  setzer-mcd = pkgs.callPackage sources.setzer-mcd {};
-
-  omnia = pkgs.callPackage ../omnia { inherit ssb-server setzer-mcd; };
 }
