@@ -147,25 +147,25 @@ updateNodePackages
 
 ### Staging and release process
 
-To create a release candidate for staging, typically after a PR has passed its
-smoke tests and is merged to `master`, checkout `master` and run:
+To create a release candidate (rc) for staging, typically after a PR has
+passed its smoke and regression tests and is merged into `master`, checkout
+`master` and run:
 
 ```
-nix-shell
-release minor
+nix-shell --run "release minor"
 ```
 
 This should bump the version of `omnia` by Semver version level `minor`
-and add a Git tag with the resulting version and the suffix `-rc` which
-indicates a release candidate that is ready for staging.
+and create a new release branch with the resulting version
+(e.g. `release/1.1`) and a tag with the suffix `-rc` which indicates a
+release candidate that is ready for staging.
 
 When a release candidate has been tested in staging and is deemed stable you can
-run the same command but without the Semver version level:
+run the same command in the release branch but without the Semver version level:
 
 ```
-nix-shell
-release
+nix-shell --run release
 ```
 
 This should add a Git tag to the current commit with its current version
-(without suffix) and move the `stable` tag.
+(without suffix) and move the `stable` tag there also.
