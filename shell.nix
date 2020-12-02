@@ -1,9 +1,8 @@
 let
   srcs = import ./nix/srcs.nix;
-  sources = import ./nix/sources.nix;
 in
 
-{ pkgs ? import sources.dapptools {}
+{ pkgs ? srcs.pkgs
 }@args:
 
 let oracles = import ./. args; in

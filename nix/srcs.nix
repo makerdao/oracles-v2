@@ -1,8 +1,8 @@
 let
   inherit (builtins) map filter listToAttrs attrValues isString currentSystem;
-  dappPkgs = import sources.dapptools {};
-  inherit (dappPkgs) fetchgit;
-  inherit (dappPkgs.lib.strings) removePrefix;
+  inherit (import sources.nixpkgs {}) pkgs;
+  inherit (pkgs) fetchgit;
+  inherit (pkgs.lib.strings) removePrefix;
 
   getName = x:
    let
@@ -14,9 +14,15 @@ let
   sources = import ./sources.nix;
 in
 
-{ pkgs ? dappPkgs, system ? currentSystem }: rec {
+rec {
+  inherit pkgs;
+
+  makerpkgs = import sources.makerpkgs {
+    dapptoolsOverrides.current = ./dapptools.nix;
+  };
+
   nodepkgs = let
-    nodepkgs' = import ./nodepkgs.nix { inherit pkgs system; };
+    nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
     shortNames = listToAttrs (map
       (x: { name = removePrefix "node_" (getName x.name); value = x; })
       (attrValues nodepkgs')
@@ -27,7 +33,9 @@ in
     buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build ];
   };
 
-  setzer-mcd = pkgs.callPackage sources.setzer-mcd {};
+  setzer-mcd = makerpkgs.callPackage sources.setzer-mcd {};
 
-  omnia = pkgs.callPackage ../omnia { inherit ssb-server setzer-mcd; };
+  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd; };
+
+  install-omnia = makerpkgs.callPackage ../systemd { inherit ssb-server omnia; };
 }

@@ -1,15 +1,14 @@
 let
-  sources = import ../nix/sources.nix;
+  srcs = import ../nix/srcs.nix;
 in
 
-{ pkgs ? import sources.dapptools {}
-, srcs ? import ../nix/srcs.nix { inherit pkgs; }
+{ pkgs ? srcs.pkgs
+, makerpkgs ? srcs.makerpkgs
 , nodepkgs ? srcs.nodepkgs
 }@args:
 
 let
   oracles = import ./.. args;
-  inherit (import sources.nixpkgs {}) mitmproxy;
 in
 
 pkgs.mkShell rec {
@@ -20,7 +19,7 @@ pkgs.mkShell rec {
 
     nodepkgs.tap-xunit
 
-    pkgs.dapp
+    makerpkgs.dapp
 
     oracles.omnia
     oracles.install-omnia
