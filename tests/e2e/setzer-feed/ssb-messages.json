@@ -176,33 +176,6 @@
     "timestamp": 1603364884784.001
   },
   {
-    "key": "%1+8BL0RHWrMJI07OjjpNum4NTaBo48jMmIzMAiaEbZU=.sha256",
-    "value": {
-      "previous": "%3KtFXAZMye+J5eiQADZRJwBMNytvbumg2wCGmPOlz0g=.sha256",
-      "sequence": 9,
-      "author": "@VhVfpFNLUqyPGZcYRY3S2piRQSDuUtaLiNi4Sx9yI48=.ed25519",
-      "timestamp": 1603364882503,
-      "hash": "sha256",
-      "content": {
-        "type": "LENDUSD",
-        "version": "1.4.0",
-        "price": 0.3535588467,
-        "priceHex": "00000000000000000000000000000000000000000000000004e817e5d8c01300",
-        "time": 1603364881,
-        "timeHex": "000000000000000000000000000000000000000000000000000000005f916811",
-        "hash": "0271e9ddf3b26418cd39b1d1959f3ec9bd6cc3c21e922c7da154bd5d83ff8b22",
-        "signature": "e2581acba06a50aa4f35cd2b0ef55732a16949d918f1804df7b85a29d6e46bed7bfc859ee1dc705ab924f6252c629bde3606e440f5bcca1d26e35c4e47115aa71c",
-        "sources": {
-          "binance": "0.5856300768",
-          "kyber": "0.3529621938",
-          "uniswap": "0.3535588467"
-        }
-      },
-      "signature": "vxhgXVCUpVsBz1PDYqjBIW3YOcuXnRtBDCvH+iK9G25oyIcCUUjL9ajdrfszfocNCh2MgfHy2qEPFAltc1fpAA==.sig.ed25519"
-    },
-    "timestamp": 1603364882503.001
-  },
-  {
     "key": "%3KtFXAZMye+J5eiQADZRJwBMNytvbumg2wCGmPOlz0g=.sha256",
     "value": {
       "previous": "%mfFW6x7TWINrU5hwIzajyJGJ5rJpIgwxLN7nIG840xk=.sha256",
