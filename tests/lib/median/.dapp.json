@@ -1,0 +1,46 @@
+{
+  "contracts": {
+    "ds-test_eb7148d": {
+      "deps": {},
+      "name": "ds-test",
+      "repo": {
+        "name": "ds-test-eb7148d",
+        "ref": "HEAD",
+        "rev": "eb7148d43c1ca6f9890361e2e2378364af2430ba",
+        "url": "https://github.com/dapphub/ds-test"
+      }
+    },
+    "median_bc85f34": {
+      "deps": {
+        "ds-test": "ds-test_eb7148d"
+      },
+      "name": "median",
+      "repo": {
+        "name": "median-bc85f34",
+        "ref": "HEAD",
+        "rev": "bc85f3448da72400095ec249c895b1cb29a6f25a",
+        "url": "https://github.com/makerdao/median"
+      }
+    },
+    "testchain-medians_688ada1": {
+      "deps": {
+        "ds-test": "ds-test_eb7148d",
+        "median": "median_bc85f34"
+      },
+      "name": "testchain-medians",
+      "repo": {
+        "name": "testchain-medians-688ada1",
+        "ref": "HEAD",
+        "rev": "688ada16a3bb74b3677b6faf716345bdadee9671",
+        "url": "https://github.com/makerdao/testchain-medians"
+      }
+    }
+  },
+  "this": {
+    "deps": {
+      "testchain-medians": "testchain-medians_688ada1"
+    },
+    "name": "medianzier-atd"
+  },
+  "version": 1
+}

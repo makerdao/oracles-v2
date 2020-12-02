@@ -2,13 +2,13 @@
 set -o pipefail
 
 _path="$(cd ${BASH_SOURCE[0]%/*}; pwd)"
+
 ecode=0
-proxyUrl=http://localhost:8080
 
 while [[ "$1" ]]; do
   case "$1" in
     --update)
-      update=1;;
+      export E2E_RECORD=1;;
     *)
       targets+=("$1");;
   esac
@@ -21,57 +21,25 @@ fi
 
 for target in "${targets[@]}"; do
   export E2E_TARGET="$target"
-  t_path="$_path/$target"
-  mkdir -p logs
-
-  if [[ $update ]]; then
-    echo >&2 "# Updating regression for target '$target'"
-    echo >&2 "# Recording through proxy"
-    rm -f "$t_path/replay.mitm"
-    mitmdump \
-      -w "$t_path/replay.mitm" \
-      --set "confdir=$_path/../resources/mitmproxy" \
-      >"logs/$target-rec-mitm.out" 2>&1 &
-    sleep 1
-
-    (
-      export HTTP_PROXY="$proxyUrl"
-      export HTTPS_PROXY="$proxyUrl"
-      "$t_path/run" >/dev/null
-    )
-    pkill mitmdump
-    "$_path/../lib/dedup-mitm" "$t_path/replay.mitm"
-  else
-    echo >&2 "# Testing regression for target '$target'"
-  fi
-
-  echo >&2 "# Replaying through proxy"
-  mitmdump \
-    -S "$t_path/replay.mitm" \
-    --set "confdir=$_path/../resources/mitmproxy" \
-    --set upstream_cert=false \
-    -k \
-    --server-replay-refresh \
-    --server-replay-kill-extra \
-    --server-replay-nopop \
-    >"logs/$target-replay-mitm.out" 2>&1 &
-  sleep 1
-
-  output=$(mktemp)
-  (
-    export HTTP_PROXY="$proxyUrl"
-    export HTTPS_PROXY="$proxyUrl"
-    "$t_path/run" > "$output"
-  )
-  echo >&2 "# Killing proxy"
-  pkill mitmdump
+  export E2E_TARGET_DIR="$_path/$target"
 
   {
-    if [[ $update ]]; then \
-      "$t_path/test" "$output" \
-        && cp -f "$output" "$t_path/ssb-messages.json"
+    if [[ $E2E_RECORD ]]; then
+      if [[ -x "$E2E_TARGET_DIR/record" ]]; then
+        echo >&2 "# Recording new regression for target '$target'"
+        "$E2E_TARGET_DIR/record"
+      else
+        echo >&2 "# No $E2E_TARGET_DIR/record  for target '$target', skipping"
+        continue
+      fi
     else
-      "$t_path/regression" "$output"
+      if [[ -x "$E2E_TARGET_DIR/replay" ]]; then
+        echo >&2 "# Testing regression for target '$target'"
+        "$E2E_TARGET_DIR/replay"
+      else
+        echo >&2 "# No $E2E_TARGET_DIR/replay  for target '$target', skipping"
+        continue
+      fi
     fi
   } | tee "logs/$target.tap" || ecode=1
 done

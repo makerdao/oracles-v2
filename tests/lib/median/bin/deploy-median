@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+MEDIAN_ETHUSD=$(dapp create MedianETHUSD)
+MEDIAN_BATUSD=$(dapp create MedianBATUSD)
+
+for v in ${!MEDIAN_*}; do
+  seth send ${!v} 'lift(address[] memory)' "[$ETH_FROM]" >&2
+  echo $v=${!v}
+done

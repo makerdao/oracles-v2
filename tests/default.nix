@@ -9,6 +9,7 @@ in
 
 let
   oracles = import ./.. args;
+  median = import ./lib/median args;
 in
 
 pkgs.mkShell rec {
@@ -16,10 +17,11 @@ pkgs.mkShell rec {
   buildInputs = with pkgs; [
     procps jq mitmproxy
     go-ethereum
+    makerpkgs.dapp
 
     nodepkgs.tap-xunit
 
-    makerpkgs.dapp
+    median
 
     oracles.omnia
     oracles.install-omnia
