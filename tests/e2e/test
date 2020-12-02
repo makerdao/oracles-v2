@@ -7,7 +7,7 @@ ecode=0
 
 while [[ "$1" ]]; do
   case "$1" in
-    --update)
+    --update|--record)
       export E2E_RECORD=1;;
     *)
       targets+=("$1");;
@@ -19,6 +19,8 @@ if [[ -z $targets ]]; then
   targets=($(cd "$_path"; find * -maxdepth 0 -type d ! -name "_*"))
 fi
 
+mkdir -p logs
+
 for target in "${targets[@]}"; do
   export E2E_TARGET="$target"
   export E2E_TARGET_DIR="$_path/$target"
@@ -26,18 +28,18 @@ for target in "${targets[@]}"; do
   {
     if [[ $E2E_RECORD ]]; then
       if [[ -x "$E2E_TARGET_DIR/record" ]]; then
-        echo >&2 "# Recording new regression for target '$target'"
+        echo >&2 "# Record new regression for target '$target'"
         "$E2E_TARGET_DIR/record"
       else
-        echo >&2 "# No $E2E_TARGET_DIR/record  for target '$target', skipping"
+        echo >&2 "# No $E2E_TARGET_DIR/record for target '$target', skipped"
         continue
       fi
     else
       if [[ -x "$E2E_TARGET_DIR/replay" ]]; then
-        echo >&2 "# Testing regression for target '$target'"
+        echo >&2 "# Test regression for target '$target'"
         "$E2E_TARGET_DIR/replay"
       else
-        echo >&2 "# No $E2E_TARGET_DIR/replay  for target '$target', skipping"
+        echo >&2 "# No $E2E_TARGET_DIR/replay  for target '$target', skipped"
         continue
       fi
     fi

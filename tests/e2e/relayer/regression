@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+
+. "$_path/../../lib/tap.sh"
+
+mapfile -t pairs < <(jq -r '.pairs|keys|.[]|sub("/";"")|select(. != "ETHBTC")' <"$_path/omnia.conf")
+
+cp -f "$1" $wdir/output
+
+plan $((${#pairs[@]} * 2))
+
+note <<<"Relayer Regression Assertions"
+
+for pair in "${pairs[@]}"; do
+  assert "Oracle price for $pair not null" \
+    json ".$pair != null" <<<"true"
+  assert "Oracle price for $pair" \
+    json ".$pair" <<<$(jq ".$pair" "$_path/good.json")
+done

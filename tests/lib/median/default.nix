@@ -3,12 +3,12 @@ let
   sources = import ../../../nix/sources.nix;
 in
 
-{ makerpkgs ? import sources.makerpkgs {}
+{ makerpkgs ? srcs.makerpkgs
 , srcRoot ? null
 , ...
 }@args:
 
-with makerpkgs.pkgs;
+with makerpkgs;
 
 let
   inherit (builtins) mapAttrs attrValues;
@@ -23,7 +23,7 @@ let
   ) specs.this.deps);
 in
 
-pkgs.makerScriptPackage {
+makerScriptPackage {
   name = "median-deploy";
 
   # Specify files to add to build environment

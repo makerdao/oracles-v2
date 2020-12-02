@@ -7,7 +7,7 @@ _include() {
     rm -rf \"$E2E_HOME\"
   "
   trap 'trap - EXIT; bash -c "$E2E_EXIT_HOOK"' EXIT
-  set -e
+  set -eo pipefail
 }
 _include
 
@@ -15,7 +15,7 @@ startProxyRecord() {
   local proxyUrl=http://localhost:8080
   local _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
-  echo >&2 "# Recording through proxy"
+  echo >&2 "# Record through proxy"
   rm -f "$E2E_TARGET_DIR/replay.mitm"
   {
     pkill mitmdump || true
@@ -24,7 +24,7 @@ startProxyRecord() {
       --set "confdir=$_path/../resources/mitmproxy"
 
     "$_path/dedup-mitm" "$E2E_TARGET_DIR/replay.mitm"
-  } >"$E2E_LOGS/$target-rec-mitm.out" 2>&1 &
+  } >"$E2E_LOGS/${E2E_TARGET-test}-rec-mitm.out" 2>&1 &
   E2E_EXIT_HOOK+='pkill mitmdump;'
 
   export HTTP_PROXY="$proxyUrl"
@@ -36,7 +36,7 @@ startProxyReplay() {
   local proxyUrl=http://localhost:8080
   local _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
-  echo >&2 "# Replaying through proxy"
+  echo >&2 "# Replay through proxy"
   pkill mitmdump || true
   mitmdump \
     -S "$E2E_TARGET_DIR/replay.mitm" \
@@ -46,7 +46,7 @@ startProxyReplay() {
     --server-replay-refresh \
     --server-replay-kill-extra \
     --server-replay-nopop \
-    >"logs/$target-replay-mitm.out" 2>&1 &
+    >"logs/${E2E_TARGET-test}-replay-mitm.out" 2>&1 &
   E2E_EXIT_HOOK+='pkill mitmdump;'
 
   export HTTP_PROXY="$proxyUrl"
@@ -94,7 +94,7 @@ ssbPublishMessages() {
 }
 
 startSSB() {
-  echo >&2 "# Starting SSB server"
+  echo >&2 "# Start SSB server"
   mkdir -p "$E2E_HOME/.ssb"
   HOME="$E2E_HOME" \
     ssb-server start >"$E2E_LOGS/${E2E_TARGET-test}-ssb.out" 2>&1 &
@@ -105,20 +105,17 @@ startSSB() {
 
 startGeth() {
   local _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
-  echo >&2 "# Starting Geth testnet"
+  echo >&2 "# Start Geth testnet"
   {
     HOME="$E2E_HOME" \
-      dapp testnet </dev/null
-      echo DAPP_EXIT
-  } 2>&1 | tee "$E2E_LOGS/${E2E_TARGET-test}-dapp.out" >"$E2E_HOME"/dapp.out &
+      dapp testnet 2>&1 </dev/null || echo DAPP_EXIT
+  } >"$E2E_LOGS/${E2E_TARGET-test}-dapp.out" &
   E2E_EXIT_HOOK+='pkill dapp;'
 
   grep -q 'DAPP_EXIT\|0x[a-zA-Z0-9]\{40\}' \
-    <(tail -f "$E2E_HOME"/dapp.out)
+    <(tail -f "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
 
-  cat "$E2E_HOME/.dapp/testnet/8545/geth.log" > "$E2E_LOGS/${E2E_TARGET-test}-geth.out" &
-
-  export ETH_FROM=$(grep -o '0x[a-zA-Z0-9]\{40\}' < "$E2E_HOME"/dapp.out)
+  export ETH_FROM=$(grep -o '0x[a-zA-Z0-9]\{40\}' < "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
   export ETH_KEYSTORE="$E2E_HOME"/.dapp/testnet/8545/keystore
   export ETH_PASSWORD="$_path/../resources/password"
   export ETH_RPC_URL="http://127.0.0.1:8545"
@@ -127,13 +124,12 @@ startGeth() {
 }
 
 startOmnia() {
-  echo >&2 "# Starting Omnia"
+  echo >&2 "# Start omnia"
   {
-    HOME="$E2E_HOME" omnia
-    echo OMNIA_EXIT
-  } 2>&1 | tee "$E2E_LOGS/${E2E_TARGET-test}-omnia.out" >"$E2E_HOME"/omnia.out &
+    HOME="$E2E_HOME" omnia 2>&1 || echo OMNIA_EXIT
+  } >"$E2E_LOGS/${E2E_TARGET-test}-omnia.out" &
 
   grep -q "OMNIA_EXIT\|${1:-${E2E_OMNIA_STOP_PHRASE:-Sleeping}}" \
-    <(tail -f "$E2E_HOME"/omnia.out)
+    <(tail -f "$E2E_LOGS/${E2E_TARGET-test}-omnia.out")
   pkill omnia
 }
