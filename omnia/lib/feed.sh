@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 readSourcesAndBroadcastAllPriceMessages()  {
-	if [[ "${#assetPairs[@]}" -eq 0 || "${#OMNIA_FEED_SOURCES[@]}" -eq 0 || "${#OMNIA_FEED_PUBLISHERS[@]}" -eq 0 ]]
+	if [[ "${#assetPairs[@]}" -eq 0 || "${#OMNIA_FEED_SOURCES[@]}" -eq 0 ]]
 	then
 		error "Error - Loop in readSourcesAndBroadcastAllPriceMessages"
 		return 1
@@ -33,13 +33,10 @@ readSourcesAndBroadcastAllPriceMessages()  {
 				continue
 			fi
 
-			unset _unpublishedPairs[$_assetPair]
+			log "Publishing $_assetPair price message"
+			ssb-server publish . <<< "$_message" || error "Failed publishing $_assetPair price"
 
-			local _publisher
-			for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
-				log "Publishing $_assetPair price message with $_publisher"
-				"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
-			done
+			unset _unpublishedPairs[$_assetPair]
 		done < <(readSource "$_src" "${!_unpublishedPairs[@]}")
 	done
 }

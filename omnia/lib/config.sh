@@ -48,18 +48,6 @@ importSources () {
 	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
 }
 
-importPublishers () {
-	local _config="$1"
-	readarray -t OMNIA_FEED_PUBLISHERS < <(jq -r '.publishers[]' "$_config")
-	[[ "${#OMNIA_FEED_PUBLISHERS[@]}" -gt 0 ]] || OMNIA_FEED_PUBLISHERS=("oracle-transporter-ssb")
-}
-
-importPullers () {
-	local _config="$1"
-	readarray -t OMNIA_MESSAGE_PULLERS < <(jq -r '.pullers[]' "$_config")
-	[[ "${#OMNIA_MESSAGE_PULLERS[@]}" -gt 0 ]] || OMNIA_MESSAGE_PULLERS=("oracle-transporter-ssb")
-}
-
 importNetwork () {
 	local _json="$1"
 	#this parameter is not needed when using a custom rpc node
