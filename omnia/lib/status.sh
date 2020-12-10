@@ -67,7 +67,7 @@ isMsgExpired () {
 	fi
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
 	if [ "$(isExpired "$_lastTime" "$_expirationInterval")" == "true" ]; then
-		log "Message timestamp is expired, skipping..."
+		log "Message timestamp is expired, skipping... $_assetPair"
 		echo true
 	else
 		echo false
@@ -136,7 +136,8 @@ isMsgStale () {
 		echo false
 		return 1
 	fi
-	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
+	echo >&2 isStale "$_oldPrice" "$_newPrice" "$_spreadLimit"
+	isStale "$_oldPrice" "$_newPrice" "$_spreadLimit"
 }
 
 #is spread between existing Oracle price greater than spread limit
@@ -157,7 +158,7 @@ isOracleStale () {
 		echo false
 		return 1
 	fi
-	[ "$(isStale "$_oldPrice" "$_newPrice" "$_spreadLimit")" == "true" ] && echo true || echo false
+	isStale "$_oldPrice" "$_newPrice" "$_spreadLimit"
 }
 
 #is timestamp of message more recent than timestamp of last Oracle update

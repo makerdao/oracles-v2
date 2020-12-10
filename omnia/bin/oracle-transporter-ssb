@@ -70,6 +70,12 @@ publishMsg() {
 	importAssetPairsEnv "$OMNIA_CONFIG"
 } >/dev/null 2>&1
 
+for x in ${!assetInfo[*]}; do
+	y=${x/\/}
+	y=${y^^}
+	assetInfo[$y]="${assetInfo[$x]}"
+done
+
 case "$_command" in
 	publish) publishMsg "$2";;
 	pull) pullLatestFeedMsgOfType "$2";;
