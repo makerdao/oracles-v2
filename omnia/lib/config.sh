@@ -82,7 +82,7 @@ importNetwork () {
 	esac
 	#validate connection to ethereum network
 	[[ $(seth --rpc-url "$ETH_RPC_URL" block latest number) =~ ^[1-9]*[0-9]*$ ]] || errors+=("Error - Unable to connect to Ethereum network.\nValid options are: ethlive, mainnet, ropsten, kovan, rinkeby, goerli, or a custom endpoint")
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 	export ETH_RPC_URL
 }
 
@@ -109,7 +109,7 @@ importEthereumEnv () {
 	[[ -f "$ETH_PASSWORD" ]] || errors+=("Error - Ethereum Password Path is invalid, file does not exist.")
 	export ETH_PASSWORD
 
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importAssetPairsEnv () {
@@ -125,6 +125,7 @@ importAssetPairsEnv () {
 
 	[[ $OMNIA_MODE == "FEED" ]] && importAssetPairsFeed
 	[[ $OMNIA_MODE == "RELAYER" ]] && importAssetPairsRelayer
+	true
 }
 
 importAssetPairsFeed () {
@@ -145,7 +146,7 @@ importAssetPairsFeed () {
 		_msgSpread=$(getMsgSpread "$assetPair")
 		[[ "$_msgSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgSpread field, must be positive integer or float.")
 	done
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importAssetPairsRelayer () {
@@ -230,13 +231,13 @@ importOptionsEnv () {
 		fi
 	fi
 	
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importServicesEnv () {
 	local _config="$1"
 
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importScuttlebotEnv () {
