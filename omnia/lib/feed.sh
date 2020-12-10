@@ -35,11 +35,7 @@ readSourcesAndBroadcastAllPriceMessages()  {
 
 			unset _unpublishedPairs[$_assetPair]
 
-			local _publisher
-			for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
-				log "Publishing $_assetPair price message with $_publisher"
-				"$_publisher" publish "$_message" || error "Failed publishing $_assetPair price with $_publisher"
-			done
+			transportPublish "$_message"
 		done < <(readSource "$_src" "${!_unpublishedPairs[@]}")
 	done
 }
@@ -126,16 +122,6 @@ validateAndConstructMessage() {
 	if [[ "$(isPriceValid "$median")" == "false" ]]; then
 		error "Error - Failed to calculate valid median: ($median)"
 		debug "Sources = $sourcePrices"
-		return 1
-	fi
-
-	#Get latest message for asset pair
-	latestMsg=$(pullLatestFeedMsgOfType "$SCUTTLEBOT_FEED_ID" "$_assetPair")
-
-	if [ "$(isEmpty "$latestMsg")" == "false" ] \
-		&& [ "$(isAssetPair "$_assetPair" "$latestMsg")" == "true" ] \
-		&& [ "$(isMsgExpired "$_assetPair" "$latestMsg")" == "false" ] \
-		&& [ "$(isMsgStale "$_assetPair" "$latestMsg" "$median")" == "false" ]; then
 		return 1
 	fi
 
