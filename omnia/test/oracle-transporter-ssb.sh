@@ -3,7 +3,7 @@ TEST_PATH=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 bin_path="$TEST_PATH/../bin"
 
 export TEST_PATH
-export TEST_SET_NON_STALE_TIMESTAMPS
+export TEST_SET_NON_STALE_MESSAGES
 
 timestamp() {
 	echo $(($(date +%s)+$1))
@@ -21,8 +21,8 @@ ssb-server() {
 			cat > $wdir/output
 			;;
 		createUserStream)
-			if [[ $TEST_SET_NON_STALE_TIMESTAMPS ]]; then
-				jq ".[].value.content.time=$(timestamp 0) | .[]" "$TEST_PATH/ssb-messages.json"
+			if [[ $TEST_SET_NON_STALE_MESSAGES ]]; then
+				jq ".[].value.content.time=$(timestamp -1000) | .[].value.content.price=0.223 | .[]" "$TEST_PATH/ssb-messages.json"
 			else
 				jq ".[].value.content.time=$(timestamp -2000) | .[]" "$TEST_PATH/ssb-messages.json"
 			fi
@@ -40,15 +40,16 @@ export ETH_PASSWORD="$TEST_PATH/../../tests/resources/password"
 
 . "$TEST_PATH/../tap.sh" 2>/dev/null || . "$TEST_PATH/../../tests/lib/tap.sh"
 
-
 currentTime=$(timestamp 0)
-assert "broadcast price message" run "$bin_path"/oracle-transporter-ssb publish '{"hash":"AB","price":0.222,"priceHex":"ABC","signature":"CD","sources":{"s1":"0.1","s2":"0.2","s3":"0.3"},"time":'$currentTime',"timeHex":"DEF","type":"BTCUSD","version":"dev-test"}'
-assert "verify the broadcast message" json . <<<'{"price":0.222,"hash":"AB","priceHex":"ABC","signature":"CD","sources":{"s1":"0.1","s2":"0.2","s3":"0.3"},"time":'$currentTime',"timeHex":"DEF","type":"BTCUSD","version":"dev-test"}'
 
 "$bin_path"/oracle-transporter-ssb pull BTC/USD > $wdir/output
 assert "pulled price message" json '.type' <<<'"BTCUSD"'
 
-TEST_SET_NON_STALE_TIMESTAMPS=1
+echo '{}' > $wdir/output
+assert "broadcast price message" run "$bin_path"/oracle-transporter-ssb publish '{"hash":"AB","price":0.222,"priceHex":"ABC","signature":"CD","sources":{"s1":"0.1","s2":"0.2","s3":"0.3"},"time":'$currentTime',"timeHex":"DEF","type":"BTCUSD","version":"dev-test"}'
+assert "verify the broadcast message" json . <<<'{"price":0.222,"hash":"AB","priceHex":"ABC","signature":"CD","sources":{"s1":"0.1","s2":"0.2","s3":"0.3"},"time":'$currentTime',"timeHex":"DEF","type":"BTCUSD","version":"dev-test"}'
+
+TEST_SET_NON_STALE_MESSAGES=1
 echo '{}' > $wdir/output
 assert "broadcast message with non-stale latest message" run "$bin_path"/oracle-transporter-ssb publish '{"hash":"AB","price":0.222,"priceHex":"ABC","signature":"CD","sources":{"s1":"0.1","s2":"0.2","s3":"0.3"},"time":'$currentTime',"timeHex":"DEF","type":"BTCUSD","version":"dev-test"}'
 assert "no broadcast should have been done" json '.' <<<'{}'
