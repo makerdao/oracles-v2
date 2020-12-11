@@ -8,11 +8,9 @@ lib_path="$root_path/lib"
 
 # Mock setzer
 transport-mock() {
-	echo >&2 "$@"
 	case "$1" in
 		publish)
-			echo >&2 "$3"
-			echo "$3" > $wdir/output
+			echo "$2" >> $wdir/output
 			;;
 		pull)
 			cat "$test_path/transport-message.json"
@@ -22,20 +20,52 @@ transport-mock() {
 }
 export -f transport-mock
 
+transport-mock-other() {
+	case "$1" in
+		publish)
+			jq '.time += 10' <<<"$2" >> $wdir/output
+			;;
+		*) return 1;;
+	esac
+}
+export -f transport-mock-other
+
+transport-mock-latest() {
+	case "$1" in
+		pull)
+			jq '.time += 10' "$test_path/transport-message.json"
+			;;
+		*) return 1;;
+	esac
+}
+export -f transport-mock-latest
+
 transport-mock-fail() {
 	return 1
 }
+export -f transport-mock-fail
 
 OMNIA_SRC_TIMEOUT=60
-OMNIA_FEED_PUBLISHERS=(transport-mock)
-OMNIA_MESSAGE_PULLERS=(transport-mock)
+transportMessage="$(jq -c . "$test_path/transport-message.json")"
 
 . "$root_path/tap.sh" 2>/dev/null || . "$root_path/../tests/lib/tap.sh"
 
-assert "read sources from setzer" run transportPublish "$(cat "$test_path/transport-message.json")"
-assert "length of sources" json '.type' <<<'"BTCUSD"'
-assert "median" json '.median' <<<"0.2"
+rm -f $wdir/output
+OMNIA_FEED_PUBLISHERS=(transport-mock)
+assert "publish to transport" run transportPublish "BTC/USD" "$transportMessage"
+assert "type should be BTCUSD" json '.type' <<<'"BTCUSD"'
+assert "time should be set" json '.time' <<<"1607032851"
 
-assert "read sources from setzer" run transportPublish "$(cat "$test_path/transport-message.json")"
-assert "length of sources" json '.type' <<<'"BTCUSD"'
-assert "median" json '.median' <<<"0.2"
+rm -f $wdir/output
+OMNIA_FEED_PUBLISHERS=(transport-mock transport-mock-other)
+assert "publish to two transports" run transportPublish "BTC/USD" "$transportMessage"
+assert "type should be two BTCUSD" json -s '[.[].type]' <<<'["BTCUSD","BTCUSD"]'
+assert "time should be separate times " json -s '[.[].time]' <<<"[1607032851,1607032861]"
+
+OMNIA_FEED_PUBLISHERS=(transport-mock-fail)
+assert "should fail if transport exits non-zero" fail transportPublish "BTC/USD" "$transportMessage"
+
+OMNIA_MESSAGE_PULLERS=(transport-mock transport-mock-latest)
+assert "pull message from two transports" run_json transportPull f33d1d "BTC/USD"
+assert "type should be BTCUSD" json '.type' <<<'"BTCUSD"'
+assert "time should be from latest message" json '.time' <<<"1607032861"

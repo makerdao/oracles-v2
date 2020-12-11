@@ -24,7 +24,7 @@ transportPull() {
 	for _puller in "${OMNIA_MESSAGE_PULLERS[@]}"; do
 		log "Pulling $_assetPair price message with $_puller"
 
-		_msg=$("$_puller" pull "$_feed" "$_message" | jq -c)
+		_msg=$("$_puller" pull "$_feed" "$_assetPair" | jq -c)
 
 		if [[ -n $_msg ]]; then
 			_msgs["$_puller"]="$_msg"
@@ -36,4 +36,3 @@ transportPull() {
 	# Return the latest of the messages pulled.
 	jq -se 'max_by(.time)' <<<"${_msgs[@]}"
 }
-

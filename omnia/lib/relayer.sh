@@ -61,7 +61,7 @@ pullLatestPricesOfAssetPair () {
         # Grab latest price msg of asset from feed then verify price msg is
         # valid and not expired.
         local priceEntry
-        if priceEntry=$(transportPull "$feed" "$_assetPair")
+        if priceEntry=$(transportPull "$feed" "$_assetPair") \
         && [ -n "$priceEntry" ] \
         && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] \
         && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] \
