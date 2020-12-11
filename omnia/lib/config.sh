@@ -165,6 +165,8 @@ importAssetPairsFeed () {
 
 	#Write values as comma seperated list to associative array
 	while IFS="=" read -r assetPair info; do
+		assetPair="${assetPair^^}"
+		assetPair="${assetPair/\/}"
 		assetInfo[$assetPair]="$info"
 	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .msgSpread)"' "$_config")
 
@@ -187,6 +189,8 @@ importAssetPairsRelayer () {
 	local _oracleSpread
 
 	while IFS="=" read -r assetPair info; do
+		assetPair="${assetPair^^}"
+		assetPair="${assetPair/\/}"
 		assetInfo[$assetPair]="$info"
 	done < <(jq -r '.pairs | keys[] as $assetPair | "\($assetPair)=\(.[$assetPair] | .msgExpiration),\(.[$assetPair] | .oracle),\(.[$assetPair] | .oracleExpiration),\(.[$assetPair] | .oracleSpread)"' "$_config")
 
@@ -253,8 +257,7 @@ importOptionsEnv () {
 		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
 		export SETZER_MIN_MEDIAN
 
-		local usesGofer=$(jq '.sources | index("gofer") != null' <<<"$_json")
-		if [[ $usesGofer == true ]]; then
+		if jq -e '.sources | index("gofer") != null' <<<"$_json"; then
 			OMNIA_GOFER_CONFIG="${OMNIA_GOFER_CONFIG:-$(echo "$_json" | jq -r '.goferConfig // "./gofer.json"')}"
 			[[ -e "$OMNIA_GOFER_CONFIG" ]] || errors+=("Error - Gofer config file '$OMNIA_GOFER_CONFIG' doesn't exist.")
 			export OMNIA_GOFER_CONFIG
