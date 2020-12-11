@@ -14,6 +14,7 @@ isEmpty () {
 #is message of type asset
 isAssetPair () {
 	local _assetPair="$1"
+	_assetPair="${_assetPair^^}"
 	_assetPair="${_assetPair/\/}"
 	local _msg="$2"
 	[ "$(echo "$_msg" | jq --arg _assetPair "$_assetPair" '.type == $_assetPair')" == "true" ] && echo true || echo false
