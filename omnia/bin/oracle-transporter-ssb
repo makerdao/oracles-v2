@@ -57,7 +57,8 @@ pullLatestFeedMsgOfType() {
 publishMsg() {
 	local _msg="$1"
 	local _assetPair=$(jq -r .type <<<"$_msg")
-	if isntStale "$(pullLatestFeedMsgOfType "$_assetPair")" "$_msg"; then
+	local _feedId=$(getId)
+	if isntStale "$(pullLatestFeedMsgOfType "$_feedId" "$_assetPair")" "$_msg"; then
 		echo >&2 "Scuttlebot Info: Not publishing, last message not stale."
 	else
 		ssb-server publish . <<<"$_msg"
