@@ -24,6 +24,8 @@ readSourcesAndBroadcastAllPriceMessages()  {
 				continue
 			fi
 			local _assetPair=$(jq -r .asset <<<"$_json")
+			_assetPair="${_assetPair^^}"
+			_assetPair="${_assetPair/\/}"
 			local _median=$(jq -r .median <<<"$_json")
 			local _sources=$(jq -rS '.sources' <<<"$_json")
 			local	_message=$(validateAndConstructMessage "$_assetPair" "$_median"	"$_sources")
@@ -35,7 +37,7 @@ readSourcesAndBroadcastAllPriceMessages()  {
 
 			unset _unpublishedPairs[$_assetPair]
 
-			transportPublish "$_message"
+			transportPublish "$_assetPair" "$_message"
 		done < <(readSource "$_src" "${!_unpublishedPairs[@]}")
 	done
 }
