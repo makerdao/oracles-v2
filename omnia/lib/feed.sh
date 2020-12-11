@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 readSourcesAndBroadcastAllPriceMessages()  {
-	if [[ "${#assetPairs[@]}" -eq 0 || "${#OMNIA_FEED_SOURCES[@]}" -eq 0 || "${#OMNIA_FEED_PUBLISHERS[@]}" -eq 0 ]]
+	if [[ "${#assetPairs[@]}" -eq 0 || "${#OMNIA_FEED_SOURCES[@]}" -eq 0 || "${#OMNIA_TRANSPORTS[@]}" -eq 0 ]]
 	then
 		error "Error - Loop in readSourcesAndBroadcastAllPriceMessages"
 		return 1
