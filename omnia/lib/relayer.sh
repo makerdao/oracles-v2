@@ -10,7 +10,10 @@ updateOracle () {
 
         #get quorum for asset pair
         _quorum=$(pullOracleQuorum "$assetPair")
-        if [[ -z "$_quorum" ]] || [[ "$_quorum" -le 0 ]]; then error "Error - Invalid quorum, skipping..."; continue; fi
+        if [[ -z "$_quorum" || "$_quorum" -le 0 ]]; then
+          error "Error - Invalid quorum, skipping..."
+          continue
+        fi
 
         pullLatestPricesOfAssetPair "$assetPair" "$_quorum"
 
@@ -52,14 +55,17 @@ pullLatestPricesOfAssetPair () {
     #scrape all feeds
     for feed in "${_randomizedFeeds[@]}"; do
         #stop collecting messages once quorum has been achieved
-        if [ "${#entries[@]}" -eq "$_quorum" ]; then log "Collected enough messages for quorum"; return; fi
+        if [ "${#entries[@]}" -eq "$_quorum" ]; then
+          log "Collected enough messages for quorum"
+          break
+        fi
  
         log "Polling feed: $feed"
-        #grab latest price msg of asset from feed
-        priceEntry=$(pullLatestFeedMsgOfType "$feed" "$_assetPair")
-
-        #verify price msg is valid and not expired
-        if [ -n "$priceEntry" ] \
+        # Grab latest price msg of asset from feed then verify price msg is
+        # valid and not expired.
+        local priceEntry
+        if priceEntry=$(transportPull "$feed" "$_assetPair") \
+        && [ -n "$priceEntry" ] \
         && [ "$(isAssetPair "$_assetPair" "$priceEntry")" == "true" ] \
         && [ "$(isMsgExpired "$_assetPair" "$priceEntry")" == "false" ] \
         && [ "$(isMsgNew "$_assetPair" "$priceEntry")" == "true" ]

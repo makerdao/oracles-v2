@@ -46,6 +46,9 @@ conf=$(jq --arg id $(ssbId) '.feeds = [ $id ]' <<<"$conf")
 conf=$(jq '.ethereum.network = "http://127.0.0.1:8545"' <<<"$conf")
 echo "$conf" > "$OMNIA_CONFIG"
 
+#echo >&2 "# HOME at $E2E_HOME"
+#tail -f /dev/null
+
 startOmnia
 
 echo >&2 "# Read oracle prices"
