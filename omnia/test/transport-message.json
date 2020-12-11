@@ -1,0 +1,12 @@
+{
+  "author": "@i40pt/QgqhjIUOvq2166WZr5bXMGt/8/Zr5GD8yQRvA=.ed25519",
+  "version": "1.4.2",
+  "time": 1607032851,
+  "timeHex": "000000000000000000000000000000000000000000000000000000005fc96013",
+  "msgID": "%iTFaC75c0CVAQ7DI3KLKiyw0mSwfXAwzYUf+zO8yjnY=.sha256",
+  "previous": "%6kqhofyUuixjtm19aya4vgJV0zutYgwqhv5RpLk3fiw=.sha256",
+  "type": "BTCUSD",
+  "price": 19468.18,
+  "priceHex": "00000000000000000000000000000000000000000000041f5f45632964420000",
+  "signature": "3fc9535cba4a8ae887713991fd43479958d2ff70f2f3269d64d0aae18cb7cfbc6ffa7deaf5993ff79f8e91c9da281b15662a9b69f1637499a0a9cfdb921ddfed1c"
+}
