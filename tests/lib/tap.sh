@@ -22,21 +22,30 @@ log() {
 }
 note() { sed 's/^/# /'; }
 run() {
-  ecode=0
+  local ecode=0
   { set -x
     "$@" || ecode=$?
     { set +x; } >/dev/null 2>&1
   } >$wdir/log 2>&1 </dev/null
-  if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
+  if [[ $ecode -eq 0 ]]; then rm -f $wdir/log; fi
   return $ecode
 }
+fail() {
+  local ecode=0
+  { set -x
+    "$@" || ecode=$?
+    { set +x; } >/dev/null 2>&1
+  } >$wdir/log 2>&1 </dev/null
+  if [[ $ecode -ne 0 ]]; then rm -f $wdir/log; else return 1; fi
+  return 0
+}
 run_json() {
-  ecode=0
+  local ecode=0
   { set -x
     "$@" || ecode=$?
     { set +x; } >/dev/null 2>&1
   } 2>$wdir/log >$wdir/output </dev/null
-  if [[ $ecode = 0 ]]; then rm -f $wdir/log; fi
+  if [[ $ecode -eq 0 ]]; then rm -f $wdir/log; fi
   return $ecode
 }
 capture() {
@@ -135,7 +144,7 @@ assert() {
     res=$(cat $wdir/res); rm -f $wdir/res
   fi
 
-  if [[ $ecode == 0 && ! $res ]]; then
+  if [[ $ecode -eq 0 && ! $res ]]; then
     echo "ok $test_count - $desc> $@"
   else
     ((failed_tests+=1))
