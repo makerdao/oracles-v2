@@ -54,40 +54,32 @@ time2Hex () {
 	seth --to-uint256 "$_time" | sed s/0x//
 }
 
-getMsgExpiration () {
+getAssetInfo () {
 	local _assetPair="$1"
-	local _msgExpiration
-	_msgExpiration=$(cut -d ',' -f1 <<<"${assetInfo[$_assetPair]}")
-	echo "$_msgExpiration"
+	_assetPair="${_assetPair^^}"
+	_assetPair="${_assetPair/\/}"
+	echo "${assetInfo[$_assetPair]}"
+}
+
+getMsgExpiration () {
+	getAssetInfo "$1" | cut -d ',' -f1
 }
 
 getMsgSpread () {
-	local _assetPair="$1"
-	local _msgSpread
-	[[ $OMNIA_MODE == "FEED" ]] && _msgSpread=$(cut -d ',' -f2 <<<"${assetInfo[$_assetPair]}")
-	echo "$_msgSpread"
+	[[ $OMNIA_MODE == "FEED" ]] && getAssetInfo "$1" | cut -d ',' -f2
 }
 
 #get the Oracle contract of an asset pair
 getOracleContract () {
-	local _assetPair="$1"
-	local _address
-	[[ $OMNIA_MODE == "RELAYER" ]] && _address=$(cut -d ',' -f2 <<<"${assetInfo[$_assetPair]}")
-	echo "$_address"
+	[[ $OMNIA_MODE == "RELAYER" ]] && getAssetInfo "$1" | cut -d ',' -f2
 }
 
 getOracleExpiration () {
-	local _assetPair="$1"
-	local _oracleExpiration
-	[[ "$OMNIA_MODE" == "RELAYER" ]] && _oracleExpiration=$(cut -d ',' -f3 <<<"${assetInfo[$_assetPair]}")
-	echo "$_oracleExpiration"
+	[[ "$OMNIA_MODE" == "RELAYER" ]] && getAssetInfo "$1" | cut -d ',' -f3
 }
 
 getOracleSpread () { 
-	local _assetPair="$1"
-	local _oracleSpread
-	[[ "$OMNIA_MODE" == "RELAYER" ]] && _oracleSpread=$(cut -d ',' -f4 <<<"${assetInfo[$_assetPair]}")
-	echo "$_oracleSpread"
+	[[ "$OMNIA_MODE" == "RELAYER" ]] && getAssetInfo "$1" | cut -d ',' -f4
 }
 
 signMessage () {
