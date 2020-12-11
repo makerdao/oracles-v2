@@ -29,8 +29,8 @@ getId() {
 
 #optimized message search algorithm
 pullLatestFeedMsgOfType() {
-	local _feed=$(getId)
-	local _assetPair="$1"
+	local _feed="$1"
+	local _assetPair="$2"
 	_assetPair=${_assetPair/\/}
 	_assetPair=${_assetPair^^}
 	ssb-server createUserStream \
@@ -72,5 +72,5 @@ publishMsg() {
 
 case "$_command" in
 	publish) publishMsg "$2";;
-	pull) pullLatestFeedMsgOfType "$2";;
+	pull) pullLatestFeedMsgOfType "$2" "$3";;
 esac

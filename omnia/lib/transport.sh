@@ -15,16 +15,25 @@ transportPublish() {
 }
 
 transportPull() {
-	local assetPair="$1"
-	local puller
-	for puller in "${OMNIA_MESSAGE_PULLERS[@]}"; do
-		log "Pulling $assetPair price message with $puller"
+	local _feed="$1"
+	local _assetPair="$2"
+	local _puller
+	local _msg
+	local -A _msgs
 
-		if "$puller" pull "$_message" | jq -c; then
-			true
+	for _puller in "${OMNIA_MESSAGE_PULLERS[@]}"; do
+		log "Pulling $_assetPair price message with $_puller"
+
+		_msg=$("$_puller" pull "$_feed" "$_message" | jq -c)
+
+		if [[ -n $_msg ]]; then
+			_msgs["$_puller"]="$_msg"
 		else
-			error "Failed pulling $assetPair price with $puller"
+			error "Failed pulling $_assetPair price from feed $_feed with $_puller"
 		fi
 	done
+
+	# Return the latest of the messages pulled.
+	jq -se 'max_by(.time)' <<<"${_msgs[@]}"
 }
 
