@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+_here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
+_command="$1"
+set -x
+case "$_command" in
+	publish) spire broadcast-price <<<"$2";;
+	pull)
+		_assetPair="$3"
+		_assetPair=${_assetPair/\/}
+		_assetPair=${_assetPair^^}
+		spire get-prices "$_assetPair" | jq -s --arg pair "$_assetPair" '
+		[.[]|select(.wat == $pair)][0]
+		| {
+			type: .wat,
+			price: .price,
+			time: .age
+		}
+	';;
+# TODO: when using `spire get-prices` we get all latest messages for a given pair
+# TODO: we need to filter it to get only a single one for a specific author
+esac
