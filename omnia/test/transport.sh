@@ -51,21 +51,21 @@ transportMessage="$(jq -c . "$test_path/transport-message.json")"
 . "$root_path/tap.sh" 2>/dev/null || . "$root_path/../tests/lib/tap.sh"
 
 rm -f $wdir/output
-OMNIA_FEED_PUBLISHERS=(transport-mock)
+OMNIA_TRANSPORTS=(transport-mock)
 assert "publish to transport" run transportPublish "BTC/USD" "$transportMessage"
 assert "type should be BTCUSD" json '.type' <<<'"BTCUSD"'
 assert "time should be set" json '.time' <<<"1607032851"
 
 rm -f $wdir/output
-OMNIA_FEED_PUBLISHERS=(transport-mock transport-mock-other)
+OMNIA_TRANSPORTS=(transport-mock transport-mock-other)
 assert "publish to two transports" run transportPublish "BTC/USD" "$transportMessage"
 assert "type should be two BTCUSD" json -s '[.[].type]' <<<'["BTCUSD","BTCUSD"]'
 assert "time should be separate times " json -s '[.[].time]' <<<"[1607032851,1607032861]"
 
-OMNIA_FEED_PUBLISHERS=(transport-mock-fail)
+OMNIA_TRANSPORTS=(transport-mock-fail)
 assert "should fail if transport exits non-zero" fail transportPublish "BTC/USD" "$transportMessage"
 
-OMNIA_MESSAGE_PULLERS=(transport-mock transport-mock-latest)
+OMNIA_TRANSPORTS=(transport-mock transport-mock-latest)
 assert "pull message from two transports" run_json transportPull f33d1d "BTC/USD"
 assert "type should be BTCUSD" json '.type' <<<'"BTCUSD"'
 assert "time should be from latest message" json '.time' <<<"1607032861"

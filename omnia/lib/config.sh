@@ -21,7 +21,7 @@ importEnv () {
 
 	importMode "$config"
 	importSources "$config"
-	importPublishers "$config"
+	importTransports "$config"
 	importEthereumEnv "$config"
 	importAssetPairsEnv "$config"
 	importOptionsEnv "$config"
@@ -48,16 +48,10 @@ importSources () {
 	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
 }
 
-importPublishers () {
+importTransports () {
 	local _config="$1"
-	readarray -t OMNIA_FEED_PUBLISHERS < <(jq -r '.publishers[]' "$_config")
-	[[ "${#OMNIA_FEED_PUBLISHERS[@]}" -gt 0 ]] || OMNIA_FEED_PUBLISHERS=("oracle-transporter-ssb")
-}
-
-importPullers () {
-	local _config="$1"
-	readarray -t OMNIA_MESSAGE_PULLERS < <(jq -r '.pullers[]' "$_config")
-	[[ "${#OMNIA_MESSAGE_PULLERS[@]}" -gt 0 ]] || OMNIA_MESSAGE_PULLERS=("oracle-transporter-ssb")
+	readarray -t OMNIA_TRANSPORTS < <(jq -r '.transports[]' "$_config")
+	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("oracle-transporter-ssb")
 }
 
 importNetwork () {
@@ -177,7 +171,7 @@ importAssetPairsRelayer () {
 		_oracleSpread=$(getOracleSpread "$assetPair")
 		[[ "$_oracleSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracleSpread field, must be positive integer or float")
 	done
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importFeeds () {
@@ -188,7 +182,7 @@ importFeeds () {
 	for feed in "${feeds[@]}"; do
 		[[ $feed =~ ^(@){1}[a-zA-Z0-9+/]{43}(=.ed25519){1}$ ]] || { error "Error - Invalid feed address: $feed"; exit 1; }
 	done
-	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 
 importOptionsEnv () {

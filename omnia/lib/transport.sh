@@ -2,7 +2,7 @@ transportPublish() {
 	local _assetPair="$1"
 	local _message="$2"
 	local _succ=0
-	for _publisher in "${OMNIA_FEED_PUBLISHERS[@]}"; do
+	for _publisher in "${OMNIA_TRANSPORTS[@]}"; do
 		log "Publishing $_assetPair price message with $_publisher"
 		if "$_publisher" publish "$_message"; then
 			((_succ++))
@@ -21,7 +21,7 @@ transportPull() {
 	local _msg
 	local -A _msgs
 
-	for _puller in "${OMNIA_MESSAGE_PULLERS[@]}"; do
+	for _puller in "${OMNIA_TRANSPORTS[@]}"; do
 		log "Pulling $_assetPair price message with $_puller"
 
 		_msg=$("$_puller" pull "$_feed" "$_assetPair" | jq -c)

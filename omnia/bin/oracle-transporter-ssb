@@ -36,7 +36,7 @@ pullLatestFeedMsgOfType() {
 	ssb-server createUserStream \
 		--id "$_feed" --limit "$OMNIA_MSG_LIMIT" \
 		--reverse --fillCache 1 \
-	| jq -s --arg pair "$_assetPair" '
+	| jq -scM --arg pair "$_assetPair" '
 		[.[] | select(.value.content.type == $pair)]
 		| max_by(.value.content.time)
 		| {
@@ -69,7 +69,7 @@ publishMsg() {
 	importMode "$OMNIA_CONFIG"
 	importOptionsEnv "$OMNIA_CONFIG"
 	importAssetPairsEnv "$OMNIA_CONFIG"
-} >/dev/null 2>&1
+} >&2
 
 case "$_command" in
 	publish) publishMsg "$2";;

@@ -10,7 +10,10 @@ updateOracle () {
 
         #get quorum for asset pair
         _quorum=$(pullOracleQuorum "$assetPair")
-        if [[ -z "$_quorum" ]] || [[ "$_quorum" -le 0 ]]; then error "Error - Invalid quorum, skipping..."; continue; fi
+        if [[ -z "$_quorum" || "$_quorum" -le 0 ]]; then
+          error "Error - Invalid quorum, skipping..."
+          continue
+        fi
 
         pullLatestPricesOfAssetPair "$assetPair" "$_quorum"
 
