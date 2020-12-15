@@ -5,19 +5,34 @@ _here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 _command="$1"
 set -x
 case "$_command" in
-	publish) spire broadcast-price <<<"$2";;
+	publish)
+		_v=$(seth --to-word "0x$(jq -r '.signature[128:130]' <<<"$2")")
+		_msg=$(jq '{
+			price: {
+				wat: .type,
+				val: (.price * 1000000000000000000 | round | tostring),
+				age: .time,
+				r: .signature[0:64],
+				s: .signature[64:128],
+				v: .signature[128:130]
+			},
+			trace: .sources
+		}' <<<"$2")
+		spire push -c "$SPIRE_CONFIG" price <<<"$_msg"
+		;;
 	pull)
 		_assetPair="$3"
-		_assetPair=${_assetPair/\/}
-		_assetPair=${_assetPair^^}
-		spire get-prices "$_assetPair" | jq -s --arg pair "$_assetPair" '
-		[.[]|select(.wat == $pair)][0]
-		| {
-			type: .wat,
-			price: .price,
-			time: .age
-		}
-	';;
-# TODO: when using `spire get-prices` we get all latest messages for a given pair
-# TODO: we need to filter it to get only a single one for a specific author
+		_msg=$(spire pull -c "$SPIRE_CONFIG" price "$_assetPair" "$2") || exit $?
+		_priceHex=$(seth --to-uint256 "$(jq -r '.price.val' <<<"$_msg")" | sed s/^0x//)
+		_timeHex=$(seth --to-uint256 "$(jq -r '.price.age' <<<"$_msg")" | sed s/^0x//)
+		jq -c --arg ph $_priceHex --arg th $_timeHex '{
+			type: .price.wat,
+			price: ((.price.val | tonumber) / 1e18),
+			priceHex: $ph,
+			time: .price.age,
+			timeHex: $th,
+			signature: (.price.r + .price.s + .price.v),
+			sources: .trace
+		}' <<<"$_msg"
+		;;
 esac
