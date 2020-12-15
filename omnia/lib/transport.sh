@@ -17,6 +17,8 @@ transportPublish() {
 transportPull() {
 	local _feed="$1"
 	local _assetPair="$2"
+	_assetPair=${_assetPair/\/}
+	_assetPair=${_assetPair^^}
 	local _puller
 	local _msg
 	local -A _msgs
