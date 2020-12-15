@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+
+. "$_path/../../lib/tap.sh"
+
+cp -f "$1" $wdir/output
+jqf=".[]|{trace,wat:.price.wat,val:.price.val}"
+mapfile -t symbols < <(jq -r '.pairs[]' "$_path/spire.json")
+
+plan $((${#symbols[@]} * 2))
+
+note <<<"Feed with Spire Transport Regression Assertions"
+
+for symbol in "${symbols[@]}"; do
+  jqfs="$jqf|select(.wat == \"$symbol\")"
+
+  assert "ssb message for $symbol isn't empty" \
+    json "$jqfs != null" <<<"true"
+  assert "regression of ssb message for $symbol" \
+    json "$jqfs" <<<$(jq "$jqfs" "$_path/spire-messages.json")
+done

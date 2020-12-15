@@ -180,7 +180,9 @@ importFeeds () {
 
 	readarray -t feeds < <(jq -r '.feeds[]' < "$_config")
 	for feed in "${feeds[@]}"; do
-		[[ $feed =~ ^(@){1}[a-zA-Z0-9+/]{43}(=.ed25519){1}$ ]] || { error "Error - Invalid feed address: $feed"; exit 1; }
+		[[ $feed =~ ^@[a-zA-Z0-9+/]{43}=.ed25519$ \
+		|| $feed =~ ^0x[0-9a-fA-F]{40}$ \
+		]] || { error "Error - Invalid feed address: $feed"; exit 1; }
 	done
 	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }

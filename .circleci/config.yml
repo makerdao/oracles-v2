@@ -102,7 +102,7 @@ jobs:
       - setup-nix
       - setup-cachix
       - checkout
-      - clone-gofer
+      #- clone-gofer
       - pre-fetch:
           path: tests
       - run-nix:
@@ -116,7 +116,7 @@ jobs:
     steps:
       - setup-cachix
       - checkout
-      - clone-gofer
+      #- clone-gofer
       - setup-ca:
           cert: tests/resources/mitmproxy/mitmproxy-ca-cert.cer
       - pre-fetch:
@@ -143,7 +143,7 @@ jobs:
     steps:
       - setup-cachix
       - checkout
-      - clone-gofer
+      #- clone-gofer
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true

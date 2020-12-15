@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+. "$_path/../../lib/include.sh"
+
+export SPIRE_CONFIG="$_path/_spire.json"
+export OMNIA_CONFIG="$_path/omnia.conf"
+export OMNIA_SOURCE_PARALLEL=1
+export OMNIA_DEBUG=1
+
+exportEthEnvs
+
+jq \
+  --arg from "$ETH_FROM" \
+  --arg keys "$ETH_KEYSTORE" \
+  '.ethereum *= {from:$from,keystore:$keys}' \
+  "$_path/spire.json" \
+> "$SPIRE_CONFIG"
+
+startSSB
+startLibp2p
+startOmnia
+
+mapfile -t symbols < <(jq -r '.pairs[]' "$SPIRE_CONFIG")
+for symbol in "${symbols[@]}"; do
+  spire -c "$SPIRE_CONFIG" pull prices "$symbol"
+done | jq -s flatten
