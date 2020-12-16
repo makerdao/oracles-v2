@@ -223,7 +223,7 @@ importOptionsEnv () {
 		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
 		export SETZER_MIN_MEDIAN
 
-		if jq -e '.sources | index("gofer") != null' <<<"$_json"; then
+		if jq -e '.sources | index("gofer") != null' <<<"$_config"; then
 			OMNIA_GOFER_CONFIG="${OMNIA_GOFER_CONFIG:-$(echo "$_json" | jq -r '.goferConfig // "./gofer.json"')}"
 			[[ -e "$OMNIA_GOFER_CONFIG" ]] || errors+=("Error - Gofer config file '$OMNIA_GOFER_CONFIG' doesn't exist.")
 			export OMNIA_GOFER_CONFIG
