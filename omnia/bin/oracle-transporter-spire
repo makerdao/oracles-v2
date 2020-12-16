@@ -7,10 +7,11 @@ set -x
 case "$_command" in
 	publish)
 		_v=$(seth --to-word "0x$(jq -r '.signature[128:130]' <<<"$2")")
-		_msg=$(jq '{
+		_val=$(seth --to-wei "$(jq -r '.price' <<<"$2")" eth)
+		_msg=$(jq --arg val "$_val" '{
 			price: {
 				wat: .type,
-				val: (.price * 1000000000000000000 | round | tostring),
+				val: $val,
 				age: .time,
 				r: .signature[0:64],
 				s: .signature[64:128],
