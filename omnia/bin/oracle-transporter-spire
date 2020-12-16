@@ -3,7 +3,7 @@ set -eo pipefail
 
 _here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 _command="$1"
-set -x
+
 case "$_command" in
 	publish)
 		_v=$(seth --to-word "0x$(jq -r '.signature[128:130]' <<<"$2")")
