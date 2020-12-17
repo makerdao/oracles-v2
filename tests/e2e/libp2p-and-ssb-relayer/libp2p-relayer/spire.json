@@ -1,11 +1,11 @@
 {
   "ethereum": {
-    "from": "0x1f8fbe73820765677e68eb6e933dcb3c94c9b708",
-    "keystore": "../../resources/keys",
+    "from": "",
+    "keystore": "",
     "password": ""
   },
   "p2p": {
-    "bootstrapAddrs": [ ]
+    "bootstrapAddrs": []
   },
   "rpc": {
     "address": ":8082"
@@ -13,5 +13,8 @@
   "feeds": [
     "0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
   ],
-  "pairs": ["BALUSD", "ZRXUSD", "YFIUSD"]
+  "pairs": [
+    "BALUSD",
+    "ZRXUSD"
+  ]
 }
