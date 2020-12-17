@@ -1,7 +1,7 @@
 {
   "ethereum": {
-    "from": "0x3ff19094e81adCFD1F56ee9d0Cead07F9cDaA29F",
-    "keystore": "/run/user/1000/home.Sql8amGU/.dapp/testnet/8545/keystore",
+    "from": "0xB80820E3aB3a5ABA5efb0ECF4b007fce09265122",
+    "keystore": "/run/user/1000/home.j6chAstp/.dapp/testnet/8545/keystore",
     "password": ""
   },
   "p2p": {
@@ -12,7 +12,7 @@
   },
   "feeds": [
     "0x1f8fbe73820765677e68eb6e933dcb3c94c9b708",
-    "0x3ff19094e81adCFD1F56ee9d0Cead07F9cDaA29F"
+    "0xB80820E3aB3a5ABA5efb0ECF4b007fce09265122"
   ],
   "pairs": [
     "BALUSD",
