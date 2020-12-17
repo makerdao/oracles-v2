@@ -1,7 +1,7 @@
 {
   "ethereum": {
-    "from": "0x1f8fbe73820765677e68eb6e933dcb3c94c9b708",
-    "keystore": "/home/icetan/src/maker/oracles-v2-transport/tests/lib/../resources/keys",
+    "from": "",
+    "keystore": "",
     "password": ""
   },
   "p2p": {
@@ -15,6 +15,7 @@
   ],
   "pairs": [
     "BALUSD",
-    "ZRXUSD"
+    "ZRXUSD",
+    "YFIUSD"
   ]
 }
