@@ -24,8 +24,6 @@ startGeth
 
 echo >&2 "# Deploy oracle contracts"
 oracles=$(deploy-median 0x1f8fbe73820765677e68eb6e933dcb3c94c9b708 "${pairs[@]}" 2>"${E2E_LOGS-.}/deploy-median.out")
-#oracles=$(deploy-median "ETHUSD")
-#echo "$oracles" >&2
 
 startSSB
 

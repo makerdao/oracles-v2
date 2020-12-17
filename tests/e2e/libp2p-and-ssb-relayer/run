@@ -26,14 +26,23 @@ jq \
 # Deploy Median contracts
 
 echo >&2 "# Deploy oracle contracts"
-oracles=$(deploy-median 0x1f8fbe73820765677e68eb6e933dcb3c94c9b708 "${pairs[@]}" 2>"${E2E_LOGS-.}/deploy-median.out")
+oracles=$(deploy-median \
+  0x1f8fbe73820765677e68eb6e933dcb3c94c9b708 \
+  "${pairs[@]}" \
+  2>"${E2E_LOGS-.}/${E2E_TARGET-test}-deploy-median.out"
+)
 
-startSSB
 startLibp2p
 
 echo >&2 "# Replay Spire messages"
 jq -c '.[]' "$_path/spire-messages.json" \
   | spirePublishMessages
+
+startSSB
+
+echo >&2 "# Replay Scuttlebot messages"
+jq -c '.[].value.content' "$_path/ssb-messages.json" \
+  | ssbPublishMessages
 
 # Update omnia config
 for pair in "${pairs[@]}"; do
@@ -44,6 +53,7 @@ for pair in "${pairs[@]}"; do
       <<<"$conf"
   )
 done
+conf=$(jq --arg s $(ssbId) '.services.scuttlebotIdMap = {"0x1f8fbe73820765677e68eb6e933dcb3c94c9b708":$s}' <<<"$conf")
 conf=$(jq '.ethereum.network = "http://127.0.0.1:8545"' <<<"$conf")
 echo "$conf" > "$OMNIA_CONFIG"
 

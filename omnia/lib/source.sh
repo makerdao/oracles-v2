@@ -1,16 +1,17 @@
 readSourcesWithSetzer()  {
 	local _assetPair="$1"
-	_assetPair="${_assetPair/\/}"
-	_assetPair="${_assetPair,,}"
+	local _setzerAssetPair="$1"
+	_setzerAssetPair="${_setzerAssetPair/\/}"
+	_setzerAssetPair="${_setzerAssetPair,,}"
 	local _prices
 
 	_prices=$(
-		setzer sources "$_assetPair" \
+		setzer sources "$_setzerAssetPair" \
 		| parallel \
 			-j${OMNIA_SOURCE_PARALLEL:-0} \
 			--termseq KILL \
 			--timeout "$OMNIA_SRC_TIMEOUT" \
-			_mapSetzer "$_assetPair"
+			_mapSetzer "$_setzerAssetPair"
 	)
 
 	local _price
@@ -29,9 +30,8 @@ readSourcesWithSetzer()  {
 
 _mapSetzer() {
 	local _assetPair=$1
-	local _setzerAssetPair=${1/\/}
 	local _source=$2
-	local _price=$(setzer price "$_setzerAssetPair" "$_source")
+	local _price=$(setzer price "$_assetPair" "$_source")
 	if [[ -n "$_price" && "$_price" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9]+[0-9]*)$ ]]; then
 		echo "{\"$_source\": \"$(LANG=POSIX printf %0.10f $_price)\"}"
 	else
