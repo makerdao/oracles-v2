@@ -18,7 +18,7 @@ rec {
   inherit pkgs;
 
   makerpkgs = import sources.makerpkgs {
-    dapptoolsOverrides.current = ./dapptools.nix;
+    dapptoolsOverrides.default = ./dapptools.nix;
   };
 
   nodepkgs = let
