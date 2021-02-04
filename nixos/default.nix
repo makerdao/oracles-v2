@@ -5,7 +5,7 @@ in {
     enable = mkEnableOption "omnia";
 
     mode = mkOption {
-      type = types.str;
+      type = types.enum [ "feed" "relayer" ];
       description = ''
         Omnia operational mode (feed or relayer)
       '';
@@ -117,6 +117,15 @@ in {
         type = types.path;
         description = ''
           Ethereum private key password
+        '';
+      };
+
+      network = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        example = "http://localhost:8545";
+        description = ''
+          Ethereum network
         '';
       };
     };
