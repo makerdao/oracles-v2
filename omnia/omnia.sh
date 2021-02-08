@@ -166,6 +166,30 @@ execute () {
 			continue
 		fi
 
+		#generate stark hash message
+		assetPairHexShortened=$(echo "$assetPairHex" | cut -c1-32)
+		starkHash=$(python3 "$STARK_CLI" --method "hash" --time "$timeHex" --price "$medianHex" --oracle "4d616b6572" --asset "$assetPairHexShortened")
+		if [[ ! "$starkHash" =~ ^[0-9a-fA-F]{1,64}$ ]]; then
+			error "Error - failed to generate valid stark hash"
+			debug "Median Hex = $medianHex"
+			debug "Timestamp Hex = $timeHex"
+			debug "Asset Pair Hex = $assetPairHexShortened"
+			debug "Invalid Hash = $starkHash"
+			continue
+		fi
+
+		#generate stark sig
+		starkSig=$(python3 $STARK_CLI --method "sign" --data "$starkHash" --key "$STARK_PRIVATE_KEY")
+		if [[ ! "$starkSig" =~ ^0x[0-9a-f]{1,64}[[:space:]]0x[0-9a-f]{1,64}$ ]]; then
+			error "Error - Failed to generate valid stark signature"
+			debug "Hash = $starkHash"
+			debug "Invalid Signature = $starkSig"
+			continue
+		fi
+		starkSigR=$(echo $starkSig | cut -d " " -f1)
+		starkSigS=$(echo $starkSig | cut -d " " -f2)
+
+
 		#broadcast message to scuttelbot
 		broadcastPriceMsg "$assetPair" "$median" "$medianHex" "$time" "$timeHex" "$hash" "$sig" "${validSources[@]}" "${validPrices[@]}"
 	
