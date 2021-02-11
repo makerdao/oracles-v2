@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
+set -e
 
-for pair in "${@-ETHUSD}"; do
-  pair=${pair^^}
-  pair=${pair/\/}
-  contractName=Median${pair/BTC/WBTC}
+join() { local IFS="$1"; shift; echo "$*"; }
+
+declare -a toLift
+declare -a pairs
+
+for arg in "$@"; do
+  if [[ $arg =~ ^0x ]]; then
+    toLift+=("${arg#0x}")
+  else
+    pairs+=("$arg")
+  fi
+done
+
+for pair in "${pairs[@]-ETHUSD}"; do
+  contractName=${pair^^}
+  contractName=${contractName/\/}
+  contractName=Median${contractName/BTC/WBTC}
   address=$(dapp create $contractName)
-  seth send $address 'lift(address[] memory)' "[${ETH_FROM#0x},1f8fbe73820765677e68eb6e933dcb3c94c9b708]" >&2
+  seth send $address 'lift(address[] memory)' "[$(join , "${toLift[@]}")]" >&2
   jq -n --arg p $pair --arg a $address '{($p):$a}'
 done | jq -Ss add

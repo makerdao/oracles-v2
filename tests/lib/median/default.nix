@@ -25,6 +25,7 @@ in
 
 makerScriptPackage {
   name = "median-deploy";
+  nativeBuildInputs = [ bash ];
 
   # Specify files to add to build environment
   src = lib.sourceByRegex ./. [
