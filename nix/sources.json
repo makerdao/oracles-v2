@@ -77,10 +77,10 @@
         "homepage": "",
         "owner": "makerdao",
         "repo": "setzer-mcd",
-        "rev": "67820f31810f5634c4e150636bc17f3314741068",
-        "sha256": "1j1y575pxgd9qpdy88g1jlfp0h444n16vjqjl1vbka720jc6fbb1",
+        "rev": "6d4c107051f452125126b74b82708e5578298e8b",
+        "sha256": "15mhzq5w56rz5h4wwdcl6sywmqrz8b3lgh3gi5krq15dyhfpbsks",
         "type": "tarball",
-        "url": "https://github.com/makerdao/setzer-mcd/archive/67820f31810f5634c4e150636bc17f3314741068.tar.gz",
+        "url": "https://github.com/makerdao/setzer-mcd/archive/6d4c107051f452125126b74b82708e5578298e8b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
