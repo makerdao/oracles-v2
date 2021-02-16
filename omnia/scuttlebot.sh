@@ -87,7 +87,7 @@ broadcastPriceMsg () {
         error "Error - failed to generate stark signature json"
     fi
     #compose jq message arguments
-    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson starkSignature $_starkSignatureJson" "--argjson sourcePrices $_sourcePrices" )
+    _jqArgs=( --arg assetPair "$_assetPair" --arg version "$OMNIA_VERSION" --arg price "$_price" --arg priceHex "$_priceHex" --arg time "$_time" --arg timeHex "$_timeHex" --arg hash "${_hash:2}" --arg signature "${_signature:2}" --argjson starkSignature "$_starkSignatureJson" --argjson sourcePrices "$_sourcePrices" )
     #debug
     verbose "${_jqArgs[*]}"
     #generate JSON msg
