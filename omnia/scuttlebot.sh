@@ -91,7 +91,6 @@ broadcastPriceMsg () {
     #debug
     verbose "${_jqArgs[*]}"
     #generate JSON msg
-    # shellcheck disable=2068
     if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, starkSignature: $starkSignature, sources: $sourcePrices}'); then
         error "Error - failed to generate JSON msg"
         return
