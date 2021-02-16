@@ -11,6 +11,18 @@
         "url": "https://github.com/dapphub/dapptools/archive/78508c6a8db2d6d3e8e09437dbe122bb5e6b2e7e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "mach-nix": {
+        "branch": "master",
+        "description": "Create highly reproducible python environments",
+        "homepage": "",
+        "owner": "DavHau",
+        "repo": "mach-nix",
+        "rev": "3.1.1",
+        "sha256": "06bxmz7x1fnjx2d0gb63fdm0jci2mcdnpa3isbhjr92z1l2a7hl1",
+        "type": "tarball",
+        "url": "https://github.com/DavHau/mach-nix/archive/3.1.1.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "makerpkgs": {
         "branch": "master",
         "description": "Common nixpkgs",

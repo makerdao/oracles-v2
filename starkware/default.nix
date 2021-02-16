@@ -1,12 +1,19 @@
-{ python38Packages }:
+{ }:
 
-python38Packages.buildPythonPackage {
+let
+  sources = import ../nix/sources.nix;
+  mach-nix = import sources.mach-nix {};
+in
+
+mach-nix.buildPythonPackage {
   pname = "stark-cli";
   version = "0.0.0";
 
   src = ./.;
 
-  propagatedBuildInputs = with python38Packages; [ mpmath sympy ];
-
-  doCheck = false;
+  requirements = ''
+    mpmath
+    sympy
+    ecdsa==0.16.0
+  '';
 }

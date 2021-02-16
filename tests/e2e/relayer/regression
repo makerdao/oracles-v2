@@ -3,7 +3,15 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 . "$_path/../../lib/tap.sh"
 
-mapfile -t pairs < <(jq -r '.pairs|keys|.[]|sub("/";"")|select(. != "ETHBTC")' <"$_path/omnia.conf")
+rmPairs='
+["ETHBTC"
+,"AAVEUSD"
+,"UNIUSD"
+]'
+mapfile -t pairs < <(jq -r --argjson rp "$rmPairs" '
+  .pairs|keys|.[]|sub("/";"")|select([.]|inside($rp)|not)
+' < "$_path/omnia.conf")
+
 
 cp -f "$1" $wdir/output
 
