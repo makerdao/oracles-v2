@@ -83,7 +83,7 @@ broadcastPriceMsg () {
 
     _starkSignature=( --arg r "$_starkSignatureR" --arg s "$_starkSignatureS" --arg publicKey "$_starkPublicKey" )
     verbose  "${_starkSignature[*]}"
-    if ! _starkSignatureJson=$(jq -nce  --arg r "$_starkSignatureR" --arg s "$_starkSignatureS" --arg publicKey "$_starkPublicKey" '{r: $r, s:$s, publicKey:$publicKey}'); then
+    if ! _starkSignatureJson=$(jq -nce  "${_starkSignature[@]}" '{r: $r, s:$s, publicKey:$publicKey}'); then
         error "Error - failed to generate stark signature json"
     fi
     #compose jq message arguments
