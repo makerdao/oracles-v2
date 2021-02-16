@@ -35,7 +35,9 @@ rec {
 
   setzer-mcd = makerpkgs.callPackage sources.setzer-mcd {};
 
-  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd; };
+  stark-cli = makerpkgs.callPackage ../starkware {};
+
+  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli; };
 
   install-omnia = makerpkgs.callPackage ../systemd { inherit ssb-server omnia; };
 }

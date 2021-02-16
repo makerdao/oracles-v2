@@ -108,7 +108,7 @@ importStarkwareEnv() {
 	local _enthropy
 	local _seed
 	
-	STARK_CLI="../starkware/stark_cli.py"
+	STARK_CLI="${STARK_CLI:-stark_cli.py}"
 	export STARK_CLI
 	
 	_starkdata="537461726b4b657944657269766174696f6e" #StarkKeyDerivation
@@ -117,7 +117,7 @@ importStarkwareEnv() {
 	STARK_PRIVATE_KEY="$( printf 'obase=16; ibase=16; %s / %s\n' "${_seed^^}" 20 | BC_LINE_LENGTH=0 bc )"
 	export STARK_PRIVATE_KEY
 
-	STARK_PUBLIC_KEY=$(python3 $STARK_CLI --method "get_public" --key "$STARK_PRIVATE_KEY")
+	STARK_PUBLIC_KEY=$($STARK_CLI --method "get_public" --key "$STARK_PRIVATE_KEY")
 	export STARK_PUBLIC_KEY
 }
 
