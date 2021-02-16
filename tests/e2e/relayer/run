@@ -3,8 +3,16 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 . "$_path/../../lib/include.sh"
 
+# Medianizer contracts not to deploy
+rmPairs='
+["ETHBTC"
+,"AAVEUSD"
+,"UNIUSD"
+]'
 conf=$(cat "$_path/omnia.conf")
-mapfile -t pairs < <(jq -r '.pairs|keys|.[]|sub("/";"")|select(. != "ETHBTC")' <<<"$conf")
+mapfile -t pairs < <(jq -r --argjson rp "$rmPairs" '
+  .pairs|keys|.[]|sub("/";"")|select([.]|inside($rp)|not)
+' <<<"$conf")
 
 export OMNIA_CONFIG="$_path/_omnia.conf"
 export OMNIA_SOURCE_PARALLEL=1
@@ -15,7 +23,7 @@ startGeth
 # Deploy Median contracts
 
 echo >&2 "# Deploy oracle contracts"
-oracles=$(deploy-median "${pairs[@]}" 2>"${E2E_LOGS-.}/deploy-median.out")
+oracles=$(deploy-median 0x1f8fbe73820765677e68eb6e933dcb3c94c9b708 "${pairs[@]}" 2>"${E2E_LOGS-.}/deploy-median.out")
 #oracles=$(deploy-median "ETHUSD")
 #echo "$oracles" >&2
 

@@ -66,6 +66,9 @@ broadcastPriceMsg () {
     local _timeHex="$5"
     local _hash="$6"
     local _signature="$7"
+    local _starkSignatureR="$8"
+    local _starkSignatureS="$9"
+    local _starkPublicKey="${10}"
     local _sourcePrices
     local _jqArgs=()
     local _json
@@ -76,13 +79,19 @@ broadcastPriceMsg () {
         error "Error - failed to transpose sources with prices"
         return
     fi
+    #format starkware sig
+
+    _starkSignature=( --arg r "$_starkSignatureR" --arg s "$_starkSignatureS" --arg publicKey "$_starkPublicKey" )
+    verbose  "${_starkSignature[*]}"
+    if ! _starkSignatureJson=$(jq -nce  "${_starkSignature[@]}" '{r: $r, s:$s, publicKey:$publicKey}'); then
+        error "Error - failed to generate stark signature json"
+    fi
     #compose jq message arguments
-    _jqArgs=( "--arg assetPair $_assetPair" "--arg version $OMNIA_VERSION" "--arg price $_price" "--arg priceHex $_priceHex" "--arg time $_time" "--arg timeHex $_timeHex" "--arg hash ${_hash:2}" "--arg signature ${_signature:2}" "--argjson sourcePrices $_sourcePrices" )
+    _jqArgs=( --arg assetPair "$_assetPair" --arg version "$OMNIA_VERSION" --arg price "$_price" --arg priceHex "$_priceHex" --arg time "$_time" --arg timeHex "$_timeHex" --arg hash "${_hash:2}" --arg signature "${_signature:2}" --argjson starkSignature "$_starkSignatureJson" --argjson sourcePrices "$_sourcePrices" )
     #debug
     verbose "${_jqArgs[*]}"
     #generate JSON msg
-    # shellcheck disable=2068
-    if ! _json=$(jq -ne ${_jqArgs[@]} '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices}'); then
+    if ! _json=$(jq -ne "${_jqArgs[@]}" '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, starkSignature: $starkSignature, sources: $sourcePrices}'); then
         error "Error - failed to generate JSON msg"
         return
     fi

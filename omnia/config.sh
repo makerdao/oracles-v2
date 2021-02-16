@@ -20,6 +20,7 @@ importEnv () {
 
 	importMode "$config"
 	importEthereumEnv "$config"
+	importStarkwareEnv "$config"
 	importAssetPairsEnv "$config"
 	importOptionsEnv "$config"
 	importScuttlebotEnv
@@ -89,6 +90,35 @@ importEthereumEnv () {
 	export ETH_PASSWORD
 
 	[[ ${errors[*]} ]] && { printf '%s\n' "${errors[@]}"; exit 1; }
+}
+
+#sign message
+signMessage () {
+	local _data
+	for arg in "$@"; do
+		_data+="$arg"
+	done
+	verbose "Signing message..."
+	ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
+}
+
+importStarkwareEnv() {
+	verbose "Importing Starkware signature keys"
+	local _starkdata
+	local _enthropy
+	local _seed
+	
+	STARK_CLI="${STARK_CLI:-stark_cli.py}"
+	export STARK_CLI
+	
+	_starkdata="537461726b4b657944657269766174696f6e" #StarkKeyDerivation
+	_enthropy=$(signMessage "$_starkdata")
+	_seed=$(keccak256Hash "$_enthropy" | cut -c3-)
+	STARK_PRIVATE_KEY="$( printf 'obase=16; ibase=16; %s / %s\n' "${_seed^^}" 20 | BC_LINE_LENGTH=0 bc )"
+	export STARK_PRIVATE_KEY
+
+	STARK_PUBLIC_KEY=$($STARK_CLI --method "get_public" --key "$STARK_PRIVATE_KEY")
+	export STARK_PUBLIC_KEY
 }
 
 importAssetPairsEnv () {

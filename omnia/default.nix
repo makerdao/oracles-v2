@@ -1,6 +1,6 @@
 { stdenv, makeWrapper, lib, glibcLocales
 , coreutils, bash, parallel, bc, jq, gnused, datamash, gnugrep
-, ssb-server, ethsign, seth, setzer-mcd }:
+, ssb-server, ethsign, seth, setzer-mcd, stark-cli }:
 
 stdenv.mkDerivation rec {
   name = "omnia-${version}";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
 
   passthru.runtimeDeps =  [
     coreutils bash parallel bc jq gnused datamash gnugrep
-    ssb-server ethsign seth setzer-mcd
+    ssb-server ethsign seth setzer-mcd stark-cli
   ];
   nativeBuildInputs = [ makeWrapper ];
 
