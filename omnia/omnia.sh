@@ -158,7 +158,7 @@ execute () {
 
 		#generate stark hash message
 		assetPairHexShortened=$(echo "$assetPairHex" | cut -c1-32)
-		starkHash=$(python3 "$STARK_CLI" --method "hash" --time "$timeHex" --price "$medianHex" --oracle "4d616b6572" --asset "$assetPairHexShortened")
+		starkHash=$("$STARK_CLI" --method "hash" --time "$timeHex" --price "$medianHex" --oracle "4d616b6572" --asset "$assetPairHexShortened")
 		if [[ ! "$starkHash" =~ ^[0-9a-fA-F]{1,64}$ ]]; then
 			error "Error - failed to generate valid stark hash"
 			debug "Median Hex = $medianHex"
@@ -169,7 +169,7 @@ execute () {
 		fi
 
 		#generate stark sig
-		starkSig=$(python3 "$STARK_CLI" --method "sign" --data "$starkHash" --key "$STARK_PRIVATE_KEY")
+		starkSig=$("$STARK_CLI" --method "sign" --data "$starkHash" --key "$STARK_PRIVATE_KEY")
 		if [[ ! "$starkSig" =~ ^0x[0-9a-f]{1,64}[[:space:]]0x[0-9a-f]{1,64}$ ]]; then
 			error "Error - Failed to generate valid stark signature"
 			debug "Hash = $starkHash"
