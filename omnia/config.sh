@@ -99,7 +99,7 @@ signMessage () {
 		_data+="$arg"
 	done
 	verbose "Signing message..."
-    ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
+	ethsign message --from "$ETH_FROM" --key-store "$ETH_KEYSTORE" --passphrase-file "$ETH_PASSWORD" --data "$_data"
 }
 
 importStarkwareEnv() {
