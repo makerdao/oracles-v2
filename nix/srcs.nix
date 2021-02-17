@@ -29,7 +29,7 @@ rec {
     );
   in nodepkgs' // shortNames;
 
-  ssb-server = nodepkgs.ssb-server.override {
+  ssb-server = nodepkgs."ssb-server-patch-git+https://github.com/icetan/ssb-server.git#pin-ssb-db-20-0-1".override {
     buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build ];
   };
 

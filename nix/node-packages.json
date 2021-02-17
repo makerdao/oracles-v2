@@ -1,5 +1,6 @@
 [
   { "ssb-server": "15.2.0" },
+  { "ssb-server-patch": "git+https://github.com/icetan/ssb-server.git#pin-ssb-db-20-0-1" },
   { "node-gyp-build": "4.1.0" },
   { "tap-xunit": "2.4.1" }
 ]
