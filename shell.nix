@@ -39,10 +39,12 @@ pkgs.mkShell rec {
         local version=$(semver -i "$1" $oldVersion)
         echo $version > "$VERSION_FILE"
         git commit -m "Bump $1 version to $version" "$VERSION_FILE"
-        git checkout -b release/''${version%.0}
         git tag v$version-rc && {
           echo >&2 "To publish this commit as a release candidate run:"
-          echo "git push -u origin release/''${version%.0} && git push --tags"
+          echo "git push --atomic origin master master:release/''${version%.0} v$version-rc"
+          echo >&2
+          echo >&2 "To patch this $1 release checkout the release branch:"
+          echo "git checkout release/''${version%.0}"
         }
       else
         [[ $branch =~ ^release/ ]] || {
@@ -55,13 +57,13 @@ pkgs.mkShell rec {
           git commit -m "Bump $1 version to $version" "$VERSION_FILE"
           git tag v$version-rc && {
             echo >&2 "To publish this commit as a release candidate run:"
-            echo "git push && git push --tags"
+            echo "git push --atomic origin $branch v$version-rc"
           }
         else
           git tag v$oldVersion && {
             git tag -f stable
             echo >&2 "To publish this commit as a stable release run:"
-            echo "git push --tags -f"
+            echo "git push -f origin stable"
           }
         fi
       fi
