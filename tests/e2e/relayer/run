@@ -5,13 +5,13 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 # Medianizer contracts not to deploy
 rmPairs='
-["ETHBTC"
-,"AAVEUSD"
-,"UNIUSD"
+["ETH/BTC"
+,"AAVE/USD"
+,"UNI/USD"
 ]'
 conf=$(cat "$_path/omnia.conf")
 mapfile -t pairs < <(jq -r --argjson rp "$rmPairs" '
-  .pairs|keys|.[]|sub("/";"")|select([.]|inside($rp)|not)
+  .pairs|keys|.[]|select([.]|inside($rp)|not)
 ' <<<"$conf")
 
 export OMNIA_CONFIG="$_path/_omnia.conf"

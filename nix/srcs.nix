@@ -44,8 +44,7 @@ rec {
 
   omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli; };
 
-  install-omnia = { gofer ? null }@args: makerpkgs.callPackage ../systemd {
-    inherit ssb-server;
-    omnia = omnia args;
+  install-omnia = makerpkgs.callPackage ../systemd {
+    inherit omnia ssb-server;
   };
 }
