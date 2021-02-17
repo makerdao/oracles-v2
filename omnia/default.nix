@@ -1,11 +1,11 @@
 { stdenv, makeWrapper, runCommand, lib, glibcLocales
 , coreutils, bash, parallel, bc, jq, gnused, datamash, gnugrep
-, ssb-server, ethsign, seth, setzer-mcd, stark-cli, gofer }:
+, ssb-server, ethsign, seth, setzer-mcd, stark-cli }:
 
 let
   deps = [
     coreutils bash parallel bc jq gnused datamash gnugrep
-    ssb-server ethsign seth setzer-mcd stark-cli gofer
+    ssb-server ethsign seth setzer-mcd stark-cli
   ];
 in
 
