@@ -74,8 +74,8 @@ constructMessage() {
 	local _signature="$7"
 	local _sourcePrices="$8"
 	local _starkSignatureR="$9"
-	local _starkSignatureS="$10"
-	local _starkPublicKey="$11"
+	local _starkSignatureS="${10}"
+	local _starkPublicKey="${11}"
 	local _starkSignature
 	local _jqArgs=()
 	local _json
