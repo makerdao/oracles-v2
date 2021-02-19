@@ -76,9 +76,41 @@ in {
         '';
         default = defaultFeedConfig.options.setzerMinMedian;
       };
+
+      goferConfig = mkOption {
+        type = types.path;
+        description = ''
+          Path to Gofer config file.
+        '';
+        default = ../systemd/gofer.json;
+      };
+    };
+
+    sources = mkOption {
+      type = types.listOf (types.enum ["gofer" "setzer"]);
+      description = ''
+        List of sources to use and order they fallback in.
+      '';
+      default = defaultFeedConfig.sources;
+    };
+
+    transports = mkOption {
+      type = types.listOf types.str;
+      description = ''
+        Transport CLIs to use.
+      '';
+      default = defaultFeedConfig.transports;
     };
 
     services = {
+
+      scuttlebotIdMap = mkOption {
+        type = with types; attrsOf str;
+        description = ''
+          Map of Ethereum addresses to Scuttlebot IDs.
+        '';
+        default = {};
+      };
     };
 
     feeds = mkOption {

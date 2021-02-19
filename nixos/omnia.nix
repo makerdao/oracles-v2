@@ -25,7 +25,7 @@
 
   ssb-config = writeJSON "ssb-config" cfg.ssbConfig;
   omnia-config = writeJSON "omnia.conf" {
-    inherit (cfg) pairs mode feeds ethereum options services;
+    inherit (cfg) pairs mode feeds ethereum options sources transports services;
   };
 
   inherit (import ../. {}) omnia ssb-server;
