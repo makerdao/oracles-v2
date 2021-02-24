@@ -23,7 +23,7 @@ startProxyRecord() {
       -w "$E2E_TARGET_DIR/replay.mitm" \
       --set "confdir=$_path/../resources/mitmproxy"
 
-    "$_path/dedup-mitm" "$E2E_TARGET_DIR/replay.mitm"
+    #"$_path/dedup-mitm" "$E2E_TARGET_DIR/replay.mitm"
   } >"$E2E_LOGS/${E2E_TARGET-test}-rec-mitm.out" 2>&1 &
   E2E_EXIT_HOOK+='pkill mitmdump;'
 
