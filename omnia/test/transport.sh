@@ -45,6 +45,13 @@ transport-mock-fail() {
 }
 export -f transport-mock-fail
 
+transport-mock-mallformed() {
+	case "$1" in
+		pull) printf %s '{';;
+	esac
+}
+export -f transport-mock-mallformed
+
 OMNIA_SRC_TIMEOUT=60
 transportMessage="$(jq -c . "$test_path/transport-message.json")"
 
@@ -69,3 +76,14 @@ OMNIA_TRANSPORTS=(transport-mock transport-mock-latest)
 assert "pull message from two transports" run_json transportPull f33d1d "BTC/USD"
 assert "type should be BTCUSD" json '.type' <<<'"BTCUSD"'
 assert "time should be from latest message" json '.time' <<<"1607032861"
+
+OMNIA_TRANSPORTS=(transport-mock-mallformed)
+assert "should fail if transport returns mallformed JSON" fail transportPull f33d1d "BTC/USD"
+
+OMNIA_TRANSPORTS=(transport-mock-fail)
+assert "should fail if transport returns non-zero exit code" fail transportPull f33d1d "BTC/USD"
+
+OMNIA_TRANSPORTS=(transport-mock-fail transport-mock)
+assert "pull message from one transport that fails and one that succeeds" run_json transportPull f33d1d "BTC/USD"
+assert "type should be BTCUSD" json '.type' <<<'"BTCUSD"'
+assert "time should be from latest message" json '.time' <<<"1607032851"
