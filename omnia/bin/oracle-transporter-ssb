@@ -70,7 +70,7 @@ publishMsg() {
 	if isntStale "$(pullLatestFeedMsgOfType "$_feedId" "$_assetPair")" "$_msg"; then
 		echo >&2 "Scuttlebot Info: Not publishing, last message not stale."
 	else
-		ssb-server publish . <<<"$_msg"
+		ssb-server publish . <<<"$_msg" | jq -c .
 	fi
 }
 
