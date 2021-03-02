@@ -106,7 +106,7 @@ constructMessage() {
 	)
 
 	# generate JSON msg
-	if ! _json=$(jq -ne "${_jqArgs[@]}" '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices, starkSignature: $starkSignature}'); then
+	if ! _json=$(jq -nce "${_jqArgs[@]}" '{type: $assetPair, version: $version, price: $price | tonumber, priceHex: $priceHex, time: $time | tonumber, timeHex: $timeHex, hash: $hash, signature: $signature, sources: $sourcePrices, starkSignature: $starkSignature}'); then
 			error "Error - failed to generate JSON msg"
 			return 1
 	fi
