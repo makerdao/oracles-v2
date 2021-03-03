@@ -21,7 +21,8 @@ startProxyRecord() {
     pkill mitmdump || true
     mitmdump \
       -w "$E2E_TARGET_DIR/replay.mitm" \
-      --set "confdir=$_path/../resources/mitmproxy"
+      --set "confdir=$_path/../resources/mitmproxy" \
+      --anticache
 
     #"$_path/dedup-mitm" "$E2E_TARGET_DIR/replay.mitm"
   } >"$E2E_LOGS/${E2E_TARGET-test}-rec-mitm.out" 2>&1 &
@@ -46,6 +47,7 @@ startProxyReplay() {
     --server-replay-refresh \
     --server-replay-kill-extra \
     --server-replay-nopop \
+    --anticache \
     >"logs/${E2E_TARGET-test}-replay-mitm.out" 2>&1 &
   E2E_EXIT_HOOK+='pkill mitmdump;'
 

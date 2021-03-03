@@ -29,11 +29,15 @@ readSourcesWithSetzer()  {
 }
 
 _mapSetzer() {
+	if [[ -n $OMNIA_DEBUG ]]; then set -x; fi
 	local _assetPair=$1
 	local _source=$2
 	local _price=$(setzer price "$_assetPair" "$_source")
 	if [[ -n "$_price" && "$_price" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9]+[0-9]*)$ ]]; then
-		echo "{\"$_source\": \"$(LANG=POSIX printf %0.10f $_price)\"}"
+		jq -nc \
+			--arg s $_source \
+			--arg p "$(LANG=POSIX printf %0.10f "$_price")" \
+			'{($s):$p}'
 	else
 		echo "[$(date "+%D %T")] [E] $1" >&2
 	fi
