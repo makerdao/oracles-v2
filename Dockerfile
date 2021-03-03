@@ -10,6 +10,7 @@ RUN nix run -f https://cachix.org/api/v1/install cachix -c cachix use maker \
 
 # Copy Omnia source code inside the container
 COPY omnia /src/omnia
+COPY tests/lib/tap.sh /src/omnia
 COPY nix /src/nix
 COPY docker /src/docker
 COPY starkware /src/starkware
