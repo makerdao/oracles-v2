@@ -3,6 +3,8 @@
 , ssb-server, ethsign, seth, setzer-mcd, stark-cli }:
 
 let
+  inherit (builtins) pathExists;
+  tapsh = if (pathExists ./tap.sh) then ./tap.sh else ../tests/lib/tap.sh;
   deps = [
     coreutils bash parallel bc jq gnused datamash gnugrep
     ssb-server ethsign seth setzer-mcd stark-cli
@@ -24,7 +26,7 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
   checkPhase = ''
-    cp ${../tests/lib/tap.sh} ./tap.sh
+    cp ${tapsh} ./tap.sh
     find . -name '*_test*' -or -path "*/test/*.sh" | while read -r x; do
       patchShebangs "$x"; $x
     done

@@ -2,9 +2,7 @@ let
   srcs = import ../nix/srcs.nix;
 
   inherit (builtins) readFile;
-  inherit (srcs) pkgs ssb-server;
-
-  omnia = srcs.omnia { gofer = import ../gofer {}; };
+  inherit (srcs) pkgs ssb-server omnia;
 
   path = with pkgs; lib.makeBinPath [
     coreutils bash jq gnused
