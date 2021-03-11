@@ -12,6 +12,7 @@ let
       else x.pname or (parse x.name);
 
   sources = import ./sources.nix;
+  ssbServerPatches = ../ssb-server/patches;
 in
 
 rec {
@@ -30,7 +31,12 @@ rec {
   in nodepkgs' // shortNames;
 
   ssb-server = nodepkgs.ssb-server.override {
-    buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build ];
+    buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build nodepkgs.patch-package ];
+    postInstall = ''
+      mkdir -p ./patches
+      cp ${ssbServerPatches}/*.patch ./patches
+      patch-package
+    '';
   };
 
   setzer-mcd = makerpkgs.callPackage sources.setzer-mcd {};
