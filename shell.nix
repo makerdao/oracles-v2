@@ -1,12 +1,10 @@
 let
   srcs = import ./nix/srcs.nix;
 in
-
-{ pkgs ? srcs.pkgs
-}@args:
-
-let oracles = import ./. args; in
-
+{ pkgs ? srcs.pkgs }@args:
+let
+  oracles = import ./. args;
+in
 pkgs.mkShell rec {
   name = "oracle-shell";
   buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [
@@ -47,20 +45,27 @@ pkgs.mkShell rec {
           echo "git checkout release/''${version%.0}"
         }
       else
-        [[ $branch =~ ^release/ ]] || {
+        [[ $branch =~ ^release/ ]] || [[ $1 =~ ^pre ]] || {
           echo >&2 "Not on a release branch, checkout a 'release/*' or create one: release minor or release major"
           return 1
         }
         if [[ -n $1 ]]; then
-          local version=$(semver -i "$1" $oldVersion)
+          local version=$(semver -i "$1" --preid rc $oldVersion)
           echo $version > "$VERSION_FILE"
           git commit -m "Bump $1 version to $version" "$VERSION_FILE"
-          git tag v$version-rc && {
+          git tag v$version && {
             echo >&2 "To publish this commit as a release candidate run:"
-            echo "git push --atomic origin $branch v$version-rc"
+            echo "git push --atomic origin $branch v$version"
           }
         else
-          git tag v$oldVersion && {
+          [[ $oldVersion =~ -rc\. ]] || {
+            echo >&2 "Current version ($oldVersion) not a Release Candidate. Run: release premajor|preminor|prepatch|prerelease"
+            return 1
+          }
+          local version=$(semver -i $oldVersion)
+          echo $version > "$VERSION_FILE"
+          git commit -m "Release $version as stable" "$VERSION_FILE"
+          git tag v$version && {
             git tag -f stable
             echo >&2 "To publish this commit as a stable release run:"
             echo "git push -f origin stable"
@@ -68,5 +73,8 @@ pkgs.mkShell rec {
         fi
       fi
     }
+    echo 'Locally available commands:
+      * updateNodePackages
+      * release [--help]'
   '';
 }

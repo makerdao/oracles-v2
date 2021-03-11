@@ -1,5 +1,6 @@
 [
-  { "ssb-server": "15.2.0" },
+  { "patch-package": "6.2.2"},
+  { "ssb-server": "git+https://github.com/ssbc/ssb-server.git#v15.2.0" },
   { "node-gyp-build": "4.1.0" },
   { "tap-xunit": "2.4.1" }
 ]
