@@ -21,10 +21,10 @@ COPY ssb-server /src/ssb-server
 RUN nix-env -i -f /src/nix/docker.nix --verbose \
   && nix-collect-garbage -d
 
-# # Add a non-root user
-# RUN adduser -D omnia
-# USER omnia
-WORKDIR /src/omnia
+# Add a non-root user
+RUN adduser -D omnia
+USER omnia
+WORKDIR /home/omnia
 
 # Set Omnia runner script as command
 CMD [ "/nix/var/nix/profiles/default/bin/runner" ]
