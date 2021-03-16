@@ -12,7 +12,7 @@ lib_path="$root_path/lib"
 declare -gA assetInfo
 assetInfo["BTCUSD"]="1800,0.5"
 
-transportMessage="$(jq -c . "$test_path/transport-message.json")"
+transportMessage="$(jq -c . "$test_path/messages/transport-message.json")"
 
 # isAssetPair
 assert "isAssetPair returns true for 'BTC/USD' pair" match "true" < <(capture isAssetPair "BTC/USD" $transportMessage)
@@ -39,3 +39,81 @@ assert "isMsgExpired returns true for old time" match "true" < <(capture isMsgEx
 _curTime=$(timestampS)
 _json=$(jq -c '.time = '"$_curTime" <<<"$transportMessage")
 assert "isMsgExpired returns false for current time" match "false" < <(capture isMsgExpired "BTC/USD" $_json)
+
+#isPriceValid
+assert "isPriceValid returns false for non numeric price" match "false" < <(capture isPriceValid a)
+assert "isPriceValid returns false for invalid price" match "false" < <(capture isPriceValid .1)
+assert "isPriceValid returns true for valid price" match "true" < <(capture isPriceValid 1.1)
+
+OMNIA_MODE="RELAYER"
+assetInfo["BTCUSD"]="0xxxxx,0.5,15500,1800"
+
+# getOracleSpread
+assert "getOracleSpread gets correctly oracle spread" match "1800" < <(capture getOracleSpread "BTCUSD")
+
+# isOracleStale
+pullOraclePrice() {
+	printf "1"
+}
+export -f pullOraclePrice
+assert "isOracleStale returns false for non staled contract" match "false" < <(capture isOracleStale "BTC/USD" 1)
+assert "isOracleStale returns true for staled contract" match "true" < <(capture isOracleStale "BTC/USD" 1802)
+
+pullOraclePrice() {
+	printf "a"
+}
+export -f pullOraclePrice
+assert "pullOraclePrice should fail if transport returns incorrect price" fail isOracleStale "BTC/USD" 1
+
+assetInfo["BTCUSD"]="0xxxxx,0.5,15500,abs"
+assert "pullOraclePrice should fail if transport returns incorrect spread" fail isOracleStale "BTC/USD" 1
+
+# isOracleExpired
+pullOracleTime() {
+	printf "a"
+}
+export -f pullOracleTime
+assert "isOracleExpired should fail if oracle time is incorrect" fail isOracleExpired "BTC/USD"
+
+pullOracleTime() {
+	return 1
+}
+export -f pullOracleTime
+assert "isOracleExpired should fail if pullOracleTime fails" fail isOracleExpired "BTC/USD"
+
+assetInfo["BTCUSD"]="0xxxxx,0.5,1,1800"
+
+pullOracleTime() {
+	printf "1615917609"
+}
+export -f pullOracleTime
+assert "isOracleExpired should return true it actually expired" match "true" < <(capture isOracleExpired "BTC/USD")
+
+assetInfo["BTCUSD"]="0xxxxx,0.5,aaa,1800"
+assert "isOracleExpired should fail on incorrect expiration" fail isOracleExpired "BTC/USD"
+
+assetInfo["BTCUSD"]="0xxxxx,0.5,10,1800"
+pullOracleTime() {
+	printf $(timestampS)
+}
+export -f pullOracleTime
+assert "isOracleExpired should return false on non expired oracle" match "false" < <(capture isOracleExpired "BTC/USD")
+
+# isMsgNew
+
+pullOracleTime() {
+	printf "a"
+}
+export -f pullOracleTime
+assert "isMsgNew should fail if oracle returned invalid time" fail isMsgNew "BTC/USD" '{"time":1}'
+
+pullOracleTime() {
+	printf "1615917609"
+}
+export -f pullOracleTime
+assert "isMsgNew should fail if passed msg does not have time field" fail isMsgNew "BTC/USD" "{}"
+assert "isMsgNew should fail if passed msg is invalid JSON" fail isMsgNew "BTC/USD" "{"
+assert "isMsgNew should fail if passed time in msg is invalid" fail isMsgNew "BTC/USD" '{"time":"123"}'
+
+assert "isMsgNew should return false on same time" match "false" < <(capture isMsgNew "BTC/USD" '{"time":1}')
+assert "isMsgNew should return true if msg time is greater" match "true" < <(capture isMsgNew "BTC/USD" '{"time":1615917610}')

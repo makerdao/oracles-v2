@@ -28,7 +28,7 @@ readSourcesAndBroadcastAllPriceMessages()  {
 			_assetPair="${_assetPair/\/}"
 			local _median=$(jq -r .median <<<"$_json")
 			local _sources=$(jq -rS '.sources' <<<"$_json")
-			local	_message=$(validateAndConstructMessage "$_assetPair" "$_median"	"$_sources")
+			local _message=$(validateAndConstructMessage "$_assetPair" "$_median"	"$_sources")
 
 			if [[ -z "$_message" ]]; then
 				error "Failed constructing $_assetPair price message"
