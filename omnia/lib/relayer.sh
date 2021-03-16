@@ -27,7 +27,9 @@ updateOracle () {
         _median=$(getMedian "${_prices[@]}")
         log "-> median = $_median"
 
-        if [[ ( "$(isPriceValid "$_median")" == "true" ) && ( "$(isOracleStale "$assetPair" "$_median")" == "true" || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
+        if [[ ( "$(isPriceValid "$_median")" == "true" ) \
+        && ( "$(isOracleStale "$assetPair" "$_median")" == "true" \
+        || "$(isOracleExpired "$assetPair")" == "true" ) ]]; then
             local allPrices=()
             local allTimes=()
             local allR=()
