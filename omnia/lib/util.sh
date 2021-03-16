@@ -16,7 +16,7 @@ extractPrices () {
     echo "${_prices[@]}"
 }
 
-join () { 
+join () {
 	local IFS=","
 	echo "$*"
 }

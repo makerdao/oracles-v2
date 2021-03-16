@@ -13,7 +13,7 @@ transport-mock() {
 			echo "$2" >> $wdir/output
 			;;
 		pull)
-			cat "$test_path/transport-message.json"
+			cat "$test_path/messages/transport-message.json"
 			;;
 		*) return 1;;
 	esac
@@ -33,7 +33,7 @@ export -f transport-mock-other
 transport-mock-latest() {
 	case "$1" in
 		pull)
-			jq '.time += 10' "$test_path/transport-message.json"
+			jq '.time += 10' "$test_path/messages/transport-message.json"
 			;;
 		*) return 1;;
 	esac
@@ -60,7 +60,7 @@ transport-mock-empty() {
 export -f transport-mock-empty
 
 OMNIA_SRC_TIMEOUT=60
-transportMessage="$(jq -c . "$test_path/transport-message.json")"
+transportMessage="$(jq -c . "$test_path/messages/transport-message.json")"
 
 . "$root_path/tap.sh" 2>/dev/null || . "$root_path/../tests/lib/tap.sh"
 

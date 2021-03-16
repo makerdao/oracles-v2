@@ -22,9 +22,9 @@ ssb-server() {
 			;;
 		createUserStream)
 			if [[ $TEST_SET_NON_STALE_MESSAGES ]]; then
-				jq ".[].value.content *= {time:$(timestamp -1000),price:0.223} | .[]" "$TEST_PATH/ssb-messages.json"
+				jq ".[].value.content *= {time:$(timestamp -1000),price:0.223} | .[]" "$TEST_PATH/messages/ssb-messages.json"
 			else
-				jq ".[].value.content.time=$(timestamp -2000) | .[]" "$TEST_PATH/ssb-messages.json"
+				jq ".[].value.content.time=$(timestamp -2000) | .[]" "$TEST_PATH/messages/ssb-messages.json"
 			fi
 			;;
 	esac
@@ -33,7 +33,7 @@ export -f ssb-server
 
 #export OMNIA_VERBOSE="true"
 export OMNIA_VERSION="dev-test"
-export OMNIA_CONFIG="$TEST_PATH/oracle-transporter-ssb-omnia.conf"
+export OMNIA_CONFIG="$TEST_PATH/configs/oracle-transporter-ssb-omnia.conf"
 export ETH_FROM="0x1f8fbe73820765677e68eb6e933dcb3c94c9b708"
 export ETH_KEYSTORE="$TEST_PATH/../../tests/resources/keys"
 export ETH_PASSWORD="$TEST_PATH/../../tests/resources/password"
