@@ -34,7 +34,7 @@ pullPreviousFeedMsg () {
 #optimized message search algorithm
 pullLatestFeedMsgOfType () {
 	local	_feed="$1"
-	local	_assetPair="$2"
+	local	_assetPair="${2/\/}"
 	ssb-server createUserStream \
 		--id "$_feed" --limit "$OMNIA_MSG_LIMIT" \
 		--reverse --fillCache 1 \
@@ -59,7 +59,7 @@ pullLatestFeedMsgOfType () {
 
 #publish price  to scuttlebot
 broadcastPriceMsg () {
-    local _assetPair="$1"
+    local _assetPair="${1/\/}"
     local _price="$2"
     local _priceHex="$3"
     local _time="$4"
