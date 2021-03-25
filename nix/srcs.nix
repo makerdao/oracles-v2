@@ -12,6 +12,7 @@ let
       else x.pname or (parse x.name);
 
   sources = import ./sources.nix;
+  ssb-patches = ../ssb-server;
 in
 
 rec {
@@ -30,7 +31,11 @@ rec {
   in nodepkgs' // shortNames;
 
   ssb-server = nodepkgs.ssb-server.override {
-    buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build ];
+    name = "patched-ssb-server";
+    buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build git ];
+    postInstall = ''
+      git apply --verbose ${ssb-patches}/ssb-db+19.2.0.patch
+    '';
   };
 
   setzer-mcd = makerpkgs.callPackage sources.setzer-mcd {};

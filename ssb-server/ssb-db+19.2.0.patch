@@ -1,0 +1,33 @@
+diff --git a/node_modules/ssb-db/db.js b/node_modules/ssb-db/db.js
+index 8825682..97d32cd 100644
+--- a/node_modules/ssb-db/db.js
++++ b/node_modules/ssb-db/db.js
+@@ -1,13 +1,9 @@
+-var ViewHashTable = require('flumeview-hashtable')
++var ViewLevel = require('flumeview-level')
+
+ module.exports = function (dir, keys, opts) {
+   var db = require('./minimal')(dir, keys, opts)
+
+-    .use('keys', ViewHashTable(2, function (key) {
+-      var b = Buffer.from(key.substring(1, 7), 'base64').readUInt32BE(0)
+-      return b
+-    })
+-    )
++    .use('keys', ViewLevel(3, (msg) => [ msg.key ]) )
+     .use('clock', require('./indexes/clock')())
+
+   db.progress = {}
+diff --git a/node_modules/ssb-db/minimal.js b/node_modules/ssb-db/minimal.js
+index 052aefe..8c177a5 100644
+--- a/node_modules/ssb-db/minimal.js
++++ b/node_modules/ssb-db/minimal.js
+@@ -80,7 +80,7 @@ module.exports = function (dirname, keys, opts) {
+
+   var unboxers = [ mainUnboxer ]
+
+-  var log = OffsetLog(path.join(dirname, 'log.offset'), { blockSize: 1024 * 16, codec })
++  var log = OffsetLog(path.join(dirname, 'log.offset'), { blockSize: 1024 * 16, codec, offsetCodec: 53 })
+
+   const unboxerMap = (msg, cb) => cb(null, db.unbox(msg))
+   const maps = [ unboxerMap ]
