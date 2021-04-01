@@ -9,5 +9,5 @@ let
   ssb-server = lib.setPrio 8 srcs.ssb-server;
 in {
   inherit ssb-server;
-  inherit (srcs) omnia install-omnia stark-cli;
+  inherit (srcs) omnia install-omnia stark-cli oracle-suite;
 }

@@ -1,13 +1,13 @@
 { stdenv, makeWrapper, runCommand, lib, glibcLocales
 , coreutils, bash, parallel, bc, jq, gnused, datamash, gnugrep
-, ssb-server, ethsign, seth, setzer-mcd, stark-cli }:
+, ssb-server, ethsign, seth, setzer-mcd, stark-cli, oracle-suite }:
 
 let
   inherit (builtins) pathExists;
   tapsh = if (pathExists ./tap.sh) then ./tap.sh else ../tests/lib/tap.sh;
   deps = [
     coreutils bash parallel bc jq gnused datamash gnugrep
-    ssb-server ethsign seth setzer-mcd stark-cli
+    ssb-server ethsign seth setzer-mcd stark-cli oracle-suite
   ];
 in
 

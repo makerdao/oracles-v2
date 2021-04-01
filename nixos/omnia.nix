@@ -41,11 +41,45 @@ in {
 
     networking.firewall.allowedTCPPorts = ssbIncomingPorts;
 
+    systemd.services.gofer = {
+      enable = true;
+      description = "Gofer Agent";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" "omnia.service" ];
+
+      serviceConfig = {
+        Type = "simple";
+        User = name;
+        Group = name;
+        PermissionsStartOnly = true;
+        Restart = "always";
+        RestartSec = 5;
+        ExecStart = "${oracle-suite}/bin/gofer --config ${cfg.goferConfig} agent";
+      };
+    };
+
+    systemd.services.spire = {
+      enable = true;
+      description = "Spire Agent";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" "omnia.service" ];
+
+      serviceConfig = {
+        Type = "simple";
+        User = name;
+        Group = name;
+        PermissionsStartOnly = true;
+        Restart = "always";
+        RestartSec = 5;
+        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.spireConfig} agent";
+      };
+    };
+
     systemd.services.ssb-server = {
       enable = true;
       description = "Scuttlebot server";
       after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "multi-user.target" "omnia.service" ];
 
       serviceConfig = {
         Type = "simple";
