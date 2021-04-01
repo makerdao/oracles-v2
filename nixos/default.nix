@@ -84,6 +84,14 @@ in {
         '';
         default = ../systemd/gofer.json;
       };
+
+      spireConfig = mkOption {
+        type = types.path;
+        description = ''
+          Path to Gofer config file.
+        '';
+        default = ../systemd/gofer.json;
+      };
     };
 
     sources = mkOption {
