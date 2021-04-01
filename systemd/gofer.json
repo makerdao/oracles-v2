@@ -122,8 +122,8 @@
     "DOT/USD": {
       "method": "median",
       "sources": [
-        [{ "origin": "kraken", "pair": "DOT/USDT" }],
-        [{ "origin": "bitfinex", "pair": "DOT/USDT" }],
+        [{ "origin": "kraken", "pair": "DOT/USD" }],
+        [{ "origin": "bitfinex", "pair": "DOT/USD" }],
         [{ "origin": "huobi", "pair": "DOT/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "binance", "pair": "DOT/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "kucoin", "pair": "DOT/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
@@ -414,10 +414,10 @@
       "sources": [
         [{ "origin": "bitfinex", "pair": "XRP/USD" }],
         [{ "origin": "kraken", "pair": "XRP/USD" }],
-        [{ "origin": "huobi", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "binance", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "okex", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "hitbtc", "pair": "WNXM/BTC" },{ "origin": ".", "pair": "BTC/USD" }]
+        [{ "origin": "huobi", "pair": "XRP/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "binance", "pair": "XRP/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "okex", "pair": "XRP/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "hitbtc", "pair": "XRP/BTC" },{ "origin": ".", "pair": "BTC/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 2
@@ -430,8 +430,8 @@
         [{ "origin": "coinbase", "pair": "XTZ/USD" }],
         [{ "origin": "hitbtc", "pair": "XTZ/USD" }],
         [{ "origin": "kraken", "pair": "XTZ/USD" }],
-        [{ "origin": "binance", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "okex", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }]
+        [{ "origin": "binance", "pair": "XTZ/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "okex", "pair": "XTZ/USDT" },{ "origin": ".", "pair": "USDT/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 2
