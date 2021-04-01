@@ -71,6 +71,12 @@
         "url": "https://github.com/NixOS/nixpkgs/archive/f1707d8875276cfa110139435a7e8998b4c2a4fd.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "oracle-suite": {
+        "branch": "master",
+        "repo": "https://github.com/makerdao/oracle-suite.git",
+        "rev": "ab61f0e324f3bd42e526ac5fe2da8d3b644aabb5",
+        "type": "git"
+    },
     "setzer-mcd": {
         "branch": "master",
         "description": null,

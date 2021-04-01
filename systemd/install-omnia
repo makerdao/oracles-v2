@@ -155,6 +155,7 @@ installConfigs() {
 
 installServices() {
   subst spire-agent "$SHARE_DIR"/spire-agent.service
+  subst gofer-agent "$SHARE_DIR"/gofer-agent.service
   subst ssb-server "$SHARE_DIR"/ssb-server.service
   subst omnia "$SHARE_DIR"/omnia.service
 }
