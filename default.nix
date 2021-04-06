@@ -6,7 +6,7 @@ in
 }: with pkgs;
 
 let
-  ssb-server = lib.setPrio 9 srcs.ssb-server;
+  ssb-server = lib.setPrio 8 srcs.ssb-server;
 in {
   inherit ssb-server;
   inherit (srcs) omnia install-omnia stark-cli;
