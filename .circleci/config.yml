@@ -77,17 +77,31 @@ commands:
       path:
         type: string
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
       - run-nix:
           name_: Pre-fetch dependencies for << parameters.path >>
           command: |
-            nix-shell "<< parameters.path >>" --run true
-  clone-gofer:
-    description: Copy gofer code
+            ls -la ~/.ssh
+            ssh-add -d
+            nix-shell "<< parameters.path >>" --show-trace --run true
+  pre-fetch2:
+    description: Pre-fetch Nix dependencies
+    parameters:
+      path:
+        type: string
     steps:
-      - run:
-          name: Copying gofer source code to ./gofer
+      - add_ssh_keys:
+          fingerprints:
+            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
+      - run-nix:
+          name_: Pre-fetch dependencies for << parameters.path >>
           command: |
-            sh -c "$GOFER_CLONE_SH" _ ./gofer "$(cat ./nix/gofer-rev)"
+            mv -f ~/.ssh/id_rsa_ab0634b8a6723d48bb42cbdbe8e430be ~/.ssh/id_rsa
+            rm -f ~/.ssh/id_rsa.pub
+            ls -la ~/.ssh
+            nix-shell "<< parameters.path >>" --show-trace --run true
 executors:
   nix-executor:
     docker:
@@ -103,7 +117,6 @@ jobs:
       - setup-nix
       - setup-cachix
       - checkout
-      #- clone-gofer
       - pre-fetch:
           path: tests
       - run-nix:
@@ -117,10 +130,9 @@ jobs:
     steps:
       - setup-cachix
       - checkout
-      #- clone-gofer
       - setup-ca:
           cert: tests/resources/mitmproxy/mitmproxy-ca-cert.cer
-      - pre-fetch:
+      - pre-fetch2:
           path: tests
       - run-nix:
           name_: End 2 end regression test
@@ -144,7 +156,6 @@ jobs:
     steps:
       - setup-cachix
       - checkout
-      #- clone-gofer
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
