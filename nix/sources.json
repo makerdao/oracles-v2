@@ -73,8 +73,8 @@
     },
     "oracle-suite": {
         "branch": "master",
-        "repo": "https://github.com/makerdao/oracle-suite.git",
-        "rev": "ab61f0e324f3bd42e526ac5fe2da8d3b644aabb5",
+        "repo": "git@github.com:makerdao/oracle-suite",
+        "rev": "23ee35d0f400bb9aef0f4e0e82dadf5e7f88c27c",
         "type": "git"
     },
     "setzer-mcd": {
