@@ -1,3 +1,6 @@
 *.out
 test-results/
 .env
+
+.local/
+.vagrant/
