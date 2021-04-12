@@ -84,7 +84,7 @@ pkgs.mkShell rec {
           echo "   git push --atomic origin $branch v$version"
         }
       elif [[ $_level == "stable" ]]; then
-        [[ $oldVersion =~ -rc\. ]] || {
+        [[ $oldVersion =~ -rc\. || $2 != "--force" || $2 != "-f" ]] || {
           echo >&2 "Current version ($oldVersion) is not a Release Candidate. Run: release major|minor|patch"
           return 1
         }

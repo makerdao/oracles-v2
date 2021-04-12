@@ -22,10 +22,10 @@ EOD
 fi
 
 if [[ "$1" == "install" ]]; then
-	if [[ "$2" == "commit" ]]; then
+	_version=${2:-"stable"}
+	if [[ $_version == "commit" ]]; then
 		nix-env --install -f "https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
 	else
-		_version=${2:-"stable"}
 		if [[ "$_version" == "current" ]]; then
 			_version=$(cat /vagrant/omnia/lib/version)
 		fi
