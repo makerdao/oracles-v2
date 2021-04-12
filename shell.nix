@@ -25,6 +25,10 @@ pkgs.mkShell rec {
       } )
     }
 
+    version() {
+      cat $VERSION_FILE
+    }
+
     release() {
       local branch=$(git rev-parse --abbrev-ref HEAD)
       local oldVersion=$(cat $VERSION_FILE)
@@ -38,13 +42,14 @@ pkgs.mkShell rec {
         }
         local version=$(semver -i "$1" $oldVersion)
         echo $version > "$VERSION_FILE"
-        git commit -m "Bump $1 version to $version" "$VERSION_FILE"
+
+        git commit -m "Bump >$1< version to $version" "$VERSION_FILE"
         git tag v$version-rc && {
           echo >&2 "To publish this commit as a release candidate run:"
-          echo "git push --atomic origin master master:release/''${version%.0} v$version-rc"
+          echo "   git push --atomic origin master master:release/''${version%.0} v$version-rc"
           echo >&2
           echo >&2 "To patch this $1 release checkout the release branch:"
-          echo "git checkout release/''${version%.0}"
+          echo "   git checkout release/''${version%.0}"
         }
       else
         [[ $branch =~ ^release/ ]] || {
@@ -52,21 +57,36 @@ pkgs.mkShell rec {
           return 1
         }
         if [[ -n $1 ]]; then
-          local version=$(semver -i "$1" $oldVersion)
+          local version=$(semver -i "$1" --preid rc $oldVersion)
           echo $version > "$VERSION_FILE"
-          git commit -m "Bump $1 version to $version" "$VERSION_FILE"
-          git tag v$version-rc && {
+
+          git commit -m "Bump \`$1\` version to $version" "$VERSION_FILE"
+          git tag v$version && {
             echo >&2 "To publish this commit as a release candidate run:"
-            echo "git push --atomic origin $branch v$version-rc"
+            echo "   git push --atomic origin $branch v$version"
           }
         else
-          git tag v$oldVersion && {
+          [[ $oldVersion =~ -rc\. ]] || {
+            echo >&2 "Current version ($oldVersion) not a Release Candidate. Run: release premajor|preminor|prepatch|prerelease"
+            return 1
+          }
+          local version=$(semver -i $oldVersion)
+          echo $version > "$VERSION_FILE"
+
+          git commit -m "Release \`$version\` as \`stable\`" "$VERSION_FILE"
+          git tag v$version && {
             git tag -f stable
             echo >&2 "To publish this commit as a stable release run:"
-            echo "git push -f origin stable"
+            echo "   git push -f origin stable"
           }
         fi
       fi
     }
+    echo 'Locally available commands:
+      * updateNodePackages
+      * version
+         see current release version
+      * release [--help] [LEVEL]
+         - LEVEL: major, minor, patch, premajor, preminor, prepatch, or prerelease'
   '';
 }
