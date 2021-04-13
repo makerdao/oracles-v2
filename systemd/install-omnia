@@ -165,7 +165,7 @@ case "$1" in
   feed)
     installType="feed"
     ;;
-  relayer)
+  relayer|relay)
     installType="relayer"
     ;;
   help|--help|-h)
@@ -226,6 +226,7 @@ done
 installConfigs
 
 installServices
+
 echo >&2 "To (re)start Omnia now (and auto-start on reboot) run:"
 echo     "systemctl daemon-reload  # Reload systemd services"
 echo -n  "$systemdCmd"

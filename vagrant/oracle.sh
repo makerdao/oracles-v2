@@ -37,9 +37,9 @@ if [[ "$1" == "install" ]]; then
 fi
 
 if [[ "$1" == "configure" ]]; then
-	sudo sed -i "/from/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
-	sudo sed -i "/keystore/c\\\"keystore\": \"/vagrant/.local/eth-keystore\"," /etc/omnia.conf
-	sudo sed -i "/password/c\\\"password\": \"/vagrant/.local/eth-keystore-password.txt\"" /etc/omnia.conf
+	sudo sed -i "/\"from\"/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
+	sudo sed -i "/\"keystore\"/c\\\"keystore\": \"/vagrant/.local/eth-keystore\"," /etc/omnia.conf
+	sudo sed -i "/\"password\"/c\\\"password\": \"/vagrant/.local/eth-keystore-password.txt\"" /etc/omnia.conf
 
 	grep -E 'from|keystore|password' /etc/omnia.conf
 fi
