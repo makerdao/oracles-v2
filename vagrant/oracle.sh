@@ -93,7 +93,11 @@ if [[ "$1" == "status" ]]; then
 fi
 
 if [[ "$1" == "log" ]]; then
-	journalctl -q -u ssb-server -u omnia -u gofer-agent -u gofer-agent -f
+	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent
+fi
+
+if [[ "$1" == "log-omnia" ]]; then
+	journalctl -q -f -u omnia
 fi
 
 if [[ "$1" == "state" ]]; then
