@@ -200,6 +200,18 @@ while [[ -n "$1" ]]; do
     --network)
       configUpdates+=( ".ethereum.network = \"$2\"" );shift
       ;;
+    --no-transport)
+      configUpdates+=( ".transports = []" )
+      ;;
+    --add-transport)
+      configUpdates+=( ".transports += [\"$2\"]" );shift
+      ;;
+    --no-source)
+      configUpdates+=( ".sources = []" )
+      ;;
+    --add-source)
+      configUpdates+=( ".sources += [\"$2\"]" );shift
+      ;;
     --ssb-external)
       ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );shift
       ;;

@@ -32,39 +32,38 @@ if [[ "$1" == "install" ]]; then
 
 		nix-env --install -f "https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
-
-	install-omnia feed --ssb-caps "/vagrant/.local/ssb-caps.json" --ssb-external "$(curl ifconfig.me)"
 fi
 
 if [[ "$1" == "configure" ]]; then
-	sudo sed -i "/\"from\"/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
-	sudo sed -i "/\"keystore\"/c\\\"keystore\": \"/vagrant/.local/eth-keystore\"," /etc/omnia.conf
-	sudo sed -i "/\"password\"/c\\\"password\": \"/vagrant/.local/eth-keystore-password.txt\"" /etc/omnia.conf
-
-	grep -E 'from|keystore|password' /etc/omnia.conf
+	install-omnia feed \
+	--ssb-caps "/vagrant/.local/ssb-caps.json" \
+	--ssb-external "$(curl ifconfig.me)" \
+	--no-source \
+	--add-source "gofer" \
+	--no-transport \
+	--add-transport "oracle-transporter-ssb" \
+	--keystore "/vagrant/.local/eth-keystore" \
+	--password "/vagrant/.local/eth-keystore-password.txt"
 fi
 
 if [[ "$1" == "enable" ]]; then
 	sudo systemctl daemon-reload
 	sudo systemctl enable --now ssb-server
 	sudo systemctl enable --now omnia
+	sudo systemctl enable --now gofer-agent
+	sudo systemctl enable --now spire-agent
 
-	systemctl status ssb-server omnia --no-pager
-fi
-
-if [[ "$1" == "upgrade" ]]; then
-	_version="$2"
-	nix-env --install -f "https://github.com/makerdao/oracles-v2/tarball/$_version"
-
-	install-omnia feed --ssb-caps "/vagrant/.local/ssb-caps.json" --ssb-external "$(curl ifconfig.me)"
+	oracle status
 fi
 
 if [[ "$1" == "restart" ]]; then
 	sudo systemctl daemon-reload
 	sudo systemctl restart ssb-server
 	sudo systemctl restart omnia
+	sudo systemctl restart gofer-agent
+	sudo systemctl restart spire-agent
 
-	systemctl status ssb-server omnia
+	oracle status
 fi
 
 if [[ "$1" == "connect" ]]; then
@@ -73,8 +72,15 @@ if [[ "$1" == "connect" ]]; then
 	done < /vagrant/.local/ssb-invites.txt
 fi
 
+if [[ "$1" == "status" ]]; then
+	systemctl status ssb-server omnia gofer-agent spire-agent --no-pager
+fi
+
 if [[ "$1" == "log" ]]; then
-	systemctl status ssb-server omnia --no-pager
-	journalctl -q -u ssb-server
+	journalctl -q -u ssb-server -u omnia -u gofer-agent -u gofer-agent -f
+	watch du -h "$HOME/.ssb/flume/log.offset"
+fi
+
+if [[ "$1" == "state" ]]; then
 	watch du -h "$HOME/.ssb/flume/log.offset"
 fi

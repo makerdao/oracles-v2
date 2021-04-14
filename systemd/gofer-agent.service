@@ -5,6 +5,7 @@ After=network.target
 
 [Service]
 Environment="PATH=/home/$USER/.nix-profile/bin"
+Environment="GOFER_CONFIG=$GOFER_CONFIG"
 User=$USER
 Group=$USER
 ExecStart=$GOFER_PATH -v debug -c "$GOFER_CONFIG" agent

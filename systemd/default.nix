@@ -1,5 +1,5 @@
 { stdenv, lib, makeWrapper, shellcheck
-, glibcLocales, coreutils, gettext, jq, omnia, ssb-server
+, glibcLocales, coreutils, gettext, jq, omnia, ssb-server, oracle-suite
 }:
 
 stdenv.mkDerivation rec {
@@ -28,8 +28,8 @@ stdenv.mkDerivation rec {
       --set OMNIA_PATH "${omnia}/bin/omnia" \
       --set OMNIA_LIB_PATH "${omnia}/lib" \
       --set OMNIA_CONF_PATH "${omnia}/config" \
-      --set GOFER_PATH "${omnia}/bin/gofer" \
-      --set SPIRE_PATH "${omnia}/bin/spire" \
+      --set GOFER_PATH "${oracle-suite}/bin/gofer" \
+      --set SPIRE_PATH "${oracle-suite}/bin/spire" \
       --set SSB_PATH "${ssb-server}/bin/ssb-server" \
       ${locales}
   '';
