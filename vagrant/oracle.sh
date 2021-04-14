@@ -38,10 +38,26 @@ if [[ "$1" == "configure" ]]; then
 	install-omnia feed \
 	--ssb-caps "/vagrant/.local/ssb-caps.json" \
 	--ssb-external "$(curl -s ifconfig.me)" \
+	--keystore "/vagrant/.local/eth-keystore" \
+	--password "/vagrant/.local/eth-keystore-password.txt"
+fi
+
+if [[ "$1" == "configure-gofer" ]]; then
+	install-omnia feed \
+	--ssb-caps "/vagrant/.local/ssb-caps.json" \
+	--ssb-external "$(curl -s ifconfig.me)" \
 	--no-source \
 	--add-source "gofer" \
+	--keystore "/vagrant/.local/eth-keystore" \
+	--password "/vagrant/.local/eth-keystore-password.txt"
+fi
+
+if [[ "$1" == "configure-spire" ]]; then
+	install-omnia feed \
+	--ssb-caps "/vagrant/.local/ssb-caps.json" \
+	--ssb-external "$(curl -s ifconfig.me)" \
 	--no-transport \
-	--add-transport "transport-ssb" \
+	--add-transport "transport-spire" \
 	--keystore "/vagrant/.local/eth-keystore" \
 	--password "/vagrant/.local/eth-keystore-password.txt"
 fi
@@ -78,7 +94,6 @@ fi
 
 if [[ "$1" == "log" ]]; then
 	journalctl -q -u ssb-server -u omnia -u gofer-agent -u gofer-agent -f
-	watch du -h "$HOME/.ssb/flume/log.offset"
 fi
 
 if [[ "$1" == "state" ]]; then
