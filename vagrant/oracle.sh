@@ -39,7 +39,7 @@ if [[ "$1" == "configure" ]]; then
 	--ssb-caps "/vagrant/.local/ssb-caps.json" \
 	--ssb-external "$(curl -s ifconfig.me)" \
 	--no-source \
-	--add-source "source-gofer" \
+	--add-source "gofer" \
 	--no-transport \
 	--add-transport "transport-ssb" \
 	--keystore "/vagrant/.local/eth-keystore" \

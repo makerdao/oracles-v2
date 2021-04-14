@@ -46,7 +46,7 @@ export -f _mapSetzer
 
 readSourcesWithGofer()   {
 	local _output
-	_output=$(gofer price --config "$OMNIA_GOFER_CONFIG" --format json "$@")
+	_output=$(gofer price --config "$GOFER_CONFIG" --format json "$@")
 
 	echo "$_output" | jq -c '
 		.[]
