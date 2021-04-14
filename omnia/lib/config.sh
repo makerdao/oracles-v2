@@ -50,7 +50,7 @@ importSources () {
 importTransports () {
 	local _config="$1"
 	readarray -t OMNIA_TRANSPORTS < <(jq -r '.transports[]' "$_config")
-	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("oracle-transporter-ssb")
+	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("transport-ssb")
 }
 
 importNetwork () {

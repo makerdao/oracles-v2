@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+gofer -c "$GOFER_CONFIG" "$@"

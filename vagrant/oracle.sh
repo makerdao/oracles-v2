@@ -37,11 +37,11 @@ fi
 if [[ "$1" == "configure" ]]; then
 	install-omnia feed \
 	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl ifconfig.me)" \
+	--ssb-external "$(curl -s ifconfig.me)" \
 	--no-source \
-	--add-source "gofer" \
+	--add-source "source-gofer" \
 	--no-transport \
-	--add-transport "oracle-transporter-ssb" \
+	--add-transport "transport-ssb" \
 	--keystore "/vagrant/.local/eth-keystore" \
 	--password "/vagrant/.local/eth-keystore-password.txt"
 fi
