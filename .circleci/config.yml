@@ -4,8 +4,10 @@ workflows:
   version: 2
   build-test-cache:
     jobs:
-      - smoke-test
-      - regression
+      - smoke-test:
+          context: clone-gofer-sh
+      - regression:
+          context: clone-gofer-sh
       - cache:
           requires:
             - smoke-test
@@ -47,7 +49,7 @@ commands:
       - run-nix:
           name_: Install dependencies
           command: |
-            nix-env -iA nixpkgs.gitMinimal
+            nix-env -iA nixpkgs.gitMinimal nixpkgs.curl
             nix-env -iA cachix -f https://cachix.org/api/v1/install
       - run-nix:
           name_: Add build caches
@@ -75,11 +77,31 @@ commands:
       path:
         type: string
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
       - run-nix:
           name_: Pre-fetch dependencies for << parameters.path >>
           command: |
-            nix-shell "<< parameters.path >>" --run true
-
+            ls -la ~/.ssh
+            ssh-add -d
+            nix-shell "<< parameters.path >>" --show-trace --run true
+  pre-fetch2:
+    description: Pre-fetch Nix dependencies
+    parameters:
+      path:
+        type: string
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
+      - run-nix:
+          name_: Pre-fetch dependencies for << parameters.path >>
+          command: |
+            mv -f ~/.ssh/id_rsa_ab0634b8a6723d48bb42cbdbe8e430be ~/.ssh/id_rsa
+            rm -f ~/.ssh/id_rsa.pub
+            ls -la ~/.ssh
+            nix-shell "<< parameters.path >>" --show-trace --run true
 executors:
   nix-executor:
     docker:
@@ -110,7 +132,7 @@ jobs:
       - checkout
       - setup-ca:
           cert: tests/resources/mitmproxy/mitmproxy-ca-cert.cer
-      - pre-fetch:
+      - pre-fetch2:
           path: tests
       - run-nix:
           name_: End 2 end regression test

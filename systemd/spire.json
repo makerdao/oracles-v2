@@ -1,0 +1,33 @@
+{
+  "ethereum": {
+    "from": "",
+    "keystore": "",
+    "password": ""
+  },
+  "p2p": {
+    "bootstrapAddrs": []
+  },
+  "rpc": {
+    "address": ":8082"
+  },
+  "feeds": [],
+  "pairs": [
+    "AAVE/USD",
+    "BAL/USD",
+    "BAT/USD",
+    "BTC/USD",
+    "COMP/USD",
+    "ETH/BTC",
+    "ETH/USD",
+    "KNC/ETH",
+    "KNC/USD",
+    "LINK/USD",
+    "LRC/USD",
+    "MANA/USD",
+    "PAXG/USD",
+    "UNI/USD",
+    "USDT/USD",
+    "YFI/USD",
+    "ZRX/USD"
+  ]
+}

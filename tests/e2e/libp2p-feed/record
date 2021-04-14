@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
+. "$_path/../../lib/include.sh"
+
+startProxyRecord
+E2E_TARGET="${E2E_TARGET}-rec" "$_path/run" >/dev/null
+
+startProxyReplay
+output=$(mktemp)
+"$_path/run" >"$output"
+
+if "$_path/test" "$output"; then
+  cp "$output" "$_path/spire-messages.json"
+fi

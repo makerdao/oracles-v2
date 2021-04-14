@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+_here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
+_command="$1"
+
+case "$_command" in
+	publish)
+		_v=$(seth --to-word "0x$(jq -r '.signature[128:130]' <<<"$2")")
+		_val=$(seth --to-wei "$(jq -r '.price' <<<"$2")" eth)
+		_msg=$(jq --arg val "$_val" '{
+			price: {
+				wat: .type,
+				val: $val,
+				age: .time,
+				r: .signature[0:64],
+				s: .signature[64:128],
+				v: .signature[128:130]
+			},
+			trace: .sources
+		}' <<<"$2")
+		spire push -c "$SPIRE_CONFIG" price <<<"$_msg"
+		;;
+	pull)
+		_assetPair="$3"
+		_msg=$(spire pull -c "$SPIRE_CONFIG" price "$_assetPair" "$2") || exit $?
+		_priceHex=$(seth --to-uint256 "$(jq -r '.price.val' <<<"$_msg")" | sed s/^0x//)
+		_timeHex=$(seth --to-uint256 "$(jq -r '.price.age' <<<"$_msg")" | sed s/^0x//)
+		jq -c --arg ph $_priceHex --arg th $_timeHex '{
+			type: .price.wat,
+			price: ((.price.val | tonumber) / 1e18),
+			priceHex: $ph,
+			time: .price.age,
+			timeHex: $th,
+			signature: (.price.r + .price.s + .price.v),
+			sources: .trace
+		}' <<<"$_msg"
+		;;
+esac

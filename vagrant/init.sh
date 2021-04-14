@@ -14,7 +14,7 @@ nix-env -iA nixpkgs.jq
 mkdir -p /home/vagrant/bin
 ln -sf /vagrant/vagrant/oracle.sh /home/vagrant/bin/oracle
 
-cat <<EOD
+tee <<EOD
 For a basic installation of the 'stable' version of Omnia, run:
   vagrant ssh -c "oracle install && oracle configure && oracle enable"
 EOD

@@ -3,9 +3,17 @@ set -eo pipefail
 
 SCRIPT_DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 TARGET_DIR=${TARGET_DIR:-/etc/systemd/system}
-SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
-OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
-OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia}
+SHARE_DIR="${SHARE_PATH:-$SCRIPT_DIR}"
+OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia/lib}
+OMNIA_CONF_PATH=${OMNIA_CONF_PATH:-$SCRIPT_DIR/../omnia/config}
+
+export SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
+export GOFER_PATH=${GOFER_PATH:-$(command -v gofer)}
+export SPIRE_PATH=${SPIRE_PATH:-$(command -v spire)}
+export OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
+export SPIRE_CONFIG=/etc/spire.json
+export GOFER_CONFIG=/etc/gofer.json
+export OMNIA_CONFIG=/etc/omnia.conf
 
 usage() {
   cat >&2 <<EOF
@@ -35,7 +43,13 @@ subst() {
   local restart;restart=$(if [[ -e "$target" ]]; then echo 1; fi)
 
   # shellcheck disable=SC2016
-  envsubst '$USER $OMNIA_PATH $SSB_PATH $OMNIA_CONFIG' < "$2" \
+  envsubst '
+    $USER
+    $SSB_PATH
+    $OMNIA_PATH $OMNIA_CONFIG
+    $GOFER_PATH $GOFER_CONFIG
+    $SPIRE_PATH $SPIRE_CONFIG
+  ' < "$2" \
     | sudo tee "$target" >/dev/null
 
   echo >&2 "$name -> $target"
@@ -55,20 +69,20 @@ copyOmniaConf() {
   local savedFrom
   local updatedConf
 
-  if [[ -f "/etc/omnia.conf" ]]; then
-    savedFrom=$(jq '{ethereum,services} | del(.. | nulls)' "/etc/omnia.conf")
+  if [[ -f "$OMNIA_CONFIG" ]]; then
+    savedFrom=$(jq '{ethereum,services} | del(.. | nulls)' "$OMNIA_CONFIG")
   fi
 
-  sudo cp -v "$OMNIA_LIB_PATH/config/$1" "/etc/omnia.conf" >&2
-  sudo chmod u+w "/etc/omnia.conf"
+  sudo cp -v "$OMNIA_CONF_PATH/$1" "$OMNIA_CONFIG" >&2
+  sudo chmod u+w "$OMNIA_CONFIG"
 
   if [[ -n "$savedFrom" ]]; then
     configUpdates=( ". * $savedFrom" "${configUpdates[@]}" )
   fi
 
   for i in "${!configUpdates[@]}"; do
-    updatedConf=$(jq "${configUpdates[$i]}" "/etc/omnia.conf")
-    sudo tee "/etc/omnia.conf" <<<"$updatedConf" >/dev/null
+    updatedConf=$(jq "${configUpdates[$i]}" "$OMNIA_CONFIG")
+    sudo tee "$OMNIA_CONFIG" <<<"$updatedConf" >/dev/null
   done
 }
 declare -a configUpdates
@@ -84,7 +98,7 @@ copySsbConf() {
   if [[ -f $confPath ]]; then
     updatedConf=$(jq . "$confPath")
   fi
-  [[ -n $updatedConf ]] || updatedConf=$(jq . "$SCRIPT_DIR/ssb-config.json")
+  [[ -n $updatedConf ]] || updatedConf=$(jq . "$SHARE_DIR/ssb-config.json")
 
   for i in "${!ssbConfigUpdates[@]}"; do
     updatedConf=$(jq "${ssbConfigUpdates[$i]}" <<<"$updatedConf")
@@ -102,18 +116,48 @@ copySsbConf() {
   fi
 
 }
-mapfile -t ssbConfigUpdates < <(grep -v "^ *#\|^ *$" "$SCRIPT_DIR/ssb-config-updates")
+mapfile -t ssbConfigUpdates < <(grep -v "^ *#\|^ *$" "$SHARE_DIR/ssb-config-updates")
+
+copySpireConf() {
+  if [[ ! -f "$SPIRE_CONFIG" ]]; then
+    sudo cp -v "$SHARE_DIR/spire.json" "$SPIRE_CONFIG" >&2
+    sudo chmod u+w "$SPIRE_CONFIG"
+  fi
+
+  for i in "${!spireConfigUpdates[@]}"; do
+    sudo tee "$SPIRE_CONFIG" \
+      <<<"$(jq "${spireConfigUpdates[$i]}" "$SPIRE_CONFIG")" \
+      >/dev/null
+  done
+}
+declare -a spireConfigUpdates
+
+copyGoferConf() {
+  if [[ ! -f "$GOFER_CONFIG" ]]; then
+    sudo cp -v "$SHARE_DIR/gofer.json" "$GOFER_CONFIG" >&2
+    sudo chmod u+w "$GOFER_CONFIG"
+  fi
+
+  for i in "${!goferConfigUpdates[@]}"; do
+    sudo tee "$GOFER_CONFIG" \
+      <<<"$(jq "${goferConfigUpdates[$i]}" "$GOFER_CONFIG")" \
+      >/dev/null
+  done
+}
+declare -a goferConfigUpdates
 
 installConfigs() {
   copyOmniaConf "$installType.conf"
   copySsbConf
+  copySpireConf
+  copyGoferConf
 }
 
 installServices() {
-  subst ssb-server "$SCRIPT_DIR"/ssb-server.service
-
-  OMNIA_CONFIG="/etc/omnia.conf" \
-    subst omnia "$SCRIPT_DIR"/omnia.service
+  subst spire-agent "$SHARE_DIR"/spire-agent.service
+  subst gofer-agent "$SHARE_DIR"/gofer-agent.service
+  subst ssb-server "$SHARE_DIR"/ssb-server.service
+  subst omnia "$SHARE_DIR"/omnia.service
 }
 
 
@@ -121,7 +165,7 @@ case "$1" in
   feed)
     installType="feed"
     ;;
-  relayer)
+  relayer|relay)
     installType="relayer"
     ;;
   help|--help|-h)
@@ -138,16 +182,35 @@ shift
 while [[ -n "$1" ]]; do
   case "$1" in
     --from)
-      configUpdates+=( ".ethereum.from = \"$2\"" );shift
+      configUpdates+=( ".ethereum.from = \"$2\"" )
+      spireConfigUpdates+=( ".ethereum.from = \"$2\"" )
+      spireConfigUpdates+=( ".feeds += [\"$2\"]" )
+      shift
       ;;
     --keystore)
-      configUpdates+=( ".ethereum.keystore = \"$2\"" );shift
+      configUpdates+=( ".ethereum.keystore = \"$2\"" )
+      spireConfigUpdates+=( ".ethereum.keystore = \"$2\"" )
+      shift
       ;;
     --password)
-      configUpdates+=( ".ethereum.password = \"$2\"" );shift
+      configUpdates+=( ".ethereum.password = \"$2\"" )
+      spireConfigUpdates+=( ".ethereum.password = \"$(tr -d '\n' < "$2")\"" )
+      shift
       ;;
     --network)
       configUpdates+=( ".ethereum.network = \"$2\"" );shift
+      ;;
+    --no-transport)
+      configUpdates+=( ".transports = []" )
+      ;;
+    --add-transport)
+      configUpdates+=( ".transports += [\"$2\"]" );shift
+      ;;
+    --no-source)
+      configUpdates+=( ".sources = []" )
+      ;;
+    --add-source)
+      configUpdates+=( ".sources += [\"$2\"]" );shift
       ;;
     --ssb-external)
       ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );shift
@@ -175,6 +238,7 @@ done
 installConfigs
 
 installServices
+
 echo >&2 "To (re)start Omnia now (and auto-start on reboot) run:"
 echo     "systemctl daemon-reload  # Reload systemd services"
 echo -n  "$systemdCmd"

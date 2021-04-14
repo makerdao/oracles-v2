@@ -4,12 +4,12 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 . "$_path/../../lib/tap.sh"
 
 rmPairs='
-["ETHBTC"
-,"AAVEUSD"
-,"UNIUSD"
+["ETH/BTC"
+,"AAVE/USD"
+,"UNI/USD"
 ]'
 mapfile -t pairs < <(jq -r --argjson rp "$rmPairs" '
-  .pairs|keys|.[]|sub("/";"")|select([.]|inside($rp)|not)
+  .pairs|keys|.[]|select([.]|inside($rp)|not)
 ' < "$_path/omnia.conf")
 
 
@@ -21,7 +21,7 @@ note <<<"Relayer Regression Assertions"
 
 for pair in "${pairs[@]}"; do
   assert "Oracle price for $pair not null" \
-    json ".$pair != null" <<<"true"
+    json --arg p $pair '.[$p] != null' <<<"true"
   assert "Oracle price for $pair" \
-    json ".$pair" <<<$(jq ".$pair" "$_path/good.json")
+    json --arg p $pair '.[$p]' <<<$(jq --arg p $pair '.[$p]' "$_path/good.json")
 done

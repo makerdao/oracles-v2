@@ -1,0 +1,21 @@
+{
+  "ethereum": {
+    "from": "0xB80820E3aB3a5ABA5efb0ECF4b007fce09265122",
+    "keystore": "/run/user/1000/home.j6chAstp/.dapp/testnet/8545/keystore",
+    "password": ""
+  },
+  "p2p": {
+    "bootstrapAddrs": []
+  },
+  "rpc": {
+    "address": ":8082"
+  },
+  "feeds": [
+    "0x1f8fbe73820765677e68eb6e933dcb3c94c9b708",
+    "0xB80820E3aB3a5ABA5efb0ECF4b007fce09265122"
+  ],
+  "pairs": [
+    "BALUSD",
+    "ZRXUSD"
+  ]
+}

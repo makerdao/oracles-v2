@@ -1,10 +1,10 @@
 { stdenv, lib, makeWrapper, shellcheck
-, glibcLocales, coreutils, gettext, jq, omnia, ssb-server
+, glibcLocales, coreutils, gettext, jq, omnia, ssb-server, oracle-suite
 }:
 
 stdenv.mkDerivation rec {
   name = "install-omnia-${version}";
-  version = lib.fileContents ../omnia/version;
+  version = lib.fileContents ../omnia/lib/version;
   src = ./.;
 
   passthru.runtimeDeps =  [
@@ -18,13 +18,18 @@ stdenv.mkDerivation rec {
     locales = lib.optionalString (glibcLocales != null)
       "--set LOCALE_ARCHIVE \"${glibcLocales}\"/lib/locale/locale-archive";
   in ''
-    mkdir -p $out/bin
-    cp -t $out/bin *.service *.json install-omnia *-updates
+    mkdir -p $out/{bin,share}
+    cp -t $out/bin install-omnia
+    cp -t $out/share *.service *.json *-updates
 
     wrapProgram "$out/bin/install-omnia" \
       --prefix PATH : "${path}" \
+      --set SHARE_PATH "$out/share" \
       --set OMNIA_PATH "${omnia}/bin/omnia" \
       --set OMNIA_LIB_PATH "${omnia}/lib" \
+      --set OMNIA_CONF_PATH "${omnia}/config" \
+      --set GOFER_PATH "${oracle-suite}/bin/gofer" \
+      --set SPIRE_PATH "${oracle-suite}/bin/spire" \
       --set SSB_PATH "${ssb-server}/bin/ssb-server" \
       ${locales}
   '';

@@ -21,7 +21,8 @@ startProxyRecord() {
     pkill mitmdump || true
     mitmdump \
       -w "$E2E_TARGET_DIR/replay.mitm" \
-      --set "confdir=$_path/../resources/mitmproxy"
+      --set "confdir=$_path/../resources/mitmproxy" \
+      --anticache
 
     #"$_path/dedup-mitm" "$E2E_TARGET_DIR/replay.mitm"
   } >"$E2E_LOGS/${E2E_TARGET-test}-rec-mitm.out" 2>&1 &
@@ -46,6 +47,7 @@ startProxyReplay() {
     --server-replay-refresh \
     --server-replay-kill-extra \
     --server-replay-nopop \
+    --anticache \
     >"logs/${E2E_TARGET-test}-replay-mitm.out" 2>&1 &
   E2E_EXIT_HOOK+='pkill mitmdump;'
 
@@ -101,6 +103,22 @@ startSSB() {
   E2E_EXIT_HOOK+='pkill ssb-server;'
 
   sleep 3
+}
+
+spirePublishMessages() {
+  while IFS= read -r msg; do
+    HOME="$E2E_HOME" \
+      spire -c "$SPIRE_CONFIG" push price <<<"$msg"
+  done < <(cat)
+}
+
+startLibp2p() {
+  echo >&2 "# Start libp2p server"
+  HOME="$E2E_HOME" \
+    spire -v debug -c "$SPIRE_CONFIG" agent  >"$E2E_LOGS/${E2E_TARGET-test}-spire.out" 2>&1 &
+  E2E_EXIT_HOOK+='pkill spire;'
+
+  sleep 15
 }
 
 startGeth() {

@@ -34,7 +34,7 @@ rec {
     name = "patched-ssb-server";
     buildInputs = with pkgs; [ gnumake nodepkgs.node-gyp-build git ];
     postInstall = ''
-      git apply --verbose ${ssb-patches}/ssb-db+19.2.0.patch
+      git apply ${ssb-patches}/ssb-db+19.2.0.patch
     '';
   };
 
@@ -42,7 +42,12 @@ rec {
 
   stark-cli = makerpkgs.callPackage ../starkware {};
 
-  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli; };
+  oracle-suite = pkgs.callPackage sources.oracle-suite {};
 
-  install-omnia = makerpkgs.callPackage ../systemd { inherit ssb-server omnia; };
+  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
+
+  install-omnia = makerpkgs.callPackage ../systemd {
+    inherit omnia ssb-server oracle-suite;
+  };
+
 }
