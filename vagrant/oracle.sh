@@ -49,7 +49,7 @@ if [[ "$1" == "enable" ]]; then
 	sudo systemctl enable --now ssb-server
 	sudo systemctl enable --now omnia
 
-	systemctl status ssb-server omnia
+	systemctl status ssb-server omnia --no-pager
 fi
 
 if [[ "$1" == "upgrade" ]]; then
@@ -76,5 +76,5 @@ fi
 if [[ "$1" == "log" ]]; then
 	systemctl status ssb-server omnia --no-pager
 	journalctl -q -u ssb-server
-	du -h "$HOME/.ssb/flume/log.offset"
+	watch du -h "$HOME/.ssb/flume/log.offset"
 fi
