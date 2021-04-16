@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+[[ -z "$ORACLE_DEBUG" ]] || set -x
+
 SCRIPT_DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 TARGET_DIR=${TARGET_DIR:-/etc/systemd/system}
 SHARE_DIR="${SHARE_PATH:-$SCRIPT_DIR}"

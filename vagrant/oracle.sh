@@ -12,11 +12,15 @@ Commands:
     * install VERSION
     * install commit COMMIT_HASH
   * configure
+  * configure-gofer
+  * configure-spire
   * enable
-  * upgrade
   * restart
   * connect - accept invites included in .local/ssb-invites.txt (one per line)
+  * status
   * log
+  * log-all
+  * state
 EOD
 	exit 1
 fi
@@ -35,31 +39,53 @@ if [[ "$1" == "install" ]]; then
 fi
 
 if [[ "$1" == "configure" ]]; then
-	install-omnia feed \
-	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl -s ifconfig.me)" \
-	--keystore "/vagrant/.local/eth-keystore" \
-	--password "/vagrant/.local/eth-keystore-password.txt"
-fi
+#	sudo sed -i "/from/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
 
-if [[ "$1" == "configure-gofer" ]]; then
-	install-omnia feed \
-	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl -s ifconfig.me)" \
-	--no-source \
-	--add-source "gofer" \
-	--keystore "/vagrant/.local/eth-keystore" \
-	--password "/vagrant/.local/eth-keystore-password.txt"
-fi
+  opts=()
+	opts+=(--ssb-caps "/vagrant/.local/ssb-caps.json")
+	opts+=(--ssb-external "$(curl -s ifconfig.me)")
+	opts+=(--keystore "/vagrant/.local/eth-keystore")
+	opts+=(--password "/vagrant/.local/eth-keystore-password.txt")
+	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")")
 
-if [[ "$1" == "configure-spire" ]]; then
-	install-omnia feed \
-	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl -s ifconfig.me)" \
-	--no-transport \
-	--add-transport "transport-spire" \
-	--keystore "/vagrant/.local/eth-keystore" \
-	--password "/vagrant/.local/eth-keystore-password.txt"
+	_mode="feed"
+	_restart=""
+	_log=""
+	while [[ -n "${2-}" ]]; do
+		case "$2" in
+			--relay)
+				_mode="relay"
+				;;
+			--gofer)
+				opts+=(--no-source --add-source "gofer")
+				;;
+			--spire)
+				opts+=(--no-transport --add-transport "transport-spire")
+				;;
+			--restart)
+				_restart="true"
+				;;
+			--log)
+				_log="true"
+				;;
+			--debug)
+				export ORACLE_DEBUG="true"
+				;;
+			*)
+				echo >&2 "\"$2\" is not a valid option"
+				;;
+		esac
+		shift
+	done
+
+	cmd=("install-omnia" "$_mode")
+	cmd+=("${opts[@]}")
+
+	echo -e "\n\n${cmd[*]}\n\n"
+
+	"${cmd[@]}"
+	[[ -z "$_restart" ]] || oracle restart
+	[[ -z "$_log" ]] || oracle log
 fi
 
 if [[ "$1" == "enable" ]]; then
@@ -92,11 +118,11 @@ if [[ "$1" == "status" ]]; then
 	systemctl status ssb-server omnia gofer-agent spire-agent --no-pager
 fi
 
-if [[ "$1" == "log" ]]; then
+if [[ "$1" == "log-all" ]]; then
 	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent
 fi
 
-if [[ "$1" == "log-omnia" ]]; then
+if [[ "$1" == "log" ]]; then
 	journalctl -q -f -u omnia
 fi
 
