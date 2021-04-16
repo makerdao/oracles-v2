@@ -6,7 +6,7 @@ in {
   enable = lib.mkEnableOption "omnia";
 
   mode = lib.mkOption {
-    type = lib.types.enum [ "feed" "relayer" ];
+    type = lib.types.enum [ "feed" "relay" "relayer" ];
     description = ''
       Omnia operational mode (feed or relay)
     '';

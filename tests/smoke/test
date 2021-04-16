@@ -30,7 +30,7 @@ install_relayer() {
   updatedConf=$(jq '.friends.hops = 2' "$HOME/.ssb/config")
   printf %s "$updatedConf" > "$HOME/.ssb/config"
 
-  install-omnia relayer \
+  install-omnia relay \
     --network      "testnet" \
     --ssb-external "example-2.org" \
     | sudo sh
@@ -94,10 +94,10 @@ assert "Scuttlebot service is up" \
 assert "SSB create invite" \
   match '^"example.org:8007:' < <(capture ssb-server invite.create 1)
 
-note <<<"INSTALL RELAYER"
+note <<<"INSTALL RELAY"
 
 relayer_start=$(date +"%F %T")
-assert "Install relayer" run install_relayer
+assert "Install relay" run install_relayer
 
 assert "Scuttlebot config installed" \
   test -f $HOME/.ssb/config
@@ -112,11 +112,11 @@ assert "SSB caps set" \
 assert "SSB hops set" \
   json .friends.hops <<<"2"
 
-assert "Omnia relayer config installed" \
+assert "Omnia relay config installed" \
   test -f /etc/omnia.conf
 
 cat /etc/omnia.conf > $wdir/output
-assert "Mode is relayer" \
+assert "Mode is relay" \
   json .mode <<<'"relayer"'
 assert "Ethereum from address not overwritten" \
   json .ethereum.from <<<"\"$from_addr\""
@@ -129,14 +129,14 @@ assert "Has set ethereum network" \
 
 sleep 2
 
-assert "Omnia relayer service is active" \
+assert "Omnia relay service is active" \
   match "Active: active" < <(capture systemctl status omnia)
 assert "Scuttlebot service is active" \
   match "Active: active" < <(capture systemctl status ssb-server)
 
 sleep 5
 
-assert "Omnia relayer service is up" \
+assert "Omnia relay service is up" \
   match "INITIALIZATION COMPLETE" < <(capture journalctl --since "$relayer_start" -u omnia)
 assert "Scuttlebot service is up" \
   match "my key ID:" < <(capture journalctl --since "$relayer_start" -u ssb-server)

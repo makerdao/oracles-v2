@@ -28,7 +28,7 @@ importEnv () {
 	importOptionsEnv "$config"
 	importScuttlebotEnv
 	importServicesEnv "$config"
-	if [[ "$OMNIA_MODE" == "RELAYER" ]]; then
+	if [[ "$OMNIA_MODE" == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]]; then
 		importFeeds "$config"
 	fi
 }
@@ -37,7 +37,7 @@ importEnv () {
 importMode () {
 	local _config="$1"
 	OMNIA_MODE="$(jq -r '.mode' < "$_config" | tr '[:lower:]' '[:upper:]')"
-	[[ "$OMNIA_MODE" =~ ^(FEED|RELAYER){1}$ ]] || { error "Error - Invalid Mode param, valid values are 'FEED' and 'RELAYER'"; exit 1; }
+	[[ "$OMNIA_MODE" =~ ^(FEED|RELAYER|RELAY){1}$ ]] || { error "Error - Invalid Mode param, valid values are 'FEED' and 'RELAYER'"; exit 1; }
 	export OMNIA_MODE
 }
 
@@ -85,7 +85,7 @@ importEthereumEnv () {
 
 	_json=$(jq -S '.ethereum' < "$_config")
 
-	[[ "$OMNIA_MODE" == "RELAYER" ]] && importNetwork "$_json"
+	[[ "$OMNIA_MODE" == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && importNetwork "$_json"
 
 	ETH_FROM="${ETH_FROM-$(jq -r '.from' <<<"$_json")}"
 	#this just checks for valid chars and length, NOT checksum!
@@ -146,7 +146,7 @@ importAssetPairsEnv () {
 	[[ ${#assetPairs[@]} -eq 0 ]] && { error "Error - Config must have at least 1 asset pair"; exit 1; }
 
 	[[ $OMNIA_MODE == "FEED" ]] && importAssetPairsFeed
-	[[ $OMNIA_MODE == "RELAYER" ]] && importAssetPairsRelayer
+	[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && importAssetPairsRelayer
 	true
 }
 

@@ -17,7 +17,7 @@ cp -f "$1" $wdir/output
 
 plan $((${#pairs[@]} * 2))
 
-note <<<"Relayer Regression Assertions"
+note <<<"Relay Regression Assertions"
 
 for pair in "${pairs[@]}"; do
   assert "Oracle price for $pair not null" \

@@ -9,7 +9,7 @@ cp -f "$1" $wdir/output
 
 plan $((${#pairs[@]} * 2))
 
-note <<<"Relayer with Spire Transport Regression Assertions"
+note <<<"Relay with Spire Transport Regression Assertions"
 
 for pair in "${pairs[@]}"; do
   assert "Oracle price for $pair not null" \
