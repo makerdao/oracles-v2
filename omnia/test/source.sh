@@ -38,5 +38,5 @@ assert "length of sources" json -s '.[].sources|length' <<<"3"
 assert "median" json -s '.[].median' <<<"0.2"
 
 assert "read sources from gofer" run_json readSourcesWithGofer BAT/USD
-assert "length of sources" json -s '.[].sources|length' <<<"9"
+assert "length of sources" json -s '.[].sources|length' <<<"5"
 assert "median" json -s '.[].median' <<<"0.2"

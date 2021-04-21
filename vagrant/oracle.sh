@@ -41,7 +41,7 @@ if [[ "$1" == "install" ]]; then
 		fi
 		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
-
+  echo "Installing from: $_file"
 	nix-env --install --file "$_file"
 fi
 
