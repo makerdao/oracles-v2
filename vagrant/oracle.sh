@@ -26,16 +26,19 @@ EOD
 fi
 
 if [[ "$1" == "install" ]]; then
-	_version=${2:-"stable"}
-	if [[ $_version == "commit" ]]; then
-		nix-env --install -f "https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
+	_version=${2:-"local"}
+	if [[ $_version == "local" ]]; then
+		_file="/vagrant"
+	elif [[ $_version == "commit" ]]; then
+		_file="https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
 	else
 		if [[ "$_version" == "current" ]]; then
 			_version=$(cat /vagrant/omnia/lib/version)
 		fi
-
-		nix-env --install -f "https://github.com/makerdao/oracles-v2/tarball/$_version"
+		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
+
+	nix-env --install --file "$_file"
 fi
 
 if [[ "$1" == "configure" ]]; then
