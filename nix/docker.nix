@@ -5,7 +5,7 @@ let
   inherit (srcs) pkgs ssb-server omnia;
 
   path = with pkgs; lib.makeBinPath [
-    coreutils bash jq gnused
+    coreutils findutils bash jq gnused
     ssb-server omnia
   ];
 in with pkgs;
@@ -17,4 +17,5 @@ runCommand "omnia-runner" { nativeBuildInputs = [ makeWrapper ]; } ''
     wrapProgram "$x" \
       --set PATH "$out/bin:${path}"
   done
+
 ''

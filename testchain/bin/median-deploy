@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -e
+
+join() { local IFS="$1"; shift; echo "$*"; }
+
+# Parse input args
+declare -a toLift
+declare -a pairs
+for arg in "$@"; do
+  if [[ $arg =~ ^0x ]]; then
+    toLift+=("${arg#0x}")
+  else
+    pairs+=("$arg")
+  fi
+done
+
+# Wait for ethereum node
+until seth balance "0x${toLift[0]}" &> /dev/null; do sleep 5; done
+
+# Deploy medianizer contracts
+output=$(
+  for pair in "${pairs[@]}"; do
+    contractName=${pair^^}
+    contractName=${contractName/\/}
+    contractName=Median${contractName/BTC/WBTC}
+    address=$(dapp create $contractName)
+    jq -n --arg p $pair --arg a $address '{($p):$a}'
+  done | jq -Ss add
+)
+
+# Add feeder addresses to medianizer contracts
+if [[ -n "${toLift[*]}" ]]; then
+  for pair in "${pairs[@]}"; do
+    address=$(jq -r --arg p $pair '.[$p]' <<<"$output")
+    seth send $address 'lift(address[] memory)' "[$(join , "${toLift[@]}")]" >&2
+  done
+fi
+
+echo "$output"
