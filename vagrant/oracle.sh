@@ -8,58 +8,91 @@ if [[ -z "$_command" ]]; then
 	cat <<EOD
 Usage: oracle COMMAND
 Commands:
-  * install - install stable version
+  * install - install omnia
     * install VERSION
+      - default: local
+      - stable, current
     * install commit COMMIT_HASH
-  * configure
+  * configure OPTIONS
+    - default: --feed
+    - --relay
+    - --gofer - only gofer
+    - --spire - only spire
   * enable
-  * upgrade
   * restart
   * connect - accept invites included in .local/ssb-invites.txt (one per line)
+  * status
   * log
+  * log-all
+  * state
 EOD
 	exit 1
 fi
 
 if [[ "$1" == "install" ]]; then
-	_version=${2:-"stable"}
-	if [[ $_version == "commit" ]]; then
-		nix-env --install -f "https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
+	_version=${2:-"local"}
+	if [[ $_version == "local" ]]; then
+		_file="/vagrant"
+	elif [[ $_version == "commit" ]]; then
+		_file="https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
 	else
 		if [[ "$_version" == "current" ]]; then
 			_version=$(cat /vagrant/omnia/lib/version)
 		fi
-
-		nix-env --install -f "https://github.com/makerdao/oracles-v2/tarball/$_version"
+		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
+  echo "Installing from: $_file"
+	nix-env --install --file "$_file"
 fi
 
 if [[ "$1" == "configure" ]]; then
-	install-omnia feed \
-	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl -s ifconfig.me)" \
-	--keystore "/vagrant/.local/eth-keystore" \
-	--password "/vagrant/.local/eth-keystore-password.txt"
-fi
+#	sudo sed -i "/from/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
 
-if [[ "$1" == "configure-gofer" ]]; then
-	install-omnia feed \
-	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl -s ifconfig.me)" \
-	--no-source \
-	--add-source "gofer" \
-	--keystore "/vagrant/.local/eth-keystore" \
-	--password "/vagrant/.local/eth-keystore-password.txt"
-fi
+  opts=()
+	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
+	opts+=(--ssb-external "$(curl -s ifconfig.me)")
+	opts+=(--keystore "/vagrant/tests/resources/keys")
+	opts+=(--password "/vagrant/tests/resources/password")
+	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/tests/resources/keys/UTC--2020-04-20T06-52-55.157141634Z--1f8fbe73820765677e68eb6e933dcb3c94c9b708")")
 
-if [[ "$1" == "configure-spire" ]]; then
-	install-omnia feed \
-	--ssb-caps "/vagrant/.local/ssb-caps.json" \
-	--ssb-external "$(curl -s ifconfig.me)" \
-	--no-transport \
-	--add-transport "transport-spire" \
-	--keystore "/vagrant/.local/eth-keystore" \
-	--password "/vagrant/.local/eth-keystore-password.txt"
+	_mode="feed"
+	_restart=""
+	_log=""
+	while [[ -n "${2-}" ]]; do
+		case "$2" in
+			--relay)
+				_mode="relay"
+				;;
+			--gofer)
+				opts+=(--no-source --add-source "gofer")
+				;;
+			--spire)
+				opts+=(--no-transport --add-transport "transport-spire")
+				;;
+			--restart)
+				_restart="true"
+				;;
+			--log)
+				_log="true"
+				;;
+			--debug)
+				export ORACLE_DEBUG="true"
+				;;
+			*)
+				echo >&2 "\"$2\" is not a valid option"
+				;;
+		esac
+		shift
+	done
+
+	cmd=("install-omnia" "$_mode")
+	cmd+=("${opts[@]}")
+
+	echo -e "\n\n${cmd[*]}\n\n"
+
+	"${cmd[@]}"
+	[[ -z "$_restart" ]] || oracle restart
+	[[ -z "$_log" ]] || oracle log
 fi
 
 if [[ "$1" == "enable" ]]; then
@@ -92,11 +125,11 @@ if [[ "$1" == "status" ]]; then
 	systemctl status ssb-server omnia gofer-agent spire-agent --no-pager
 fi
 
-if [[ "$1" == "log" ]]; then
+if [[ "$1" == "log-all" ]]; then
 	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent
 fi
 
-if [[ "$1" == "log-omnia" ]]; then
+if [[ "$1" == "log" ]]; then
 	journalctl -q -f -u omnia
 fi
 

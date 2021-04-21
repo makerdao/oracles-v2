@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+[[ -z "$ORACLE_DEBUG" ]] || set -x
+
 SCRIPT_DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 TARGET_DIR=${TARGET_DIR:-/etc/systemd/system}
 SHARE_DIR="${SHARE_PATH:-$SCRIPT_DIR}"
@@ -20,7 +22,7 @@ usage() {
 Usage: install-omnia COMMAND OPTIONS...
 
 Commands:
-  relayer       Install Omnia service with default relayer config
+  relay       Install Omnia service with default relay config
   feed          Install Omnia service with default feed config
   help          Print this message
 
@@ -28,7 +30,7 @@ Options:
   --from         ADDRESS          Set Ethereum address to use for signing
   --keystore     PATH             Set Ethereum keystore path
   --password     PATH             Set Ethereum keystore password file path
-  --network      ETH_NETWORK      Set relayer Ethereum network
+  --network      ETH_NETWORK      Set relay Ethereum network
   --ssb-caps     CAPS_FILE        Set Scuttlebot caps from file
   --ssb-external EXTERNAL_ADDRS   Set Scuttlebot external IP/host address
   --ssb-secret   SECRET_FILE      Install Scuttlebot secret

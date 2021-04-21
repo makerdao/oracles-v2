@@ -20,8 +20,8 @@ Currently two main modules:
 [Feed]
 Each Feed runs a Feed client which pulls prices through Setzer, signs them with an ethereum private key, and broadcasts them as a message to the secure scuttlebutt network.
 
-[Relayer]
-Relayers monitor the gossiped messages, check for liveness, and homogenize the pricing data and signatures into a single ethereum transaction.
+[Relay]
+Relays monitor the gossiped messages, check for liveness, and homogenize the pricing data and signatures into a single ethereum transaction.
 
 ## [Live Kovan Oracles]
       BATUSD = 0xAb7366b12C982ca2DE162F35571b4d21E38a16FB

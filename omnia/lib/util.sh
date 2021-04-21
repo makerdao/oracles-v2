@@ -71,15 +71,15 @@ getMsgSpread () {
 
 #get the Oracle contract of an asset pair
 getOracleContract () {
-	[[ $OMNIA_MODE == "RELAYER" ]] && getAssetInfo "$1" | cut -d ',' -f2
+	[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && getAssetInfo "$1" | cut -d ',' -f2
 }
 
 getOracleExpiration () {
-	[[ "$OMNIA_MODE" == "RELAYER" ]] && getAssetInfo "$1" | cut -d ',' -f3
+	[[ "$OMNIA_MODE" == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && getAssetInfo "$1" | cut -d ',' -f3
 }
 
 getOracleSpread () { 
-	[[ "$OMNIA_MODE" == "RELAYER" ]] && getAssetInfo "$1" | cut -d ',' -f4
+	[[ "$OMNIA_MODE" == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && getAssetInfo "$1" | cut -d ',' -f4
 }
 
 signMessage () {

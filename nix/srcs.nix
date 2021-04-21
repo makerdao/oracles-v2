@@ -49,5 +49,4 @@ rec {
   install-omnia = makerpkgs.callPackage ../systemd {
     inherit omnia ssb-server oracle-suite;
   };
-
 }

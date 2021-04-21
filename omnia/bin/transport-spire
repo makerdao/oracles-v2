@@ -6,7 +6,6 @@ _command="$1"
 
 case "$_command" in
 	publish)
-		_v=$(seth --to-word "0x$(jq -r '.signature[128:130]' <<<"$2")")
 		_val=$(seth --to-wei "$(jq -r '.price' <<<"$2")" eth)
 		_msg=$(jq --arg val "$_val" '{
 			price: {

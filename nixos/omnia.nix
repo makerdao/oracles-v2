@@ -1,9 +1,6 @@
+{ oracle-suite }:
 { pkgs, config, lib, ... }: let
-  inherit (builtins) toJSON fromJSON;
-  inherit (pkgs) writeText bash;
-  inherit (lib) mkIf optionalString;
-
-  writeJSON = name: attrs: writeText name (toJSON attrs);
+  writeJSON = name: attrs: pkgs.writeText name (builtins.toJSON attrs);
 
   cfg = config.services.omnia;
   ssbIncomingPorts = (
@@ -33,7 +30,7 @@
   name = "omnia";
   home = "/var/lib/${name}";
 in {
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       ssb-server
       omnia
@@ -54,7 +51,7 @@ in {
         PermissionsStartOnly = true;
         Restart = "always";
         RestartSec = 5;
-        ExecStart = "${oracle-suite}/bin/gofer --config ${cfg.goferConfig} agent";
+        ExecStart = "${oracle-suite}/bin/gofer --config ${cfg.options.goferConfig} agent";
       };
     };
 
@@ -71,7 +68,7 @@ in {
         PermissionsStartOnly = true;
         Restart = "always";
         RestartSec = 5;
-        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.spireConfig} agent";
+        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} agent";
       };
     };
 
@@ -106,10 +103,10 @@ in {
 
           mkdir -p "${home}/.ssb"
         ''
-        + (optionalString (cfg.ssbInitSecret != null) ''
+        + (lib.optionalString (cfg.ssbInitSecret != null) ''
           installSsbFile "${cfg.ssbInitSecret}" "secret"
         '')
-        + (optionalString (cfg.ssbInitGossip != null) ''
+        + (lib.optionalString (cfg.ssbInitGossip != null) ''
           installSsbFile "${cfg.ssbInitGossip}" "gossip.json"
         '')
         + ''
@@ -129,6 +126,8 @@ in {
       environment = {
         OMNIA_CONFIG = omnia-config;
         OMNIA_DEBUG = toString cfg.options.debug;
+        GOFER_CONFIG = toString cfg.options.goferConfig;
+        SPIRE_CONFIG = toString cfg.options.spireConfig;
       };
 
       serviceConfig = {

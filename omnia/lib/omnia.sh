@@ -44,12 +44,12 @@ initEnv () {
 	echo "Interval:                          $OMNIA_INTERVAL seconds"
 	echo ""
 	echo "ETHEREUM"
-	[[ $OMNIA_MODE == "RELAYER" ]] && echo "Network:                           $ETH_RPC_URL"
+	[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
 	echo ""
 	echo "SCUTTLEBOT"
 	echo "Feed address:                      $SCUTTLEBOT_FEED_ID"
-	[[ $OMNIA_MODE == "RELAYER" ]] && echo "   Peers:"
+	[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && echo "   Peers:"
 	for feed in "${feeds[@]}"; do
 		printf '                                   %s\n' "$feed"
 	done
@@ -57,11 +57,11 @@ initEnv () {
 	echo "ORACLE"
 	for assetPair in "${assetPairs[@]}"; do
 		printf '   %s\n' "$assetPair" 
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Address:              %s\n' "$(getOracleContract "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && printf '      Oracle Address:              %s\n' "$(getOracleContract "$assetPair")"
 		printf '      Message Expiration:          %s seconds\n' "$(getMsgExpiration "$assetPair")"
 		[[ $OMNIA_MODE == "FEED" ]] && printf '      Message Spread:              %s %% \n' "$(getMsgSpread "$assetPair")"
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Expiration:           %s seconds\n' "$(getOracleExpiration "$assetPair")"
-		[[ $OMNIA_MODE == "RELAYER" ]] && printf '      Oracle Spread:               %s %% \n' "$(getOracleSpread "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && printf '      Oracle Expiration:           %s seconds\n' "$(getOracleExpiration "$assetPair")"
+		[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && printf '      Oracle Spread:               %s %% \n' "$(getOracleSpread "$assetPair")"
 	done
 	echo ""
 	echo "-------------------------- INITIALIZATION COMPLETE ---------------------------"
@@ -85,5 +85,5 @@ runRelayer () {
 }
 
 initEnv
-[ "$OMNIA_MODE" == "RELAYER" ] && runRelayer
-[ "$OMNIA_MODE" == "FEED" ] && runFeed
+[[ "$OMNIA_MODE" == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && runRelayer
+[[ "$OMNIA_MODE" == "FEED" ]] && runFeed
