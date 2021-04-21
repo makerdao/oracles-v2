@@ -56,7 +56,7 @@ readSourcesWithGofer()   {
 			sources: (
 				[ ..
 				| select(type == "object" and .type == "origin" and .error == null)
-				| {(.base+"/"+.quote+"@"+.origin): (.price|tostring)}
+				| {(.base+"/"+.quote+"@"+.param.origin): (.price|tostring)}
 				]
 				| add
 			)
