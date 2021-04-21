@@ -427,7 +427,7 @@
       "method": "median",
       "sources": [
         [{ "origin": "bitfinex", "pair": "XTZ/USD" }],
-        [{ "origin": "coinbase", "pair": "XTZ/USD" }],
+        [{ "origin": "coinbasepro", "pair": "XTZ/USD" }],
         [{ "origin": "hitbtc", "pair": "XTZ/USD" }],
         [{ "origin": "kraken", "pair": "XTZ/USD" }],
         [{ "origin": "binance", "pair": "XTZ/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
