@@ -8,12 +8,16 @@ if [[ -z "$_command" ]]; then
 	cat <<EOD
 Usage: oracle COMMAND
 Commands:
-  * install - install stable version
+  * install - install omnia
     * install VERSION
+      - default: local
+      - stable, current
     * install commit COMMIT_HASH
-  * configure
-  * configure-gofer
-  * configure-spire
+  * configure OPTIONS
+    - default: --feed
+    - --relay
+    - --gofer - only gofer
+    - --spire - only spire
   * enable
   * restart
   * connect - accept invites included in .local/ssb-invites.txt (one per line)
@@ -45,11 +49,11 @@ if [[ "$1" == "configure" ]]; then
 #	sudo sed -i "/from/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
 
   opts=()
-	opts+=(--ssb-caps "/vagrant/.local/ssb-caps.json")
+	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
 	opts+=(--ssb-external "$(curl -s ifconfig.me)")
-	opts+=(--keystore "/vagrant/.local/eth-keystore")
-	opts+=(--password "/vagrant/.local/eth-keystore-password.txt")
-	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")")
+	opts+=(--keystore "/vagrant/tests/resources/keys")
+	opts+=(--password "/vagrant/tests/resources/password")
+	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/tests/resources/keys/UTC--2020-04-20T06-52-55.157141634Z--1f8fbe73820765677e68eb6e933dcb3c94c9b708")")
 
 	_mode="feed"
 	_restart=""
