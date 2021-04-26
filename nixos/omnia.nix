@@ -1,40 +1,28 @@
 { oracle-suite }:
-{ pkgs, config, lib, ... }: let
+{ pkgs, config, lib, ... }:
+let
   writeJSON = name: attrs: pkgs.writeText name (builtins.toJSON attrs);
 
   cfg = config.services.omnia;
-  ssbIncomingPorts = (
-    if (cfg.ssbConfig ? connections)
-    then (
-      if (cfg.ssbConfig.connections ? incoming
-        && cfg.ssbConfig.connections.incoming ? net)
-      then map
-        (x: if (x ? port) then x.port else 8008)
-        cfg.ssbConfig.connections.incoming.net
-      else [8008]
-    )
-    else (
-      if (cfg.ssbConfig ? port)
-      then [cfg.ssbConfig.port]
-      else [8008]
-    )
-  );
+  ssbIncomingPorts = (if (cfg.ssbConfig ? connections) then
+    (if (cfg.ssbConfig.connections ? incoming && cfg.ssbConfig.connections.incoming ? net) then
+      map (x: if (x ? port) then x.port else 8008) cfg.ssbConfig.connections.incoming.net
+    else
+      [ 8008 ])
+  else
+    (if (cfg.ssbConfig ? port) then [ cfg.ssbConfig.port ] else [ 8008 ]));
 
   ssb-config = writeJSON "ssb-config" cfg.ssbConfig;
-  omnia-config = writeJSON "omnia.conf" {
-    inherit (cfg) pairs mode feeds ethereum options sources transports services;
-  };
+  omnia-config =
+    writeJSON "omnia.conf" { inherit (cfg) pairs mode feeds ethereum options sources transports services; };
 
-  inherit (import ../. {}) omnia ssb-server;
+  inherit (import ../. { }) omnia ssb-server;
 
   name = "omnia";
   home = "/var/lib/${name}";
 in {
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      ssb-server
-      omnia
-    ];
+    environment.systemPackages = with pkgs; [ ssb-server omnia ];
 
     networking.firewall.allowedTCPPorts = ssbIncomingPorts;
 
@@ -68,7 +56,7 @@ in {
         PermissionsStartOnly = true;
         Restart = "always";
         RestartSec = 5;
-        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} agent";
+        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} --verbosity debug agent";
       };
     };
 
@@ -90,30 +78,27 @@ in {
       };
 
       preStart = ''
-          installSsbFile() {
-            local from="$1"
-            local target="${home}/.ssb/$2"
-            if [[ ! -e "$target" ]]; then
-              echo >&2 "SSB Service Setup: $target not found! Initiallizing with $from -> $target"
-              cp -f "$from" "$target"
-            else
-              echo >&2 "SSB Service Setup: $target exists! Not overwriting"
-            fi
-          }
+        installSsbFile() {
+          local from="$1"
+          local target="${home}/.ssb/$2"
+          if [[ ! -e "$target" ]]; then
+            echo >&2 "SSB Service Setup: $target not found! Initiallizing with $from -> $target"
+            cp -f "$from" "$target"
+          else
+            echo >&2 "SSB Service Setup: $target exists! Not overwriting"
+          fi
+        }
 
-          mkdir -p "${home}/.ssb"
-        ''
-        + (lib.optionalString (cfg.ssbInitSecret != null) ''
-          installSsbFile "${cfg.ssbInitSecret}" "secret"
-        '')
-        + (lib.optionalString (cfg.ssbInitGossip != null) ''
-          installSsbFile "${cfg.ssbInitGossip}" "gossip.json"
-        '')
-        + ''
-          ln -sf "${ssb-config}" "${home}/.ssb/config"
-          chown -R ${name}:${name} "${home}/.ssb"
-          chmod -R ug+w "${home}/.ssb"
-        '';
+        mkdir -p "${home}/.ssb"
+      '' + (lib.optionalString (cfg.ssbInitSecret != null) ''
+        installSsbFile "${cfg.ssbInitSecret}" "secret"
+      '') + (lib.optionalString (cfg.ssbInitGossip != null) ''
+        installSsbFile "${cfg.ssbInitGossip}" "gossip.json"
+      '') + ''
+        ln -sf "${ssb-config}" "${home}/.ssb/config"
+        chown -R ${name}:${name} "${home}/.ssb"
+        chmod -R ug+w "${home}/.ssb"
+      '';
     };
 
     systemd.services.omnia = {

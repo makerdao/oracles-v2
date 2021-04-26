@@ -28,6 +28,24 @@
     "UNI/USD",
     "USDT/USD",
     "YFI/USD",
-    "ZRX/USD"
+    "ZRX/USD",
+
+    "AAVEUSD",
+    "BALUSD",
+    "BATUSD",
+    "BTCUSD",
+    "COMPUSD",
+    "ETHBTC",
+    "ETHUSD",
+    "KNCETH",
+    "KNCUSD",
+    "LINKUSD",
+    "LRCUSD",
+    "MANAUSD",
+    "PAXGUSD",
+    "UNIUSD",
+    "USDTUSD",
+    "YFIUSD",
+    "ZRXUSD"
   ]
 }
