@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -ueo pipefail
 
-_here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 _command="$1"
-
 case "$_command" in
 	publish)
 		_val=$(seth --to-wei "$(jq -r '.price' <<<"$2")" eth)
@@ -26,7 +24,7 @@ case "$_command" in
 		_msg=$(spire pull -c "$SPIRE_CONFIG" price "$_assetPair" "$_feedId") || exit $?
 		_priceHex=$(seth --to-uint256 "$(jq -r '.price.val' <<<"$_msg")" | sed s/^0x//)
 		_timeHex=$(seth --to-uint256 "$(jq -r '.price.age' <<<"$_msg")" | sed s/^0x//)
-		jq -c --arg ph $_priceHex --arg th $_timeHex '{
+		jq -c --arg ph "$_priceHex" --arg th "$_timeHex" '{
 			type: .price.wat,
 			price: ((.price.val | tonumber) / 1e18),
 			priceHex: $ph,

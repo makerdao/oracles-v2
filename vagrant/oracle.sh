@@ -46,8 +46,6 @@ if [[ "$1" == "install" ]]; then
 fi
 
 if [[ "$1" == "configure" ]]; then
-#	sudo sed -i "/from/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
-
   opts=()
 	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
 	opts+=(--ssb-external "$(curl -s ifconfig.me)")
