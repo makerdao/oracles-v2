@@ -22,7 +22,8 @@ case "$_command" in
 		;;
 	pull)
 		_assetPair="$3"
-		_msg=$(spire pull -c "$SPIRE_CONFIG" price "$_assetPair" "$2") || exit $?
+		_feedId="$2"
+		_msg=$(spire pull -c "$SPIRE_CONFIG" price "$_assetPair" "$_feedId") || exit $?
 		_priceHex=$(seth --to-uint256 "$(jq -r '.price.val' <<<"$_msg")" | sed s/^0x//)
 		_timeHex=$(seth --to-uint256 "$(jq -r '.price.age' <<<"$_msg")" | sed s/^0x//)
 		jq -c --arg ph $_priceHex --arg th $_timeHex '{
