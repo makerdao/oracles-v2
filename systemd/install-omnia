@@ -196,7 +196,7 @@ while [[ -n "$1" ]]; do
       ;;
     --password)
       configUpdates+=( ".ethereum.password = \"$2\"" )
-      spireConfigUpdates+=( ".ethereum.password = \"$(tr -d '\n' < "$2")\"" )
+      spireConfigUpdates+=( ".ethereum.password = \"$2\"" )
       shift
       ;;
     --network)

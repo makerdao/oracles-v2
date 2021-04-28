@@ -1,7 +1,8 @@
 { lib, pkgs }:
 let
   defaultFeedConfig = lib.importJSON ../omnia/config/feed.conf;
-  passJSON = name: file: pkgs.writeText name (builtins.toJSON (lib.importJSON file));
+  writeJSON = name: attrs: pkgs.writeText name (builtins.toJSON attrs);
+  passJSON = name: file: writeJSON name (lib.importJSON file);
 in {
   enable = lib.mkEnableOption "omnia";
 
@@ -89,7 +90,7 @@ in {
     spireConfig = lib.mkOption {
       type = lib.types.path;
       description = ''
-        Path to Gofer config file.
+        Path to Spire config file.
       '';
       default = passJSON "spire.json" ../systemd/spire.json;
     };
@@ -112,7 +113,6 @@ in {
   };
 
   services = {
-
     scuttlebotIdMap = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       description = ''

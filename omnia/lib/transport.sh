@@ -26,7 +26,7 @@ transportPull() {
 	for _puller in "${OMNIA_TRANSPORTS[@]}"; do
 		log "Pulling $_assetPair price message with $_puller"
 
-		_msg=$("$_puller" pull "$_feed" "$_assetPair" | jq -c)
+		_msg=$(OMNIA_CONFIG="$OMNIA_CONFIG" "$_puller" pull "$_feed" "$_assetPair" | jq -c)
 
 		if [[ -n $_msg ]]; then
 			_msgs["$_puller"]="$_msg"

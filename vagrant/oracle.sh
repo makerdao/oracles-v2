@@ -42,12 +42,10 @@ if [[ "$1" == "install" ]]; then
 		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
   echo "Installing from: $_file"
-	nix-env --install --file "$_file"
+	nix-env --install --remove-all --file "$_file"
 fi
 
 if [[ "$1" == "configure" ]]; then
-#	sudo sed -i "/from/c\\\"from\": \"0x$(jq -c -r '.address' "/vagrant/.local/eth-keystore/1.json")\"," /etc/omnia.conf
-
   opts=()
 	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
 	opts+=(--ssb-external "$(curl -s ifconfig.me)")
