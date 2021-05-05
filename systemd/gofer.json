@@ -18,7 +18,6 @@
         "minimumSuccessfulSources": 3
       }
     },
-
     "AVAX/USD": {
       "method": "median",
       "sources": [
