@@ -53,7 +53,7 @@ startProxyReplay() {
 
   export HTTP_PROXY="$proxyUrl"
   export HTTPS_PROXY="$proxyUrl"
-  sleep 1
+  sleep 5
 }
 
 startProxy() {
@@ -130,8 +130,7 @@ startGeth() {
   } >"$E2E_LOGS/${E2E_TARGET-test}-dapp.out" &
   E2E_EXIT_HOOK+='pkill dapp;'
 
-  grep -q 'DAPP_EXIT\|0x[a-zA-Z0-9]\{40\}' \
-    <(tail -f "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
+  grep -q 'DAPP_EXIT\|0x[a-zA-Z0-9]\{40\}' <(tail -f "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
 
   export ETH_FROM=$(grep -o '0x[a-zA-Z0-9]\{40\}' < "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
   export ETH_KEYSTORE="$E2E_HOME"/.dapp/testnet/8545/keystore
@@ -144,7 +143,7 @@ startGeth() {
 startOmnia() {
   echo >&2 "# Start omnia"
   {
-    HOME="$E2E_HOME" omnia 2>&1 || echo OMNIA_EXIT
+    HOME="$E2E_HOME" omnia 2>&1 || echo "OMNIA_EXIT"
   } >"$E2E_LOGS/${E2E_TARGET-test}-omnia.out" &
 
   grep -q "OMNIA_EXIT\|${1:-${E2E_OMNIA_STOP_PHRASE:-Sleeping}}" \

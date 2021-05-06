@@ -12,7 +12,8 @@ exportEthEnvs
 jq \
   --arg from "$ETH_FROM" \
   --arg keys "$ETH_KEYSTORE" \
-  '.ethereum *= {from:$from,keystore:$keys}' \
+  --arg pass "$ETH_PASSWORD" \
+  '.ethereum *= {from:$from,keystore:$keys,password:$pass}
   "$_path/spire.json" \
 > "$SPIRE_CONFIG"
 
