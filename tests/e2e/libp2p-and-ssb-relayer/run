@@ -11,8 +11,8 @@ export OMNIA_CONFIG="$_path/_omnia.conf"
 export OMNIA_SOURCE_PARALLEL=1
 export OMNIA_DEBUG=1
 
+exportEthEnvs
 startGeth
-
 env | grep ETH_ >&2
 
 jq \

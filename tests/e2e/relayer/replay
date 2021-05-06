@@ -4,5 +4,4 @@ _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
 
 output=$(mktemp)
 "$_path/run" >"$output"
-
 "$_path/regression" "$output"

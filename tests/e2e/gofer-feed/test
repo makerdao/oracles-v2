@@ -6,6 +6,8 @@ plan 4
 
 cp -f "$1" $wdir/output
 
+cat $wdir/output | note
+
 assert "ssb messages has all asset pairs" \
   json '[.[].value.content.type]|sort' <<<$(jq '[.pairs|keys|.[]|sub("/";"")]|sort' "$_path/omnia.conf")
 assert "ssb message pair" \

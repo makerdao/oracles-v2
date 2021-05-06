@@ -125,8 +125,7 @@ startGeth() {
   local _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
   echo >&2 "# Start Geth testnet"
   {
-    HOME="$E2E_HOME" \
-      dapp testnet 2>&1 </dev/null || echo DAPP_EXIT
+    HOME="$E2E_HOME" dapp testnet 2>&1 </dev/null || echo DAPP_EXIT
   } >"$E2E_LOGS/${E2E_TARGET-test}-dapp.out" &
   E2E_EXIT_HOOK+='pkill dapp;'
 
@@ -137,7 +136,6 @@ startGeth() {
   export ETH_PASSWORD="$_path/../resources/password"
   export ETH_RPC_URL="http://127.0.0.1:8545"
   export ETH_GAS=7000000
-  #env | grep ETH_ >&2
 }
 
 startOmnia() {
