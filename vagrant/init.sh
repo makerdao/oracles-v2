@@ -14,8 +14,9 @@ nix-env -iA nixpkgs.jq
 mkdir -p /home/vagrant/bin
 ln -sf /vagrant/vagrant/oracle.sh /home/vagrant/bin/oracle
 
-sudo cp /vagrant/tests/resources/mitmproxy/mitmproxy-ca-cert.pem /usr/local/share/ca-certificates/mitmproxy.crt
-sudo chmod 0644 /usr/local/share/ca-certificates/mitmproxy.crt
+sudo rm -f /usr/local/share/ca-certificates/*
+sudo cp /vagrant/tests/resources/mitmproxy/mitmproxy-ca-cert.crt /usr/local/share/ca-certificates
+sudo chmod 0644 /usr/local/share/ca-certificates/*
 sudo update-ca-certificates
 ls -la /etc/ssl/certs | grep mitm
 
