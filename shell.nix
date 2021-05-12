@@ -1,19 +1,12 @@
-let
-  srcs = import ./nix/srcs.nix;
-in
+let srcs = import ./nix/srcs.nix;
 
-{ pkgs ? srcs.pkgs
-}@args:
+in { pkgs ? srcs.pkgs }@args:
 
-let oracles = import ./. args; in
+let oracles = import ./. args;
 
-pkgs.mkShell rec {
+in pkgs.mkShell rec {
   name = "oracle-shell";
-  buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [
-    git niv
-    nodePackages.node2nix
-    nodePackages.semver
-  ]);
+  buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [ git niv nodePackages.node2nix nodePackages.semver ]);
 
   VERSION_FILE = toString ./omnia/lib/version;
   ROOT_DIR = toString ./.;

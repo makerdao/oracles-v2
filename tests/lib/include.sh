@@ -53,7 +53,7 @@ startProxyReplay() {
 
   export HTTP_PROXY="$proxyUrl"
   export HTTPS_PROXY="$proxyUrl"
-  sleep 1
+  sleep 5
 }
 
 startProxy() {
@@ -125,26 +125,23 @@ startGeth() {
   local _path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
   echo >&2 "# Start Geth testnet"
   {
-    HOME="$E2E_HOME" \
-      dapp testnet 2>&1 </dev/null || echo DAPP_EXIT
+    HOME="$E2E_HOME" dapp testnet 2>&1 </dev/null || echo DAPP_EXIT
   } >"$E2E_LOGS/${E2E_TARGET-test}-dapp.out" &
   E2E_EXIT_HOOK+='pkill dapp;'
 
-  grep -q 'DAPP_EXIT\|0x[a-zA-Z0-9]\{40\}' \
-    <(tail -f "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
+  grep -q 'DAPP_EXIT\|0x[a-zA-Z0-9]\{40\}' <(tail -f "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
 
   export ETH_FROM=$(grep -o '0x[a-zA-Z0-9]\{40\}' < "$E2E_LOGS/${E2E_TARGET-test}-dapp.out")
   export ETH_KEYSTORE="$E2E_HOME"/.dapp/testnet/8545/keystore
   export ETH_PASSWORD="$_path/../resources/password"
   export ETH_RPC_URL="http://127.0.0.1:8545"
   export ETH_GAS=7000000
-  #env | grep ETH_ >&2
 }
 
 startOmnia() {
   echo >&2 "# Start omnia"
   {
-    HOME="$E2E_HOME" omnia 2>&1 || echo OMNIA_EXIT
+    HOME="$E2E_HOME" omnia 2>&1 || echo "OMNIA_EXIT"
   } >"$E2E_LOGS/${E2E_TARGET-test}-omnia.out" &
 
   grep -q "OMNIA_EXIT\|${1:-${E2E_OMNIA_STOP_PHRASE:-Sleeping}}" \

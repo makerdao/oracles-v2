@@ -1,26 +1,18 @@
 let
   srcs = import ../../../nix/srcs.nix;
   sources = import ../../../nix/sources.nix;
-in
 
-{ makerpkgs ? import sources.makerpkgs {}
-}@args:
+in { makerpkgs ? import sources.makerpkgs { } }@args:
 
 with makerpkgs.pkgs;
 
 let
   inherit (lib) importJSON;
   deploy = import ./. args;
-in
 
-mkShell rec {
+in mkShell rec {
   name = "median-shell";
-  buildInputs = [
-    jq
-    dapp2nix
-    dapp
-    deploy
-  ];
+  buildInputs = [ jq dapp2nix dapp deploy ];
 
   shellHook = ''
     _setenv() {
@@ -33,7 +25,7 @@ mkShell rec {
       export ETH_KEYSTORE=~/.dapp/testnet/8545/keystore
       export ETH_PASSWORD=/dev/null
       export ETH_RPC_URL="http://127.0.0.1:8545"
-      export ETH_GAS=7000000
+      export ETH_GAS=7000001
     }
 
     _setenv

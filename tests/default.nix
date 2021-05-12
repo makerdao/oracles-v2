@@ -1,31 +1,26 @@
-let
-  srcs = import ../nix/srcs.nix;
-in
+let srcs = import ../nix/srcs.nix;
 
-{ pkgs ? srcs.pkgs
-, makerpkgs ? srcs.makerpkgs
-, nodepkgs ? srcs.nodepkgs
-}@args:
+in { pkgs ? srcs.pkgs, makerpkgs ? srcs.makerpkgs, nodepkgs ? srcs.nodepkgs }@args:
 
 let
   oracles = import ./.. args;
   median = import ./lib/median args;
-in
 
-pkgs.mkShell rec {
-  name = "oracle-smoke-test-shell";
-  buildInputs = with pkgs; [
-    procps curl jq mitmproxy
-    go-ethereum
-    makerpkgs.dappPkgsVersions.latest.dapp
-
-    nodepkgs.tap-xunit
-
-    median
-
-    oracles.omnia
-    oracles.install-omnia
-  ] ++ oracles.omnia.buildInputs;
+in pkgs.mkShell rec {
+  name = "oracle-test-shell";
+  buildInputs = with pkgs;
+    [
+      procps
+      curl
+      jq
+      mitmproxy
+      go-ethereum
+      makerpkgs.dappPkgsVersions.latest.dapp
+      nodepkgs.tap-xunit
+      median
+      oracles.omnia
+      oracles.install-omnia
+    ] ++ oracles.omnia.buildInputs;
 
   RESULTS_DIR = "${toString ./.}/test-results";
   SMOKE_TEST = toString ./smoke/test;

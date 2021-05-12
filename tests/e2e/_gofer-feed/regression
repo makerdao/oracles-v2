@@ -14,8 +14,6 @@ note <<<"Gofer Regression Assertions"
 for symbol in "${symbols[@]}"; do
   jqfs="$jqf|select(.type == \"$symbol\")"
 
-  assert "ssb message for $symbol isn't empty" \
-    json "$jqfs != null" <<<"true"
-  assert "ssb message for $symbol hasn't changed" \
-    json "$jqfs" <<<$(jq "$jqfs" "$_path/ssb-messages.json")
+  assert "ssb message for $symbol isn't empty" json "$jqfs != null" <<<"true"
+  assert "ssb message for $symbol hasn't changed" json "$jqfs" <<<"$(jq "$jqfs" "$_path/ssb-messages.json")"
 done

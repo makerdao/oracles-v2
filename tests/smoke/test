@@ -5,6 +5,8 @@ r_path="$_path/../resources"
 . "$_path/../lib/include.sh"
 
 exportEthEnvs
+env | grep ETH_ >&2
+
 from_addr="$ETH_FROM"
 keystore_path="$ETH_KEYSTORE"
 key_path="$ETH_PASSWORD"

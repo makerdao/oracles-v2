@@ -39,7 +39,7 @@ for target in "${targets[@]}"; do
         echo >&2 "# Test regression for target '$target'"
         "$E2E_TARGET_DIR/replay"
       else
-        echo >&2 "# No $E2E_TARGET_DIR/replay  for target '$target', skipped"
+        echo >&2 "# No $E2E_TARGET_DIR/replay for target '$target', skipped"
         continue
       fi
     fi
