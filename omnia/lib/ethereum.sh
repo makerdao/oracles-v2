@@ -8,6 +8,7 @@ pullOracleTime () {
 		error "Error - Invalid Oracle contract"
 		return 1
 	fi
+
 	timeout -s9 10 seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "age()(uint32)")"
 }
 
@@ -19,6 +20,7 @@ pullOracleQuorum () {
 		error "Error - Invalid Oracle contract"
 		return 1
 	fi
+
 	timeout -s9 10 seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "bar()(uint256)")"
 }
 
@@ -31,8 +33,11 @@ pullOraclePrice () {
 			error "Error - Invalid Oracle contract"
 			return 1
 	fi
+
 	_rawStorage=$(timeout -s9 10 seth --rpc-url "$ETH_RPC_URL" storage "$_address" 0x1)
+
 	[[ "${#_rawStorage}" -ne 66 ]] && error "oracle contract storage query failed" && return
+
 	seth --from-wei "$(seth --to-dec "${_rawStorage:34:32}")"
 }
 
