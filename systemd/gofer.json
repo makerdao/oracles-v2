@@ -98,26 +98,6 @@
         "minimumSuccessfulSources": 3
       }
     },
-    "DGD/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "DGD/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "huobi", "pair": "DGD/BTC" },{ "origin": ".", "pair": "BTC/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 2
-      }
-    },
-    "DGX/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "bitfinex", "pair": "DGX/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "kyber", "pair": "DGX/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 2
-      }
-    },
     "DOT/USD": {
       "method": "median",
       "sources": [
@@ -175,46 +155,6 @@
         "minimumSuccessfulSources": 3
       }
     },
-    "GNT/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "GNT/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "bittrex", "pair": "GNT/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "coinbasepro", "pair": "GNT/USDC" },{ "origin": ".", "pair": "USDC/USD" }],
-        [{ "origin": "poloniex", "pair": "GNT/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "upbit", "pair": "GNT/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 3
-      }
-    },
-    "KNC/ETH": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "KNC/BTC" },{ "origin": ".", "pair": "ETH/BTC" }],
-        [{ "origin": "huobi", "pair": "KNC/BTC" },{ "origin": ".", "pair": "ETH/BTC" }],
-        [{ "origin": "coinbasepro", "pair": "KNC/USD" },{ "origin": ".", "pair": "ETH/USD" }],
-        [{ "origin": "kyber", "pair": "KNC/ETH" }],
-        [{ "origin": "uniswap", "pair": "KNC/ETH" }],
-        [{ "origin": "upbit", "pair": "KNC/KRW" },{ "origin": "upbit", "pair": "ETH/KRW" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 3
-      }
-    },
-    "KNC/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "KNC/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "huobi", "pair": "KNC/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "coinbasepro", "pair": "KNC/USD" }],
-        [{ "origin": "kyber", "pair": "KNC/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
-        [{ "origin": "upbit", "pair": "KNC/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 3
-      }
-    },
     "LINK/USD": {
       "method": "median",
       "sources": [
@@ -255,30 +195,6 @@
         "minimumSuccessfulSources": 3
       }
     },
-    "MKR/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "bitfinex", "pair": "MKR/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
-        [{ "origin": "hitbtc", "pair": "MKR/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "kyber", "pair": "MKR/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
-        [{ "origin": "okex", "pair": "MKR/BTC" },{ "origin": ".", "pair": "BTC/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 3
-      }
-    },
-    "OMG/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "OMG/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "bitfinex", "pair": "OMG/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "huobi", "pair": "OMG/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "upbit", "pair": "OMG/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 3
-      }
-    },
     "PAXG/USD": {
       "method": "median",
       "sources": [
@@ -290,43 +206,6 @@
       ],
       "params": {
         "minimumSuccessfulSources": 2
-      }
-    },
-    "POLY/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "POLY/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "coinmarketcap", "pair": "POLY/USD" }],
-        [{ "origin": "cryptocompare", "pair": "POLY/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 2
-      }
-    },
-    "REP/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "REP/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "bittrex", "pair": "REP/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "poloniex", "pair": "REP/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "coinbasepro", "pair": "REP/USD" }],
-        [{ "origin": "kraken", "pair": "REP/EUR" },{ "origin": "fx", "pair": "EUR/USD" }],
-        [{ "origin": "upbit", "pair": "REP/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 4
-      }
-    },
-    "SNT/USD": {
-      "method": "median",
-      "sources": [
-        [{ "origin": "binance", "pair": "SNT/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
-        [{ "origin": "huobi", "pair": "SNT/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "okex", "pair": "SNT/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "upbit", "pair": "SNT/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
-      ],
-      "params": {
-        "minimumSuccessfulSources": 3
       }
     },
     "SNX/USD": {
