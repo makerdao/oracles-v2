@@ -1,8 +1,16 @@
 {
   "rpc": {
-    "address": ":8081"
+    "address": ":8080"
   },
-  "origins": {},
+  "origins": {
+    "openexchangerates": {
+      "type": "openexchangerates",
+      "name": "openexchangerates",
+      "params": {
+        "apiKey": "API_KEY"
+      }
+    }
+  },
   "priceModels": {
     "AAVE/USD": {
       "method": "median",
@@ -18,6 +26,7 @@
         "minimumSuccessfulSources": 3
       }
     },
+
     "AVAX/USD": {
       "method": "median",
       "sources": [
@@ -51,7 +60,7 @@
         [{ "origin": "binance", "pair": "BAT/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
         [{ "origin": "bittrex", "pair": "BAT/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
         [{ "origin": "coinbasepro", "pair": "BAT/USD" }],
-        [{ "origin": "upbit", "pair": "BAT/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
+        [{ "origin": "upbit", "pair": "BAT/KRW" },{ "origin": "openexchangerates", "pair": "KRW/USD", "ttl": 300 }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -189,7 +198,7 @@
         [{ "origin": "bittrex", "pair": "MANA/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
         [{ "origin": "coinbasepro", "pair": "MANA/USDC" },{ "origin": ".", "pair": "USDC/USD" }],
         [{ "origin": "huobi", "pair": "MANA/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "upbit", "pair": "MANA/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
+        [{ "origin": "upbit", "pair": "MANA/KRW" },{ "origin": "openexchangerates", "pair": "KRW/USD", "ttl": 300 }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -214,9 +223,9 @@
         [{ "origin": "coinbasepro", "pair": "SNX/USD" }],
         [{ "origin": "huobi", "pair": "SNX/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "okex", "pair": "SNX/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "binance", "pair": "SNX/BTC" },{ "origin": "fx", "pair": "BTC/USD" }],
-        [{ "origin": "uniswap", "pair": "SNX/ETH" },{ "origin": "fx", "pair": "ETH/USD" }],
-        [{ "origin": "sushiswap", "pair": "SNX/ETH" },{ "origin": "fx", "pair": "ETH/USD" }]
+        [{ "origin": "binance", "pair": "SNX/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "uniswap", "pair": "SNX/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
+        [{ "origin": "sushiswap", "pair": "SNX/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -228,8 +237,8 @@
         [{ "origin": "gateio", "pair": "SOL/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "binance", "pair": "SOL/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "okex", "pair": "SOL/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "huobi", "pair": "SOL/BTC" },{ "origin": "fx", "pair": "BTC/USD" }],
-        [{ "origin": "bitthumb", "pair": "SOL/BTC" },{ "origin": "fx", "pair": "BTC/USD" }]
+        [{ "origin": "huobi", "pair": "SOL/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "bitthumb", "pair": "SOL/BTC" },{ "origin": ".", "pair": "BTC/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -238,12 +247,12 @@
     "UNI/USD": {
       "method": "median",
       "sources": [
-        [{ "origin": "binance", "pair": "UNI/BTC" },{ "origin": "fx", "pair": "BTC/USD" }],
+        [{ "origin": "binance", "pair": "UNI/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
         [{ "origin": "coinbasepro", "pair": "UNI/USD" }],
         [{ "origin": "ftx", "pair": "UNI/USD" }],
         [{ "origin": "huobi", "pair": "UNI/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "okex", "pair": "UNI/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "uniswap", "pair": "UNI/ETH" },{ "origin": "fx", "pair": "ETH/USD" }]
+        [{ "origin": "uniswap", "pair": "UNI/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -350,7 +359,7 @@
         [{ "origin": "okex", "pair": "ZRX/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
         [{ "origin": "bitfinex", "pair": "ZRX/USD" }],
         [{ "origin": "coinbasepro", "pair": "ZRX/USD" }],
-        [{ "origin": "upbit", "pair": "ZRX/KRW" },{ "origin": "fx", "pair": "KRW/USD" }]
+        [{ "origin": "upbit", "pair": "ZRX/KRW" },{ "origin": "openexchangerates", "pair": "KRW/USD", "ttl": 300}]
       ],
       "params": {
         "minimumSuccessfulSources": 3
