@@ -88,5 +88,17 @@
         "type": "tarball",
         "url": "https://github.com/makerdao/setzer-mcd/archive/823f1470cd66acd98ad8e36408248bb8c8e8362c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixmaster": {
+        "branch": "master",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "224df6940f0f322c0cfaa8a7c6f58d0b890898df",
+        "sha256": "1zcjc2cjnbd7pmdwhskjladllh6as3lz4y8pbwgvn2ddi5gm6hsk",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/224df6940f0f322c0cfaa8a7c6f58d0b890898df.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
