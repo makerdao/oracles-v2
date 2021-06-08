@@ -37,12 +37,14 @@ if [[ "$1" == "install" ]]; then
 		_file="https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
 	else
 		if [[ "$_version" == "current" ]]; then
-			_version=$(cat /vagrant/omnia/lib/version)
+			_version="v$(head /vagrant/omnia/lib/version | tr -d '\n')"
 		fi
 		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
+  echo "Uninstalling old Omnia"
+	nix-env --uninstall omnia || echo >&2 "No cleanup needed"
   echo "Installing from: $_file"
-	nix-env --remove-all --install --file "$_file"
+	nix-env --install --file "$_file"
 fi
 
 if [[ "$1" == "configure" ]]; then
