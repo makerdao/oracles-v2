@@ -36,5 +36,5 @@ transportPull() {
 	done
 
 	# Return the latest of the messages pulled.
-	jq -se 'max_by(.time)' <<<"${_msgs[@]}"
+	jq -sec 'max_by(.time)' <<<"${_msgs[@]}"
 }
