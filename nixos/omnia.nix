@@ -56,7 +56,7 @@ in {
         PermissionsStartOnly = true;
         Restart = "always";
         RestartSec = 5;
-        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} --verbosity debug agent";
+        ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} --log.verbosity debug agent";
       };
     };
 

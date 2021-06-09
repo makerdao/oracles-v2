@@ -42,11 +42,12 @@ if [[ "$1" == "install" ]]; then
 		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
   echo "Installing from: $_file"
-	nix-env --install --remove-all --file "$_file"
+	nix-env --remove-all --install --file "$_file"
 fi
 
 if [[ "$1" == "configure" ]]; then
   opts=()
+
 	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
 	opts+=(--ssb-external "$(curl -s ifconfig.me)")
 	opts+=(--keystore "/vagrant/tests/resources/keys")

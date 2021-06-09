@@ -200,31 +200,38 @@ while [[ -n "$1" ]]; do
       shift
       ;;
     --network)
-      configUpdates+=( ".ethereum.network = \"$2\"" );shift
+      configUpdates+=( ".ethereum.network = \"$2\"" );
+      shift
       ;;
     --no-transport)
       configUpdates+=( ".transports = []" )
       ;;
     --add-transport)
-      configUpdates+=( ".transports += [\"$2\"]" );shift
+      configUpdates+=( ".transports += [\"$2\"]" );
+      shift
       ;;
     --no-source)
       configUpdates+=( ".sources = []" )
       ;;
     --add-source)
-      configUpdates+=( ".sources += [\"$2\"]" );shift
+      configUpdates+=( ".sources += [\"$2\"]" );
+      shift
       ;;
     --ssb-external)
-      ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );shift
+      ssbConfigUpdates+=( ".connections.incoming[\"net\",\"ws\"][].external = \"$2\"" );
+      shift
       ;;
     --ssb-caps)
-      ssbConfigUpdates+=( ".caps = $(jq . "$2")" );shift
+      ssbConfigUpdates+=( ".caps = $(jq . "$2")" );
+      shift
       ;;
     --ssb-secret)
-      installSsbSecret="$2";shift
+      installSsbSecret="$2";
+      shift
       ;;
     --ssb-gossip)
-      installSsbGossip="$2";shift
+      installSsbGossip="$2";
+      shift
       ;;
     --help|-h)
       usage
