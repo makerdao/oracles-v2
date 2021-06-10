@@ -164,6 +164,19 @@
         "minimumSuccessfulSources": 3
       }
     },
+    "KNC/USD": {
+      "method": "median",
+      "sources": [
+        [{ "origin": "binance", "pair": "KNC/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "huobi", "pair": "KNC/BTC" },{ "origin": ".", "pair": "BTC/USD" }],
+        [{ "origin": "coinbasepro", "pair": "KNC/USD" }],
+        [{ "origin": "kyber", "pair": "KNC/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
+        [{ "origin": "upbit", "pair": "KNC/KRW" },{ "origin": "openexchangerates", "pair": "KRW/USD", "ttl": 3600 }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 3
+      }
+    },
     "LINK/USD": {
       "method": "median",
       "sources": [
