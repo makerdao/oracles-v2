@@ -194,7 +194,7 @@ validateAndConstructMessage() {
 		debug "Timestamp Hex = $timeHex"
 		debug "Asset Pair Hex = $assetPairHexShortened"
 		debug "Invalid Hash = $starkHash"
-		continue
+		return 1
 	fi
 
 	#generate stark sig
@@ -203,7 +203,7 @@ validateAndConstructMessage() {
 		error "Error - Failed to generate valid stark signature"
 		debug "Hash = $starkHash"
 		debug "Invalid Signature = $starkSig"
-		continue
+		return 1
 	fi
 	starkSigR=$(echo "$starkSig" | cut -d " " -f1)
 	starkSigS=$(echo "$starkSig" | cut -d " " -f2)
