@@ -10,6 +10,8 @@ readSourcesAndBroadcastAllPriceMessages()  {
 	local -A _unpublishedPairs
 	local _assetPair
 	for _assetPair in "${assetPairs[@]}"; do
+		_assetPair="${_assetPair^^}"
+		_assetPair="${_assetPair/\/}"
 		_unpublishedPairs[$_assetPair]=
 	done
 
@@ -24,14 +26,14 @@ readSourcesAndBroadcastAllPriceMessages()  {
 				continue
 			fi
 			local _assetPair=$(jq -r .asset <<<"$_json")
-			_assetPairClean="${_assetPair^^}"
-			_assetPairClean="${_assetPairClean/\/}"
+			_assetPair="${_assetPair^^}"
+			_assetPair="${_assetPair/\/}"
 			local _median=$(jq -r .median <<<"$_json")
 			local _sources=$(jq -rS '.sources' <<<"$_json")
-			local _message=$(validateAndConstructMessage "$_assetPairClean" "$_median"	"$_sources")
+			local _message=$(validateAndConstructMessage "$_assetPair" "$_median"	"$_sources")
 
 			if [[ -z "$_message" ]]; then
-				error "Failed constructing $_assetPairClean price message"
+				error "Failed constructing $_assetPair price message"
 				continue
 			fi
 
