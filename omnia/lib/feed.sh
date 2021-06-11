@@ -39,7 +39,7 @@ readSourcesAndBroadcastAllPriceMessages()  {
 
 			unset _unpublishedPairs[$_assetPair]
 
-			transportPublish "$_assetPairClean" "$_message"
+			transportPublish "$_assetPair" "$_message"
 		done < <(readSource "$_src" "${!_unpublishedPairs[@]}")
 	done
 }
