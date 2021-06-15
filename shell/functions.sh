@@ -69,15 +69,20 @@ release() {
 			echo >&2 "Current version ($oldVersion) is not a Release Candidate. Run: release major|minor|patch"
 			return 1
 		}
+		[[ $branch == master ]] || {
+			echo >&2 "Not on master branch, checkout 'master' to make a stable release."
+			return 1
+		}
 
 		version=$(semver -i "$oldVersion")
 
 		echo "$version" > "$VERSION_FILE"
 		git commit -m "Release 'v$version' as 'stable'" "$VERSION_FILE"
 		git tag "v$version" && {
-			git tag -f stable
+			git tag --delete stable
+			git tag stable
 			echo >&2 "To publish this commit as a stable release run:"
-			echo "   git push -f origin stable"
+			echo "   git push --atomic origin $branch v$version stable"
 		}
 	else
 		echo >&2 "Unknown release level ($_level)"
