@@ -89,10 +89,10 @@
         "homepage": null,
         "owner": "makerdao",
         "repo": "oracle-suite",
-        "rev": "c7f1b7abc4e79011daedf97ff4160ebda36a9ecf",
-        "sha256": "0r923qqbvnhay2lnn40knf15svh7khwaqzzayim6aca6lbzzhmga",
+        "rev": "b5248492248197963be49d5d382599aadfe04346",
+        "sha256": "1r43qjl96x63hlbrjmgdfw4rz4xp41xy6pvx71av19b2qnkrw3rw",
         "type": "tarball",
-        "url": "https://github.com/makerdao/oracle-suite/archive/c7f1b7abc4e79011daedf97ff4160ebda36a9ecf.tar.gz",
+        "url": "https://github.com/makerdao/oracle-suite/archive/b5248492248197963be49d5d382599aadfe04346.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
