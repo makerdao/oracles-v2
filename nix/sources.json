@@ -84,15 +84,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
-        "branch": "pawelz/ch12095/unify-configs",
+        "branch": "v0.1.2",
         "description": null,
         "homepage": null,
         "owner": "makerdao",
         "repo": "oracle-suite",
-        "rev": "b5248492248197963be49d5d382599aadfe04346",
-        "sha256": "1r43qjl96x63hlbrjmgdfw4rz4xp41xy6pvx71av19b2qnkrw3rw",
+        "rev": "ae62e1975ff75e99ecb4f863135580c24badbc3a",
+        "sha256": "12agga9dbrsczp4lwlakbjnkwdid7mbc01nfwhnkffrzknbqx9sf",
         "type": "tarball",
-        "url": "https://github.com/makerdao/oracle-suite/archive/b5248492248197963be49d5d382599aadfe04346.tar.gz",
+        "url": "https://github.com/makerdao/oracle-suite/archive/ae62e1975ff75e99ecb4f863135580c24badbc3a.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
