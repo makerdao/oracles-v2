@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -ueo pipefail
+if [[ -n $OMNIA_DEBUG ]]; then set -x; fi
 
 _command="$1"
 case "$_command" in
 	publish)
 		_val=$(seth --to-wei "$(jq -r '.price' <<<"$2")" eth)
-		_msg=$(jq --arg val "$_val" '{
+		_msg=$(jq --arg val "$_val" -c '{
 			price: {
 				wat: .type,
 				val: $val,
