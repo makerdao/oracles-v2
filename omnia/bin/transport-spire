@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ueo pipefail
+set -eo pipefail
 if [[ -n $OMNIA_DEBUG ]]; then set -x; fi
 
 _command="$1"
