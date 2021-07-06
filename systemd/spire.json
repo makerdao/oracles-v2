@@ -5,7 +5,10 @@
     "password": ""
   },
   "p2p": {
-    "bootstrapAddrs": []
+    "bootstrapAddrs": [
+      "/dns/spire-bootstrap1.makerops.services/tcp/8000/p2p/12D3KooWRfYU5FaY9SmJcRD5Ku7c1XMBRqV6oM4nsnGQ1QRakSJi",
+      "/dns/spire-bootstrap2.makerops.services/tcp/8000/p2p/12D3KooWBGqjW4LuHUoYZUhbWW1PnDVRUvUEpc4qgWE3Yg9z1MoR"
+    ]
   },
   "rpc": {
     "address": ":8082"
