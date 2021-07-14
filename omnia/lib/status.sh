@@ -70,7 +70,7 @@ isMsgExpired () {
 	if [ "$(isExpired "$_lastTime" "$_expirationInterval")" == "true" ]; then
 		echo true
 	else
-			log "Message timestamp has not yet expired, skipping... $_assetPair"
+		log "Message timestamp has not yet expired, skipping... $_assetPair"
 		echo false
 	fi
 }
