@@ -68,9 +68,9 @@ isMsgExpired () {
 	fi
 	_expirationInterval=$(getMsgExpiration "$_assetPair")
 	if [ "$(isExpired "$_lastTime" "$_expirationInterval")" == "true" ]; then
-		log "Latests price message for $_assetPair from feed is expired"
 		echo true
 	else
+			log "Message timestamp has not yet expired, skipping... $_assetPair"
 		echo false
 	fi
 }
