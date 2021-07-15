@@ -9,7 +9,7 @@ pullOracleTime () {
 		return 1
 	fi
 
-	timeout -s9 10 seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "age()(uint32)")"
+	timeout -s9 10 seth --rpc-url "$ETH_RPC_URL" call "$_address" "age()(uint32)"
 }
 
 pullOracleQuorum () {
@@ -21,7 +21,7 @@ pullOracleQuorum () {
 		return 1
 	fi
 
-	timeout -s9 10 seth --to-dec "$(seth --rpc-url "$ETH_RPC_URL" call "$_address" "bar()(uint256)")"
+	timeout -s9 10 seth --rpc-url "$ETH_RPC_URL" call "$_address" "bar()(uint256)"
 }
 
 pullOraclePrice () {

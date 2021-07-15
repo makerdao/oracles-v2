@@ -93,11 +93,11 @@ generateCalldata () {
     for msg in "${_msgs[@]}"; do
         _sig=$( echo "$msg" | jq -r '.signature' )
         _v=${_sig:128:2}
-        allR+=( "${_sig:0:64}" )
-        allS+=( "${_sig:64:64}" )
+        allR+=( "0x${_sig:0:64}" )
+        allS+=( "0x${_sig:64:64}" )
         allV+=( "$(seth --to-word "0x$_v" )" )
-        allPrices+=( "$( echo "$msg" | jq -r '.priceHex' )" )
-        allTimes+=( "$( echo "$msg" | jq -r '.timeHex' )" )
+        allPrices+=( "0x$( echo "$msg" | jq -r '.priceHex' )" )
+        allTimes+=( "0x$( echo "$msg" | jq -r '.timeHex' )" )
     done
     verbose "allPrices = ${allPrices[*]}"
     verbose "allTimes = ${allTimes[*]}"
