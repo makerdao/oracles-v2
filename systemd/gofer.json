@@ -217,6 +217,20 @@
         "minimumSuccessfulSources": 3
       }
     },
+    "MATIC/USD": {
+      "method": "median",
+      "sources": [
+        [{ "origin": "binance", "pair": "MATIC/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "huobi", "pair": "MATIC/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "coinbasepro", "pair": "MATIC/USD" }],
+        [{ "origin": "ftx", "pair": "MATIC/USD" }],
+        [{ "origin": "gemini", "pair": "MATIC/USD" }],
+        [{ "origin": "kraken", "pair": "MATIC/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 3
+      }
+    },
     "PAXG/USD": {
       "method": "median",
       "sources": [
