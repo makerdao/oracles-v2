@@ -121,35 +121,47 @@ copySsbConf() {
 mapfile -t ssbConfigUpdates < <(grep -v "^ *#\|^ *$" "$SHARE_DIR/ssb-config-updates")
 
 copySpireConf() {
+	set -x
   if [[ ! -f "$SPIRE_CONFIG" ]]
   then
     sudo cp -v "$SHARE_DIR/spire.json" "$SPIRE_CONFIG" >&2
     sudo chmod u+w "$SPIRE_CONFIG"
 	else
+		if [[ "$(jq -cr '.spire' < "$SPIRE_CONFIG")" == "null" ]]; then
+			spireConfigUpdates+=( "{ethereum,feeds,spire:{rpc,pairs},transport:{p2p}}" )
+		fi
+
 		local _defaultConf
-		_defaultConf=$(jq '{feeds,spire:{pairs:.spire.pairs}}' "$SPIRE_CONFIG")
+		_defaultConf=$(jq '{feeds,spire:{pairs:.spire.pairs}}' "$SHARE_DIR/spire.json")
 		spireConfigUpdates+=( ". * ${_defaultConf}" )
   fi
 
   for i in "${!spireConfigUpdates[@]}"; do
     sudo tee "$SPIRE_CONFIG" <<<"$(jq "${spireConfigUpdates[$i]}" "$SPIRE_CONFIG")" >/dev/null
   done
+  set +x
 }
 declare -a spireConfigUpdates
 
 copyGoferConf() {
+	set -x
   if [[ ! -f "$GOFER_CONFIG" ]]; then
     sudo cp -v "$SHARE_DIR/gofer.json" "$GOFER_CONFIG" >&2
     sudo chmod u+w "$GOFER_CONFIG"
 	else
+		if [[ "$(jq -cr '.gofer' < "$GOFER_CONFIG")" == "null" ]]; then
+			goferConfigUpdates+=( "{gofer:.}" )
+		fi
+
 		local _defaultConf
-		_defaultConf=$(jq '{gofer:{priceModels:.gofer.priceModels}}' "$GOFER_CONFIG")
+		_defaultConf="$(jq '{gofer:{priceModels:.gofer.priceModels}}' < "$SHARE_DIR/gofer.json")"
 		goferConfigUpdates+=( ". * ${_defaultConf}" )
   fi
 
   for i in "${!goferConfigUpdates[@]}"; do
     sudo tee "$GOFER_CONFIG" <<<"$(jq "${goferConfigUpdates[$i]}" "$GOFER_CONFIG")" >/dev/null
   done
+  set +x
 }
 declare -a goferConfigUpdates
 
