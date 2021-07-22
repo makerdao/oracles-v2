@@ -1,6 +1,6 @@
 {
   "rpc": {
-    "address": ":8080"
+    "address": "127.0.0.1:8081"
   },
   "origins": {
     "openexchangerates": {
@@ -87,7 +87,7 @@
         [{ "origin": "kucoin", "pair": "COMP/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "coinbasepro", "pair": "COMP/USD" }],
         [{ "origin": "kraken", "pair": "COMP/USD" }],
-        [{ "origin": "uniswap", "pair": "COMP/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
+        [{ "origin": "uniswapV3", "pair": "COMP/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -100,7 +100,7 @@
         [{ "origin": "binance", "pair": "CRV/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "huobi", "pair": "CRV/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "kraken", "pair": "CRV/USD" }],
-        [{ "origin": "uniswap", "pair": "CRV/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
+        [{ "origin": "uniswapV3", "pair": "CRV/ETH" },{ "origin": ".", "pair": "ETH/USD" }],
         [{ "origin": "sushiswap", "pair": "CRV/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
@@ -144,7 +144,7 @@
         [{ "origin": "ftx", "pair": "ETH/USD" }],
         [{ "origin": "gemini", "pair": "ETH/USD" }],
         [{ "origin": "kraken", "pair": "ETH/USD" }],
-        [{ "origin": "uniswap", "pair": "ETH/USD" }]
+        [{ "origin": "uniswapV3", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 4
@@ -217,6 +217,20 @@
         "minimumSuccessfulSources": 3
       }
     },
+    "MATIC/USD": {
+      "method": "median",
+      "sources": [
+        [{ "origin": "binance", "pair": "MATIC/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "huobi", "pair": "MATIC/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
+        [{ "origin": "coinbasepro", "pair": "MATIC/USD" }],
+        [{ "origin": "ftx", "pair": "MATIC/USD" }],
+        [{ "origin": "gemini", "pair": "MATIC/USD" }],
+        [{ "origin": "kraken", "pair": "MATIC/USD" }]
+      ],
+      "params": {
+        "minimumSuccessfulSources": 3
+      }
+    },
     "PAXG/USD": {
       "method": "median",
       "sources": [
@@ -265,7 +279,7 @@
         [{ "origin": "ftx", "pair": "UNI/USD" }],
         [{ "origin": "huobi", "pair": "UNI/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "okex", "pair": "UNI/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "uniswap", "pair": "UNI/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
+        [{ "origin": "uniswapV3", "pair": "UNI/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 3
@@ -303,7 +317,7 @@
         [{ "origin": "binance", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "huobi", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
         [{ "origin": "gateio", "pair": "WNXM/USDT" },{ "origin": ".", "pair": "USDT/USD" }],
-        [{ "origin": "uniswap", "pair": "WNXM/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
+        [{ "origin": "uniswapV3", "pair": "WNXM/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 2
@@ -345,7 +359,7 @@
         [{ "origin": "coinbasepro", "pair": "YFI/USD" }],
         [{ "origin": "ftx", "pair": "YFI/USD" }],
         [{ "origin": "gemini", "pair": "YFI/USD" }],
-        [{ "origin": "uniswap", "pair": "YFI/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
+        [{ "origin": "uniswapV3", "pair": "YFI/ETH" },{ "origin": ".", "pair": "ETH/USD" }]
       ],
       "params": {
         "minimumSuccessfulSources": 2

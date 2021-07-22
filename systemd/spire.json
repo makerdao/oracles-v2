@@ -11,7 +11,7 @@
     ]
   },
   "rpc": {
-    "address": ":8082"
+    "address": "127.0.0.1:8082"
   },
   "feeds": [
     "0xDA1d2961Da837891f43235FddF66BAD26f41368b",
