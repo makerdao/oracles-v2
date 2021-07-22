@@ -4,14 +4,13 @@
     "keystore": "",
     "password": ""
   },
-  "p2p": {
-    "bootstrapAddrs": [
-      "/dns/spire-bootstrap1.makerops.services/tcp/8000/p2p/12D3KooWRfYU5FaY9SmJcRD5Ku7c1XMBRqV6oM4nsnGQ1QRakSJi",
-      "/dns/spire-bootstrap2.makerops.services/tcp/8000/p2p/12D3KooWBGqjW4LuHUoYZUhbWW1PnDVRUvUEpc4qgWE3Yg9z1MoR"
-    ]
-  },
-  "rpc": {
-    "address": "127.0.0.1:8082"
+  "transport":{
+    "p2p": {
+      "bootstrapAddrs": [
+        "/dns/spire-bootstrap1.makerops.services/tcp/8000/p2p/12D3KooWRfYU5FaY9SmJcRD5Ku7c1XMBRqV6oM4nsnGQ1QRakSJi",
+        "/dns/spire-bootstrap2.makerops.services/tcp/8000/p2p/12D3KooWBGqjW4LuHUoYZUhbWW1PnDVRUvUEpc4qgWE3Yg9z1MoR"
+      ]
+    }
   },
   "feeds": [
     "0xDA1d2961Da837891f43235FddF66BAD26f41368b",
@@ -41,32 +40,38 @@
     "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3",
     "0xd72BA9402E9f3Ff01959D6c841DDD13615FFff42"
   ],
-  "pairs": [
-    "AAVEUSD",
-    "AVAXUSD",
-    "BALUSD",
-    "BATUSD",
-    "BTCUSD",
-    "COMPUSD",
-    "CRVUSD",
-    "DOTUSD",
-    "ETHBTC",
-    "ETHUSD",
-    "FILUSD",
-    "KNCUSD",
-    "LINKUSD",
-    "LRCUSD",
-    "MANAUSD",
-    "PAXGUSD",
-    "SNXUSD",
-    "SOLUSD",
-    "UNIUSD",
-    "USDTUSD",
-    "WNXMUSD",
-    "XRPUSD",
-    "XTZUSD",
-    "YFIUSD",
-    "ZECUSD",
-    "ZRXUSD"
-  ]
+  "spire": {
+    "rpc": {
+      "address": "127.0.0.1:8082"
+    },
+    "pairs": [
+      "AAVEUSD",
+      "AVAXUSD",
+      "BALUSD",
+      "BATUSD",
+      "BTCUSD",
+      "COMPUSD",
+      "CRVUSD",
+      "DOTUSD",
+      "ETHBTC",
+      "ETHUSD",
+      "FILUSD",
+      "KNCUSD",
+      "LINKUSD",
+      "LRCUSD",
+      "MANAUSD",
+      "PAXGUSD",
+      "SNXUSD",
+      "SOLUSD",
+      "UNIUSD",
+      "USDTUSD",
+      "WNXMUSD",
+      "XRPUSD",
+      "XTZUSD",
+      "YFIUSD",
+      "ZECUSD",
+      "ZRXUSD",
+      "MATICUSD"
+    ]
+  }
 }

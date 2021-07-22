@@ -84,15 +84,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
-        "branch": "v0.1.5",
+        "branch": "v0.2.1",
         "description": null,
         "homepage": null,
         "owner": "makerdao",
         "repo": "oracle-suite",
-        "rev": "ebfb44afbcde26fd745f6813b6bd31951b2b7c0e",
-        "sha256": "0ib28ynzggr3mb07cf1m1q1cqiy5hvycxqi3p4x88mp1d1mzf22z",
+        "rev": "6dd8c86f02c34b29497d3372cd421a95a54f9c1a",
+        "sha256": "17win7pn7cmx2fq078jnd0xhfh35kj0k7ycr6sw2mq0944cncids",
         "type": "tarball",
-        "url": "https://github.com/makerdao/oracle-suite/archive/ebfb44afbcde26fd745f6813b6bd31951b2b7c0e.tar.gz",
+        "url": "https://github.com/makerdao/oracle-suite/archive/6dd8c86f02c34b29497d3372cd421a95a54f9c1a.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
