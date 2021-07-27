@@ -5,6 +5,8 @@ getGasPrice () {
   # check if multiplier set
   [[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$ ]] || return 1
 
+  local _price
+
   # Getting price from source
   _price=$(case $ETH_GAS_SOURCE in
     node) getGasPriceFromNode ;;
@@ -14,11 +16,10 @@ getGasPrice () {
   esac)
 
   # Fallback to node price in case of 0 or invalid price
-  if [ $_price -eq 0 ] || [ $_price =~ ^[0-9\.]+$ ]
-  then
-    _price=$(getGasPriceFromNode)
-  fi
-
+  [[ $_price =~ ^[0-9\.]+$ ]] || _price=$(getGasPriceFromNode)
+  [[ $_price -eq 0 ]] && _price=$(getGasPriceFromNode)
+  
+  echo "After: $_price"
   # handle issues with seth
   if [[ ! $_price =~ ^[0-9\.]+$ ]]; then
     error "Error - Invalid GAS price received: $_price"
