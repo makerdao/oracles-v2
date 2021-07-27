@@ -46,7 +46,7 @@ pushOraclePrice () {
 		local _oracleContract
 		
 		#TODO - use custom gas pricing strategy
-		ETH_GAS_PRICE=$(getGasPrice)
+		local _gasPrice=$(getGasPrice)
 
 		_oracleContract=$(getOracleContract "$_assetPair")
 		if ! [[ "$_oracleContract" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]]; then
@@ -54,7 +54,7 @@ pushOraclePrice () {
 		  return 1
 		fi
 		log "Sending tx..."
-		tx=$(seth --rpc-url "$ETH_RPC_URL" send --async "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
+		tx=$(seth --rpc-url "$ETH_RPC_URL" --gas-price "$_gasPrice" send --async "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
 				"[$(join "${allPrices[@]}")]" \
 				"[$(join "${allTimes[@]}")]" \
 				"[$(join "${allV[@]}")]" \
