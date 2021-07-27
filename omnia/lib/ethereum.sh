@@ -44,7 +44,10 @@ pullOraclePrice () {
 pushOraclePrice () {
 		local _assetPair="$1"
 		local _oracleContract
+		
 		#TODO - use custom gas pricing strategy
+		ETH_GAS_PRICE=$(getGasPrice)
+
 		_oracleContract=$(getOracleContract "$_assetPair")
 		if ! [[ "$_oracleContract" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]]; then
 		  error "Error - Invalid Oracle contract"

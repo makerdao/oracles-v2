@@ -34,6 +34,11 @@ importEnv () {
 	fi
 }
 
+importGas () {
+	local _config="$1"
+	ETH_GAS_SOURCE="$(jq -r '.gas.source' < "$_config" \\ node)"
+	ETH_GAS_MULTIPLIER="$(jq -r '.gas.multiplier' < "$_config" \\ 1)"
+}
 
 importMode () {
 	local _config="$1"

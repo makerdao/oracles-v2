@@ -5,6 +5,7 @@ lib_path="$root_path/lib"
 
 . "$lib_path/log.sh"
 . "$lib_path/util.sh"
+. "$lib_path/gasprice.sh"
 . "$lib_path/ethereum.sh"
 
 . "$root_path/tap.sh" 2>/dev/null || . "$root_path/../tests/lib/tap.sh"

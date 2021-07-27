@@ -7,6 +7,7 @@ fi
 
 # shellcheck source=./config.sh
 . ./config.sh
+. ./gasprice.sh
 . ./ethereum.sh
 . ./log.sh
 . ./scuttlebot.sh
