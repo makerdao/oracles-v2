@@ -52,7 +52,7 @@ getGasPriceFromGasNow () {
 # Will return 0 if API response will be corrupted
 # Or exit code `1` in case of it wouldn't be able to make request
 getGasPriceFromEthGasStation () {
-  local _price=$(curl --silent --location https://ethgasstation.info/json/ethgasAPI1.json | jq -r '.average // 0')
+  local _price=$(curl --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r '.average // 0')
   [[ $_price =~ ^[0-9\.]+$ ]] && multiplyGasPrice $_price 100000000 || echo 0
 }
 
