@@ -15,6 +15,12 @@ OMNIA_MODE="RELAYER"
 
 declare -gA assetInfo
 
+# mocking getGasPrice before pushOraclePrice
+getGasPrice () {
+  echo "1"
+}
+export -f getGasPrice
+
 # incorrect address validation
 assetInfo["BTCUSD"]="0xxxxx,0.5,15500,1800"
 
