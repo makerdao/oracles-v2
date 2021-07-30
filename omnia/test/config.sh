@@ -13,7 +13,7 @@ ETH_GAS_SOURCE=""
 ETH_GAS_MULTIPLIER=""
 ETH_GAS_PRIORITY=""
 
-_validConfig="$(jq -c . "$test_path/config/oracle-relayer-test.conf")"
+_validConfig="$(jq -c . "$test_path/configs/oracle-relayer-test.conf")"
 
 _json="{\"ethereum\":{\"gasPrice\":{\"source\":\"node\",\"multiplier\":\"test\"}}}"
 assert "importGasPrice should fail in case of invalid multiplier" fail importGasPrice $_json
