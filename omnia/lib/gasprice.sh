@@ -19,7 +19,6 @@ getGasPrice () {
   [[ $_price =~ ^[0-9\.]+$ ]] || _price=$(getGasPriceFromNode)
   [[ $_price -eq 0 ]] && _price=$(getGasPriceFromNode)
   
-  echo "After: $_price"
   # handle issues with seth
   if [[ ! $_price =~ ^[0-9\.]+$ ]]; then
     error "Error - Invalid GAS price received: $_price"
@@ -43,7 +42,16 @@ getGasPriceFromNode () {
 
 # Using gasnow.org API for fetching gas price
 getGasPriceFromGasNow () {
-  local _price=$(curl --silent --location https://www.gasnow.org/api/v3/gas/price | jq -r '.data.standard // 0')
+  # converting gas price priority to local values
+  local _key=$(case $ETH_GAS_PRIORITY in
+    slow) printf "slow" ;;
+    standard) printf "standard" ;;
+    fast) printf "fast" ;;
+    fastest) printf "rapid" ;;
+    *) printf "fast" ;;
+  esac)
+
+  local _price=$(curl --silent --location https://www.gasnow.org/api/v3/gas/price | jq -r --arg key $_key '.data[$key] // 0')
   [[ $_price =~ ^[0-9\.]+$ ]] && echo $_price || echo 0
 }
 
@@ -52,7 +60,16 @@ getGasPriceFromGasNow () {
 # Will return 0 if API response will be corrupted
 # Or exit code `1` in case of it wouldn't be able to make request
 getGasPriceFromEthGasStation () {
-  local _price=$(curl --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r '.average // 0')
+  # converting gas price priority to local values
+  local _key=$(case $ETH_GAS_PRIORITY in
+    slow) printf "safeLow" ;;
+    standard) printf "average" ;;
+    fast) printf "fast" ;;
+    fastest) printf "fastest" ;;
+    *) printf "fast" ;;
+  esac)
+
+  local _price=$(curl --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r --arg key $_key '.[$key] // 0')
   [[ $_price =~ ^[0-9\.]+$ ]] && multiplyGasPrice $_price 100000000 || echo 0
 }
 

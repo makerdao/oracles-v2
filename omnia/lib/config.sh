@@ -34,12 +34,6 @@ importEnv () {
 	fi
 }
 
-importGas () {
-	local _config="$1"
-	ETH_GAS_SOURCE="$(jq -r '.gas.source' < "$_config" \\ node)"
-	ETH_GAS_MULTIPLIER="$(jq -r '.gas.multiplier' < "$_config" \\ 1)"
-}
-
 importMode () {
 	local _config="$1"
 	OMNIA_MODE="$(jq -r '.mode' < "$_config" | tr '[:lower:]' '[:upper:]')"
@@ -85,6 +79,24 @@ importNetwork () {
 	export ETH_RPC_URL
 }
 
+importGasPrice () {
+	local _json="$1"
+
+	# Getting Gas price details
+	ETH_GAS_SOURCE="$(echo "$_json" | jq -S '.ethereum.gasPrice.source' \\ node)"
+	export ETH_GAS_SOURCE
+
+	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq -r '.ethereum.gasPrice.multiplier' \\ 1)"
+	[[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
+	export ETH_GAS_MULTIPLIER
+	
+	ETH_GAS_PRIORITY="$(echo "$_json" | jq -r '.ethereum.gasPrice.priority' \\ fast)"
+	[[ $ETH_GAS_PRIORITY =~ ^(slow|standard|fast|fastest)$ ]] || errors+=("Error - Ethereum Gas price priority is invalid.\nValid options are: slow, standard, fast, fastest.")
+	export ETH_GAS_PRIORITY
+
+	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
+}
+
 importEthereumEnv () {
 	local _config="$1"
 	local _json
@@ -107,6 +119,9 @@ importEthereumEnv () {
 	#validate file exists
 	[[ -f "$ETH_PASSWORD" ]] || errors+=("Error - Ethereum Password Path is invalid, file does not exist.")
 	export ETH_PASSWORD
+
+	# Importing Gas Price
+	importGasPrice "$_json"
 
 	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
