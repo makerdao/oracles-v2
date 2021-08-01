@@ -83,14 +83,14 @@ importGasPrice () {
 	local _json="$1"
 
 	# Getting Gas price details
-	ETH_GAS_SOURCE="$(echo "$_json" | jq -S '.ethereum.gasPrice.source' \\ node)"
+	ETH_GAS_SOURCE="$(echo "$_json" | jq -S '.ethereum.gasPrice.source' // node)"
 	export ETH_GAS_SOURCE
 
-	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq -r '.ethereum.gasPrice.multiplier' \\ 1)"
+	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq -r '.ethereum.gasPrice.multiplier' // 1)"
 	[[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
 	export ETH_GAS_MULTIPLIER
 	
-	ETH_GAS_PRIORITY="$(echo "$_json" | jq -r '.ethereum.gasPrice.priority' \\ fast)"
+	ETH_GAS_PRIORITY="$(echo "$_json" | jq -r '.ethereum.gasPrice.priority' // fast)"
 	[[ $ETH_GAS_PRIORITY =~ ^(slow|standard|fast|fastest)$ ]] || errors+=("Error - Ethereum Gas price priority is invalid.\nValid options are: slow, standard, fast, fastest.")
 	export ETH_GAS_PRIORITY
 
@@ -121,7 +121,7 @@ importEthereumEnv () {
 	export ETH_PASSWORD
 
 	# Importing Gas Price
-	importGasPrice "$_json"
+	[[ "$OMNIA_MODE" == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && importGasPrice "$_json"
 
 	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
