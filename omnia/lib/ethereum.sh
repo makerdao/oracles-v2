@@ -45,7 +45,7 @@ pushOraclePrice () {
 		local _assetPair="$1"
 		local _oracleContract
 		
-		#TODO - use custom gas pricing strategy
+		# Using custom gas pricing strategy
 		local _gasPrice=$(getGasPrice)
 
 		_oracleContract=$(getOracleContract "$_assetPair")
@@ -63,4 +63,5 @@ pushOraclePrice () {
 		echo "TX: $tx"
 		echo SUCCESS: "$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
 		echo GAS USED: "$(timeout -s9 10 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
+		echo GAS PRICE: "$_gasPrice"
 }
