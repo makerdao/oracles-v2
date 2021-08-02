@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 updateOracle () {
     for assetPair in "${assetPairs[@]}"; do

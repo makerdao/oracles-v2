@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 #is message empty
 isEmpty () {
 	local _msg="$1"

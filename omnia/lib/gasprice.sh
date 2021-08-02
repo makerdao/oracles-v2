@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Calculate gas price
 getGasPrice () {
   # check if multiplier set

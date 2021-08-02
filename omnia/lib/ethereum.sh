@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 pullOracleTime () {
 	local _assetPair="$1"
 	local _address
@@ -60,8 +58,15 @@ pushOraclePrice () {
 				"[$(join "${allV[@]}")]" \
 				"[$(join "${allR[@]}")]" \
 				"[$(join "${allS[@]}")]")
+		
+		_status="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
+		_gasUsed="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
+		
 		echo "TX: $tx"
-		echo SUCCESS: "$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
-		echo GAS USED: "$(timeout -s9 10 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
+		echo SUCCESS: "$_status"
+		echo GAS USED: "$_gasUsed"
 		echo GAS PRICE: "$_gasPrice"
+		
+		# Monitoring node helper JSON
+		echo "{\"tx\":\"$tx\",\"gasPrice\":$_gasPrice,\"gasUsed\":$_gasUsed,\"status\":\"$_status\"}"
 }
