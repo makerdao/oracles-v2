@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 importEnv () {
 	local _here=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 	local config
