@@ -13,8 +13,7 @@ let
     (if (cfg.ssbConfig ? port) then [ cfg.ssbConfig.port ] else [ 8008 ]));
 
   ssb-config = writeJSON "ssb-config" cfg.ssbConfig;
-  omnia-config =
-    writeJSON "omnia.conf" { inherit (cfg) pairs mode feeds ethereum options sources transports services; };
+  omnia-config = writeJSON "omnia.conf" { inherit (cfg) pairs mode feeds ethereum options sources transports services; };
 
   inherit (import ../. { }) omnia ssb-server;
 
@@ -111,6 +110,8 @@ in {
       environment = {
         OMNIA_CONFIG = omnia-config;
         OMNIA_DEBUG = toString cfg.options.debug;
+        OMNIA_LOG_FORMAT = cfg.options.logFormat;
+        OMNIA_VERBOSE = toString cfg.options.verbose;
         GOFER_CONFIG = toString cfg.options.goferConfig;
         SPIRE_CONFIG = toString cfg.options.spireConfig;
       };

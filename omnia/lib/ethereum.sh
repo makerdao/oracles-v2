@@ -68,5 +68,5 @@ pushOraclePrice () {
 		verbose "GAS PRICE: $_gasPrice"
 		
 		# Monitoring node helper JSON
-		echo >&2 "{\"tx\":\"$tx\",\"gasPrice\":$_gasPrice,\"gasUsed\":$_gasUsed,\"status\":\"$_status\"}"
+		verbose "Transaction receipt" "tx=$tx" "gasPrice=$_gasPrice" "gasUsed=$_gasUsed" "status=$_status"
 }

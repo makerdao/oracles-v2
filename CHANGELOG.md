@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Introduce `--override-origin` option to enable for adding params to origins (e.g. API Key).
 - MATIC/USD
+- Support for configurable external gas price sources for relayers.
 ### Changed
 - Make sure `install-omnia` works with the new config structures of spire and gofer.
 
