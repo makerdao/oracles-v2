@@ -137,7 +137,6 @@ Available values:
 
 ```json
 {
-  {
   "mode": "relayer",
   "ethereum": {
     "from": "0x",
