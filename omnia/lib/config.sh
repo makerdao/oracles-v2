@@ -84,7 +84,7 @@ importGasPrice () {
 	ETH_GAS_SOURCE="$(echo "$_json" | jq -S '.ethereum.gasPrice.source // "node"')"
 	export ETH_GAS_SOURCE
 
-	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq -r '.ethereum.gasPrice.multiplier' // 1)"
+	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq -r '.ethereum.gasPrice.multiplier // 1')"
 	[[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
 	export ETH_GAS_MULTIPLIER
 	
