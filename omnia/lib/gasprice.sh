@@ -49,7 +49,7 @@ getGasPriceFromGasNow () {
     *) printf "fast" ;;
   esac)
 
-  local _price=$(curl --silent --location https://www.gasnow.org/api/v3/gas/price | jq -r --arg key $_key '.data[$key] // 0')
+  local _price=$(curl -m 30 --silent --location https://www.gasnow.org/api/v3/gas/price | jq -r --arg key $_key '.data[$key] // 0')
   [[ $_price =~ ^[0-9\.]+$ ]] && echo $_price || echo 0
 }
 
@@ -67,7 +67,7 @@ getGasPriceFromEthGasStation () {
     *) printf "fast" ;;
   esac)
 
-  local _price=$(curl --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r --arg key $_key '.[$key] // 0')
+  local _price=$(curl -m 30 --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r --arg key $_key '.[$key] // 0')
   [[ $_price =~ ^[0-9\.]+$ ]] && multiplyGasPrice $_price 100000000 || echo 0
 }
 
