@@ -32,3 +32,11 @@ assert "importGasPrice should correctly parse values" run importGasPrice $_json
 assert "ETH_GAS_SOURCE should have value: node" match "node" <<<$ETH_GAS_SOURCE
 assert "ETH_GAS_MULTIPLIER should have value: 1" match "1" <<<$ETH_GAS_MULTIPLIER
 assert "ETH_GAS_PRIORITY should have value: fast" match "fast" <<<$ETH_GAS_PRIORITY
+
+# Testing changed values
+_json="{\"gasPrice\":{\"source\":\"gasnow\",\"multiplier\":2,\"priority\":\"slow\"}}"
+assert "importGasPrice should correctly parse new values" run importGasPrice $_json
+
+assert "ETH_GAS_SOURCE should have value: gasnow" match "gasnow" <<<$ETH_GAS_SOURCE
+assert "ETH_GAS_MULTIPLIER should have value: 2" match "2" <<<$ETH_GAS_MULTIPLIER
+assert "ETH_GAS_PRIORITY should have value: slow" match "slow" <<<$ETH_GAS_PRIORITY
