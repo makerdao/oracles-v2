@@ -124,7 +124,7 @@ Available values are:
 
 `priority` - Gas Price priority for `gasnow` or `ethgasstation` sources. **Default value: fast**
 Due to this API's return set of different prices based on required tx speed we also give you an ability to choose.
-**NOTE:** this option does not have any effect if `source` is set to `node` !
+**NOTE:** This option does not have any effect if `source` is set to `node`!
 
 Available values:
 
