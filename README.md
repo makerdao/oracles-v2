@@ -144,7 +144,7 @@ Available values:
     "password": "",
     "network": "kovan",
     "gasPrice": {
-			"source": "node",
+      "source": "node",
       "multiplier": 1,
       "priority": "fast"
 		}
