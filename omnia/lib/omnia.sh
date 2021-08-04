@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 if [[ -n $OMNIA_DEBUG ]]; then
 	env
 	set -x
