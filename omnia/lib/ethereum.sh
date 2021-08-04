@@ -62,7 +62,7 @@ pushOraclePrice () {
 		_status="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
 		_gasUsed="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
 		
-		echo "TX: $tx"
+		verbose "TX: $tx"
 		verbose "SUCCESS: $_status"
 		verbose "GAS USED: $_gasUsed"
 		verbose "GAS PRICE: $_gasPrice"
