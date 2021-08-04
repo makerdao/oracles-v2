@@ -81,7 +81,7 @@ importGasPrice () {
 	local _json="$1"
 
 	# Getting Gas price details
-	ETH_GAS_SOURCE="$(echo "$_json" | jq -S '.ethereum.gasPrice.source' // node)"
+	ETH_GAS_SOURCE="$(echo "$_json" | jq -S '.ethereum.gasPrice.source // "node"')"
 	export ETH_GAS_SOURCE
 
 	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq -r '.ethereum.gasPrice.multiplier' // 1)"
