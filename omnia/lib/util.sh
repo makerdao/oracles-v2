@@ -1,4 +1,3 @@
-
 #get median of  a list of numbers
 getMedian () {
 	local _numbers=( "$@" )
