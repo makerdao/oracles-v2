@@ -88,7 +88,7 @@ importGasPrice () {
 	[[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
 	export ETH_GAS_MULTIPLIER
 	
-	ETH_GAS_PRIORITY="$(echo "$_json" | jq -r '.ethereum.gasPrice.priority' // fast)"
+	ETH_GAS_PRIORITY="$(echo "$_json" | jq -r '.ethereum.gasPrice.priority // "fast"')"
 	[[ $ETH_GAS_PRIORITY =~ ^(slow|standard|fast|fastest)$ ]] || errors+=("Error - Ethereum Gas price priority is invalid.\nValid options are: slow, standard, fast, fastest.")
 	export ETH_GAS_PRIORITY
 
