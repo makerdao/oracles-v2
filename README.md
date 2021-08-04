@@ -120,7 +120,7 @@ Available values are:
  - `gasnow` - Uses [GasNow](https://www.gasnow.org) API for fetching gas price.
  - `ethgasstation` - Uses [ethgasstation](https://ethgasstation.info) API for fetching Gas Price.
 
-`multiplier` - A number gas rpice will be multiplied after fetching. **Default value: 1**
+`multiplier` - A number the gas pice will be multiplied by after fetching. **Default value: 1**
 
 `priority` - Gas Price priority for `gasnow` or `ethgasstation` sources. **Default value: fast**
 Due to this API's return set of different prices based on required tx speed we also give you an ability to choose.
