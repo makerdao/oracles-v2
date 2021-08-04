@@ -29,5 +29,5 @@ ETH_GAS_PRIORITY=""
 assert "importGasPrice should correctly parse values" run importGasPrice $_validConfig
 
 assert "ETH_GAS_SOURCE should have value: node" match "node" <<<$ETH_GAS_SOURCE
-assert "ETH_GAS_MULTIPLIER should have value: node" match "1" <<<$ETH_GAS_MULTIPLIER
-assert "ETH_GAS_PRIORITY should have value: node" match "fast" <<<$ETH_GAS_PRIORITY
+assert "ETH_GAS_MULTIPLIER should have value: 1" match "1" <<<$ETH_GAS_MULTIPLIER
+assert "ETH_GAS_PRIORITY should have value: fast" match "fast" <<<$ETH_GAS_PRIORITY
