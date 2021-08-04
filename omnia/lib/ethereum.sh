@@ -63,9 +63,9 @@ pushOraclePrice () {
 		_gasUsed="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
 		
 		echo "TX: $tx"
-		echo SUCCESS: "$_status"
-		echo GAS USED: "$_gasUsed"
-		echo GAS PRICE: "$_gasPrice"
+		verbose "SUCCESS: $_status"
+		verbose "GAS USED: $_gasUsed"
+		verbose "GAS PRICE: $_gasPrice"
 		
 		# Monitoring node helper JSON
 		echo "{\"tx\":\"$tx\",\"gasPrice\":$_gasPrice,\"gasUsed\":$_gasUsed,\"status\":\"$_status\"}"
