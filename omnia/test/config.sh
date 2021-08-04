@@ -15,10 +15,10 @@ ETH_GAS_PRIORITY=""
 
 _validConfig="$(jq -c . "$test_path/configs/oracle-relayer-test.conf")"
 
-_json="{\"ethereum\":{\"gasPrice\":{\"source\":\"node\",\"multiplier\":\"test\"}}}"
+_json="{\"gasPrice\":{\"source\":\"node\",\"multiplier\":\"test\"}}"
 assert "importGasPrice should fail in case of invalid multiplier" fail importGasPrice $_json
 
-_json="{\"ethereum\":{\"gasPrice\":{\"source\":\"node\",\"multiplier\":1,\"priority\":\"invalid\"}}}"
+_json="{\"gasPrice\":{\"source\":\"node\",\"multiplier\":1,\"priority\":\"invalid\"}}"
 assert "importGasPrice should fail in case of invalid priority" fail importGasPrice $_json
 
 # Happy path
@@ -26,7 +26,8 @@ ETH_GAS_SOURCE=""
 ETH_GAS_MULTIPLIER=""
 ETH_GAS_PRIORITY=""
 
-assert "importGasPrice should correctly parse values" run importGasPrice $_validConfig
+_json=$(jq -S '.ethereum' < "$_validConfig")
+assert "importGasPrice should correctly parse values" run importGasPrice $_json
 
 assert "ETH_GAS_SOURCE should have value: node" match "node" <<<$ETH_GAS_SOURCE
 assert "ETH_GAS_MULTIPLIER should have value: 1" match "1" <<<$ETH_GAS_MULTIPLIER
