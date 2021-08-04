@@ -23,6 +23,8 @@ getGasPrice () {
     return 1
   fi
 
+	verbose "Sourced gas price" "source=$ETH_GAS_SOURCE" "value#=$_price"
+
   # Making multiplication
   multiplyGasPrice $_price $ETH_GAS_MULTIPLIER
 }
@@ -70,4 +72,3 @@ getGasPriceFromEthGasStation () {
   local _price=$(curl -m 30 --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r --arg key $_key '.[$key] // 0')
   [[ $_price =~ ^[0-9\.]+$ ]] && multiplyGasPrice $_price 100000000 || echo 0
 }
-
