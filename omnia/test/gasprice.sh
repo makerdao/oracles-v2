@@ -13,23 +13,23 @@ getGasPriceFromNode () {
 }
 export -f getGasPriceFromNode
 
-assert "multiplyGasPrice should return multiplied values" match "2" < <(capture multiplyGasPrice 1 2)
-assert "multiplyGasPrice should return multiplied values" match "10" < <(capture multiplyGasPrice 5 2)
-assert "multiplyGasPrice should return multiplied values" match "11.0" < <(capture multiplyGasPrice 10 1.1)
+assert "multiplyGasPrice should return multiplied values" match "^2$" < <(capture multiplyGasPrice 1 2)
+assert "multiplyGasPrice should return multiplied values" match "^10$" < <(capture multiplyGasPrice 5 2)
+assert "multiplyGasPrice should return multiplied values" match "^11.0$" < <(capture multiplyGasPrice 10 1.1)
 
 ETH_GAS_SOURCE="node"
 ETH_GAS_MULTIPLIER="2"
-assert "getGasPrice should return node value multiplied by $ETH_GAS_MULTIPLIER" match "2" < <(capture getGasPrice)
+assert "getGasPrice should return node value multiplied by $ETH_GAS_MULTIPLIER" match "^2$" < <(capture getGasPrice)
 
 ETH_GAS_MULTIPLIER="1"
-assert "getGasPrice should return node value multiplied by $ETH_GAS_MULTIPLIER" match "1" < <(capture getGasPrice)
+assert "getGasPrice should return node value multiplied by $ETH_GAS_MULTIPLIER" match "^1$" < <(capture getGasPrice)
 
 ETH_GAS_MULTIPLIER=""
 assert "getGasPrice should fail in case of invalid multiplier" fail getGasPrice
 
 
 ETH_GAS_MULTIPLIER="1.1"
-assert "getGasPrice should return correct gas multiplied" match "1.1" < <(capture getGasPrice)
+assert "getGasPrice should return correct gas multiplied" match "^1.1$" < <(capture getGasPrice)
 
 # validate fallback
 ETH_GAS_SOURCE="gasnow"
@@ -46,7 +46,7 @@ getGasPriceFromGasNow () {
 }
 export -f getGasPriceFromGasNow
 
-assert "getGasPrice falls back to getGasPriceFromNode in case of invalid price" match "1" < <(capture getGasPrice)
+assert "getGasPrice falls back to getGasPriceFromNode in case of invalid price" match "^1$" < <(capture getGasPrice)
 
 # mocking for invalid price
 getGasPriceFromGasNow () {
@@ -54,7 +54,7 @@ getGasPriceFromGasNow () {
 }
 export -f getGasPriceFromGasNow
 
-assert "getGasPrice falls back to getGasPriceFromNode in case of non numeric price" match "1" < <(capture getGasPrice)
+assert "getGasPrice falls back to getGasPriceFromNode in case of non numeric price" match "^1$" < <(capture getGasPrice)
 
 getGasPriceFromNode () { 
   echo "command not found: seth"
