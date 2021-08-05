@@ -7,6 +7,7 @@ fi
 
 # shellcheck source=./config.sh
 . ./config.sh
+. ./gasprice.sh
 . ./ethereum.sh
 . ./log.sh
 . ./scuttlebot.sh
@@ -46,6 +47,9 @@ initEnv () {
 	echo "ETHEREUM"
 	[[ $OMNIA_MODE == "RELAYER" || "$OMNIA_MODE" == "RELAY" ]] && echo "Network:                           $ETH_RPC_URL"
 	echo "Ethereum account:                  $ETH_FROM"
+	echo "  ETH_GAS_SOURCE     = $ETH_GAS_SOURCE"
+	echo "  ETH_GAS_MULTIPLIER = $ETH_GAS_MULTIPLIER"
+	[[ $ETH_GAS_SOURCE != "node" ]] && echo "  ETH_GAS_PRIORITY   = $ETH_GAS_PRIORITY"
 	echo ""
 	echo "SCUTTLEBOT"
 	echo "Feed address:                      $SCUTTLEBOT_FEED_ID"

@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 updateOracle () {
     for assetPair in "${assetPairs[@]}"; do
@@ -18,7 +17,7 @@ updateOracle () {
         pullLatestPricesOfAssetPair "$assetPair" "$_quorum"
 
         for entry in "${entries[@]}"; do
-            echo "entry: $(jq -c <<<"$entry")"
+            verbose "Price entry" "data=\"$(jq -c 'tojson' <<<"$entry")\""
         done
 
         [ "$(isQuorum "$assetPair" "${#entries[@]}")" == "false" ] && continue

@@ -15,6 +15,11 @@ in {
   };
 
   options = {
+    logFormat = lib.mkOption {
+      type = lib.types.str;
+      default = "text";
+    };
+
     verbose = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -169,6 +174,16 @@ in {
         Ethereum network
       '';
     };
+
+    gasPrice = lib.mkOption {
+      type = lib.types.attrs;
+      default = {
+        source = "node";
+        multiplier = 1;
+        priority = "fast";
+      };
+    };
+
   };
 
   ssbConfig = lib.mkOption {

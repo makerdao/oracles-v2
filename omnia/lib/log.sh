@@ -1,20 +1,91 @@
 #log console output with timestamp
-function log {
- 	echo "[$(date "+%D %T")] $1" >&2
+function log() {
+	_log "info" "$@" >&2
 }
 
 #log verbose console output with timestamp
-function verbose {
- 	[[ $OMNIA_VERBOSE == "true" ]] && echo "[$(date "+%D %T")] [V] $1" >&2
- 	return 0
+function verbose() {
+	if  [[ $OMNIA_VERBOSE == "true" ]]; then
+		_log "verbose" "$@" >&2
+	fi
 }
 
 #log error console output with timestamp
-function error {
-	echo "[$(date "+%D %T")] [E] $1" >&2
+function error() {
+	_log "error" "$@" >&2
+}
+
+function warning() {
+	_log "warning" "$@" >&2
 }
 
 #log debug information after error
-function debug {
-	echo "[$(date "+%D %T")] [D] $1" >&2
+function debug() {
+	if  [[ -n $OMNIA_DEBUG ]] && [[ $OMNIA_DEBUG != "false" ]] && [[ $OMNIA_DEBUG != "0" ]]; then
+		_log  "debug" "$@" >&2
+	fi
+}
+
+# _log LEVEL MESSAGE [KEY=VAL [KEY=VAL]...]
+function _log() {
+	local _level="${1,,}"
+	if [[ -z $_level ]]; then
+		_log "error" "missing log level"
+		return 1
+	fi
+	if ! [[ $_level =~ ^(error|warning|info|verbose|debug)$ ]]; then
+		_log "error" "allowed log levels: error|warning|info|verbose|debug"
+		return 1
+	fi
+
+	local _msg="${2}"
+	if [[ -z $_msg ]]; then
+		_log "error" "missing log message"
+		return 1
+	fi
+
+	shift 2
+
+	if [[ $OMNIA_LOG_FORMAT == "json" ]]; then
+		if [[ $# -eq 0 ]]; then
+			_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")"
+		else
+			_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")" "#=$(_jsonArgs "$@")"
+		fi
+		return 0
+	fi
+
+	_level="${_level:0:1}"
+	_level="${_level^^}"
+
+	if [[ $# -eq 0 ]]; then
+		echo "[$(date "+%D %T")] [$_level] $_msg"
+	else
+		echo "[$(date "+%D %T")] [$_level] $_msg" "$@"
+	fi
+}
+
+function _jsonArgs() {
+	local _args=""
+
+	local _key
+	local _value
+	for ARGUMENT in "$@"; do
+		_key="$(echo "$ARGUMENT" | cut -f1 -d=)"
+		_value="$(echo "$ARGUMENT" | cut -f2 -d=)"
+
+		if [[ -n "$_args" ]]; then
+			_args="${_args},"
+		fi
+
+		if [[ $_key == "#" ]]; then
+			_args="${_args}\"params\":${_value}"
+		elif [[ $_key =~ [a-z0-9]+#$ ]]; then
+			_args="${_args}\"${_key%#}\":${_value}"
+		else
+			_args="${_args}\"${_key}\":\"${_value}\""
+		fi
+	done
+
+	echo "{${_args}}"
 }

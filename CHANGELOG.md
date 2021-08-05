@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Support for configurable external gas price sources for relayers.
+### Changed
+- Logging to enable JSON format
+
+## [1.7.0] - 2021-07-28
+### Added
 - Introduce `--override-origin` option to enable for adding params to origins (e.g. API Key).
 - MATIC/USD
 ### Changed
@@ -19,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Introduced second transport method to allow for more resilient price updates.
 
-[Unreleased]: https://github.com/makerdao/oracles-v2/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/makerdao/oracles-v2/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/makerdao/oracles-v2/compare/v1.6.1...v1.7.0
 [1.6.1]: https://github.com/makerdao/oracles-v2/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/makerdao/oracles-v2/releases/tag/v1.6.0

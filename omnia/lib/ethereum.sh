@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 pullOracleTime () {
 	local _assetPair="$1"
 	local _address
@@ -44,20 +42,26 @@ pullOraclePrice () {
 pushOraclePrice () {
 		local _assetPair="$1"
 		local _oracleContract
-		#TODO - use custom gas pricing strategy
+		
+		# Using custom gas pricing strategy
+		local _gasPrice=$(getGasPrice)
+
 		_oracleContract=$(getOracleContract "$_assetPair")
 		if ! [[ "$_oracleContract" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]]; then
 		  error "Error - Invalid Oracle contract"
 		  return 1
 		fi
 		log "Sending tx..."
-		tx=$(seth --rpc-url "$ETH_RPC_URL" send --async "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
+		tx=$(seth --rpc-url "$ETH_RPC_URL" --gas-price "$_gasPrice" send --async "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
 				"[$(join "${allPrices[@]}")]" \
 				"[$(join "${allTimes[@]}")]" \
 				"[$(join "${allV[@]}")]" \
 				"[$(join "${allR[@]}")]" \
 				"[$(join "${allS[@]}")]")
-		echo "TX: $tx"
-		echo SUCCESS: "$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
-		echo GAS USED: "$(timeout -s9 10 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
+		
+		_status="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" status)"
+		_gasUsed="$(timeout -s9 60 seth --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
+		
+		# Monitoring node helper JSON
+		verbose "Transaction receipt" "tx=$tx" "gasPrice=$_gasPrice" "gasUsed=$_gasUsed" "status=$_status"
 }

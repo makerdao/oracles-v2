@@ -108,6 +108,55 @@ install-omnia help
 The installed Scuttlebot config can be found in `~/.ssb.config`, more details
 about the [Scuttlebot config](https://github.com/ssbc/ssb-config#configuration).
 
+## Relayer Gas Price configuration
+
+Adding a new configuration parameter to `ethereum` relayer config section: `gasPrice`.
+It consist of 3 available options: 
+
+`source` - source of gas price. **Default value: node**
+Available values are: 
+
+ - `node` - Getting Gas Price from node (using `seth gas-price`).
+ - `gasnow` - Uses [GasNow](https://www.gasnow.org) API for fetching gas price.
+ - `ethgasstation` - Uses [ethgasstation](https://ethgasstation.info) API for fetching Gas Price.
+
+`multiplier` - A number the gas pice will be multiplied by after fetching. **Default value: 1**
+
+`priority` - Gas Price priority for `gasnow` or `ethgasstation` sources. **Default value: fast**
+Due to this API's return set of different prices based on required tx speed we also give you an ability to choose.
+**NOTE:** This option does not have any effect if `source` is set to `node`!
+
+Available values:
+
+ - `slow`
+ - `standard`
+ - `fast`
+ - `fastest`
+
+**Example configuration:**
+
+```json
+{
+  "mode": "relayer",
+  "ethereum": {
+    "from": "0x",
+    "keystore": "",
+    "password": "",
+    "network": "kovan",
+    "gasPrice": {
+      "source": "node",
+      "multiplier": 1,
+      "priority": "fast"
+		}
+  },
+  "transports":["transport-ssb"],
+  "feeds": [
+    "0x01"
+  ],
+  ...
+}
+```
+
 ## Development
 
 To build from inside this repo, clone and run:
