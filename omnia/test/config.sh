@@ -16,30 +16,20 @@ ETH_GAS_SOURCE=""
 ETH_GAS_MULTIPLIER=""
 ETH_GAS_PRIORITY=""
 
-# Helper function
-exact () {
-  [[ $1 == $2 ]] || { cat <<EOF
-got: $1
-expect: $2
-EOF
-return 1
-  }
-}
-export -f exact
+plan 8
 
 # Testing default values
 _json=$(jq -c '.ethereum' <<< "$_validConfig")
 assert "importGasPrice should correctly parse values" run importGasPrice $_json
 
-# Testing exact values, no quotes/anything else
-assert "ETH_GAS_SOURCE should be exact value: node" run exact $ETH_GAS_SOURCE 'node'
-assert "ETH_GAS_MULTIPLIER should be exact value: 1" run exact $ETH_GAS_MULTIPLIER '1'
-assert "ETH_GAS_PRIORITY should be exact value: fast" run exact $ETH_GAS_PRIORITY 'fast'
+assert "ETH_GAS_SOURCE should have value: gasnow" match "^node" <<<$ETH_GAS_SOURCE
+assert "ETH_GAS_MULTIPLIER should have value: 0.5" match "^1$" <<<$ETH_GAS_MULTIPLIER
+assert "ETH_GAS_PRIORITY should have value: slow" match "^fast" <<<$ETH_GAS_PRIORITY
 
 # Testing changed values
 _json="{\"gasPrice\":{\"source\":\"gasnow\",\"multiplier\":0.5,\"priority\":\"slow\"}}"
 assert "importGasPrice should correctly parse new values" run importGasPrice $_json
 
-assert "ETH_GAS_SOURCE should be exact value: gasnow" run exact $ETH_GAS_SOURCE 'gasnow'
-assert "ETH_GAS_MULTIPLIER should be exact value: 0.5" run exact $ETH_GAS_MULTIPLIER '0.5'
-assert "ETH_GAS_PRIORITY should be exact value: slow" run exact $ETH_GAS_PRIORITY 'slow'
+assert "ETH_GAS_SOURCE should have value: gasnow" match "^gasnow$" <<<$ETH_GAS_SOURCE
+assert "ETH_GAS_MULTIPLIER should have value: 0.5" match "^0.5$" <<<$ETH_GAS_MULTIPLIER
+assert "ETH_GAS_PRIORITY should have value: slow" match "^slow$" <<<$ETH_GAS_PRIORITY
