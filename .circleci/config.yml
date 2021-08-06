@@ -138,7 +138,7 @@ jobs:
       - run-nix:
           name_: End 2 end regression test
           command: |
-            nix-shell tests --run testE2E
+            nix-shell tests --run recordE2E
       - store_test_results:
           path: ./tests/test-results
       - store_artifacts:
