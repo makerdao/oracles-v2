@@ -4,21 +4,17 @@ let
   inherit (pkgs) fetchgit;
   inherit (pkgs.lib.strings) removePrefix;
 
-  getName = x:
-    let parse = drv: (builtins.parseDrvName drv).name;
-    in if isString x then parse x else x.pname or (parse x.name);
+  getName = x: let parse = drv: (builtins.parseDrvName drv).name; in if isString x then parse x else x.pname or (parse x.name);
 
   sources = import ./sources.nix;
   ssb-patches = ../ssb-server;
-
-  nixmaster = import sources.nixmaster { };
 in rec {
   inherit pkgs;
 
-  makerpkgs = import sources.makerpkgs { dapptoolsOverrides.default = ./dapptools.nix; };
+  makerpkgs = import sources.makerpkgs { };
 
   nodepkgs = let
-    nodepkgs' = import ./nodepkgs.nix { inherit pkgs; };
+    nodepkgs' = import ./nodepkgs.nix { pkgs = pkgs // { stdenv = pkgs.stdenv // { lib = pkgs.lib; }; }; };
     shortNames = listToAttrs (map (x: {
       name = removePrefix "node_" (getName x.name);
       value = x;
@@ -33,11 +29,11 @@ in rec {
     '';
   };
 
+  oracle-suite = pkgs.callPackage sources.oracle-suite { };
+
   setzer-mcd = makerpkgs.callPackage sources.setzer-mcd { };
 
   stark-cli = makerpkgs.callPackage ../starkware { };
-
-  oracle-suite = import sources.oracle-suite { buildGoModule = nixmaster.buildGo116Module; };
 
   omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
 

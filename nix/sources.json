@@ -29,10 +29,10 @@
         "homepage": "",
         "owner": "makerdao",
         "repo": "makerpkgs",
-        "rev": "0cdc0e74ca1b4c2548d4eb36784ded03b416e8a6",
-        "sha256": "0f58fcn12vmr0l9c151fpymx7y489943gmb5sq5xwn3m5wk33hqs",
+        "rev": "76151418a2d9ffcfa55dec8acda5bde10f504224",
+        "sha256": "0vknhf3n54v6rgvq23rhi3b3lraczn9yzd7cw8i1hdxkb028f34r",
         "type": "tarball",
-        "url": "https://github.com/makerdao/makerpkgs/archive/0cdc0e74ca1b4c2548d4eb36784ded03b416e8a6.tar.gz",
+        "url": "https://github.com/makerdao/makerpkgs/archive/76151418a2d9ffcfa55dec8acda5bde10f504224.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "niv": {
@@ -47,28 +47,16 @@
         "url": "https://github.com/nmattia/niv/archive/9d35b9e4837ab88517210b1701127612c260eccf.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "nixmaster": {
-        "branch": "master",
-        "description": "Nix Packages collection",
-        "homepage": "",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "50434b9fbf098cd470b3ce2577607146a9177b29",
-        "sha256": "1fcjmkn0n8smwxyidlq9jbzyf7vsjzpngsxw5z321cq1s5fxmi38",
-        "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/50434b9fbf098cd470b3ce2577607146a9177b29.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "nixpkgs": {
         "branch": "nixpkgs-unstable",
         "description": "Nix Packages collection",
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "89281dd1dfed6839610f0ccad0c0e493606168fe",
-        "sha256": "14jwgdqbhxf9581z9afzjzj0r0maw3m7227gn5bpk4fn8057vs5s",
+        "rev": "5f746317f10f7206f1dbb8dfcfc2257b04507eee",
+        "sha256": "1wx5g7a5bxa01pz7c5fdp5xk1gsj7dv6xwm1a17g6a8s2a2c05x3",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/89281dd1dfed6839610f0ccad0c0e493606168fe.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/5f746317f10f7206f1dbb8dfcfc2257b04507eee.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs-dapptools": {
