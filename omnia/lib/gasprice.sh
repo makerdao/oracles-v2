@@ -37,7 +37,7 @@ multiplyGasPrice()  {
 
 # Using node gas price
 getGasPriceFromNode()  {
-	seth  gas-price
+	ethereum  gas-price
 }
 
 # Using gasnow.org API for fetching gas price
