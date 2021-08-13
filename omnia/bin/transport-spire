@@ -5,7 +5,7 @@ if [[ -n $OMNIA_DEBUG ]]; then set -x; fi
 _command="$1"
 case "$_command" in
 	publish)
-		_val=$(seth --to-wei "$(jq -r '.price' <<<"$2")" eth)
+		_val=$(ethereum --to-wei "$(jq -r '.price' <<<"$2")" eth)
 		_msg=$(jq --arg val "$_val" -c '{
 			price: {
 				wat: .type,
@@ -26,8 +26,8 @@ case "$_command" in
 		_assetPair="$3"
 		_feedId="$2"
 		_msg=$(spire pull -c "$SPIRE_CONFIG" price "$_assetPair" "$_feedId") || exit $?
-		_priceHex=$(seth --to-uint256 "$(jq -r '.price.val' <<<"$_msg")" | sed s/^0x//)
-		_timeHex=$(seth --to-uint256 "$(jq -r '.price.age' <<<"$_msg")" | sed s/^0x//)
+		_priceHex=$(ethereum --to-uint256 "$(jq -r '.price.val' <<<"$_msg")" | sed s/^0x//)
+		_timeHex=$(ethereum --to-uint256 "$(jq -r '.price.age' <<<"$_msg")" | sed s/^0x//)
 		jq -c --arg ph "$_priceHex" --arg th "$_timeHex" '{
 			type: .price.wat,
 			price: ((.price.val | tonumber) / 1e18),

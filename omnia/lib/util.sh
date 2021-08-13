@@ -36,20 +36,20 @@ keccak256Hash () {
 		_inputs+="$arg"
 	done
 	verbose "inputs to hash function = $_inputs"
-	seth keccak "$_inputs"
+	ethereum keccak "$_inputs"
 }
 
 #convert price to hex
 price2Hex () {
 	local _price="$1"
 	#convert price to 32 byte hex
-	seth --to-uint256 "$(seth --to-wei "$_price" eth)" | sed s/0x//
+	ethereum --to-uint256 "$(ethereum --to-wei "$_price" eth)" | sed s/0x//
 }
 
 #converts timestamp to 32 byte hex
 time2Hex () {
 	local _time="$1"
-	seth --to-uint256 "$_time" | sed s/0x//
+	ethereum --to-uint256 "$_time" | sed s/0x//
 }
 
 getAssetInfo () {

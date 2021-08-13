@@ -57,8 +57,8 @@ export -f getGasPriceFromGasNow
 assert "getGasPrice falls back to getGasPriceFromNode in case of non numeric price" match "^1$" < <(capture getGasPrice)
 
 getGasPriceFromNode () { 
-  echo "command not found: seth"
+  echo "command not found: ethereum"
   return 127 
 }
 export -f getGasPriceFromNode
-assert "getGasPrice fails in case of issues with seth" fail getGasPrice
+assert "getGasPrice fails in case of issues with ethereum" fail getGasPrice

@@ -22,7 +22,7 @@ function warning() {
 #log debug information after error
 function debug() {
 	if  [[ -n $OMNIA_DEBUG ]] && [[ $OMNIA_DEBUG != "false" ]] && [[ $OMNIA_DEBUG != "0" ]]; then
-		_log  "debug" "$@" >&2
+		_log "debug" "$@" >&2
 	fi
 }
 
@@ -38,6 +38,12 @@ function _log() {
 		return 1
 	fi
 
+	local _argType
+	if [[ "${2,,}" == "--list" ]]; then
+		_argType="list"
+		shift
+	fi
+
 	local _msg="${2}"
 	if [[ -z $_msg ]]; then
 		_log "error" "missing log message"
@@ -46,23 +52,30 @@ function _log() {
 
 	shift 2
 
+	local _logEntry
+
 	if [[ $OMNIA_LOG_FORMAT == "json" ]]; then
 		if [[ $# -eq 0 ]]; then
-			_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")"
+			_logEntry="$(_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")")"
 		else
-			_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")" "#=$(_jsonArgs "$@")"
+			if [[ $_argType == "list" ]]; then
+				_logEntry="$(_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")" "#=$(_jsonList "$@")")"
+			else
+				_logEntry="$(_jsonArgs "level=$_level" "msg=$_msg" "time#=$(date "+%s")" "#=$(_jsonArgs "$@")")"
+			fi
 		fi
-		return 0
-	fi
-
-	_level="${_level:0:1}"
-	_level="${_level^^}"
-
-	if [[ $# -eq 0 ]]; then
-		echo "[$(date "+%D %T")] [$_level] $_msg"
 	else
-		echo "[$(date "+%D %T")] [$_level] $_msg" "$@"
+		_level="${_level:0:1}"
+		_level="${_level^^}"
+
+		if [[ $# -eq 0 ]]; then
+			_logEntry="[$(date "+%D %T")] [$_level] $_msg"
+		else
+			_logEntry="[$(date "+%D %T")] [$_level] $_msg $*"
+		fi
 	fi
+
+	echo "$_logEntry"
 }
 
 function _jsonArgs() {
@@ -72,7 +85,7 @@ function _jsonArgs() {
 	local _value
 	for ARGUMENT in "$@"; do
 		_key="$(echo "$ARGUMENT" | cut -f1 -d=)"
-		_value="$(echo "$ARGUMENT" | cut -f2 -d=)"
+		_value="$(echo "$ARGUMENT" | cut -f2- -d=)"
 
 		if [[ -n "$_args" ]]; then
 			_args="${_args},"
@@ -87,5 +100,19 @@ function _jsonArgs() {
 		fi
 	done
 
-	echo "{${_args}}"
+	echo -n "{${_args}}"
+}
+
+function _jsonList() {
+	local _args=""
+	local arg
+
+	for arg in "$@"; do
+		if [[ -n "$_args" ]]; then
+			_args="${_args},"
+		fi
+		_args="${_args}\"${arg}\""
+	done
+
+	echo -n "[${_args}]"
 }
