@@ -1,14 +1,14 @@
 {
     "dapptools": {
-        "branch": "master",
+        "branch": "londonseth",
         "description": "Dapp, Seth, Hevm, and more",
         "homepage": "https://dapp.tools",
         "owner": "dapphub",
         "repo": "dapptools",
-        "rev": "78508c6a8db2d6d3e8e09437dbe122bb5e6b2e7e",
-        "sha256": "18b631l9lhn5643anqdpkmaiqryhxl6krjlhgxhl2isyvjrywln8",
+        "rev": "8aac065b2e6ef4b23f4619e0d88beff5973ed1a6",
+        "sha256": "118d3dx5mh0phyisj0kysgkj7by3jvjlggrzp35m9dli3x6i0k3d",
         "type": "tarball",
-        "url": "https://github.com/dapphub/dapptools/archive/78508c6a8db2d6d3e8e09437dbe122bb5e6b2e7e.tar.gz",
+        "url": "https://github.com/dapphub/dapptools/archive/8aac065b2e6ef4b23f4619e0d88beff5973ed1a6.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mach-nix": {

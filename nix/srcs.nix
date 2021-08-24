@@ -8,6 +8,8 @@ let
 
   sources = import ./sources.nix;
   ssb-patches = ../ssb-server;
+  dapptools = import sources.dapptools { };
+  seth = dapptools.seth;
 in rec {
   inherit pkgs;
 
@@ -35,7 +37,7 @@ in rec {
 
   stark-cli = makerpkgs.callPackage ../starkware { };
 
-  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
+  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite seth; };
 
   install-omnia = makerpkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
 }

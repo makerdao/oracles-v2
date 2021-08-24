@@ -84,10 +84,14 @@ importGasPrice () {
 	ETH_GAS_SOURCE="$(echo "$_json" | jq -r '.gasPrice.source // "node"')"
 	export ETH_GAS_SOURCE
 
-	ETH_GAS_MULTIPLIER="$(echo "$_json" | jq '.gasPrice.multiplier // 1')"
-	[[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
-	export ETH_GAS_MULTIPLIER
-	
+	ETH_MAXPRICE_MULTIPLIER="$(echo "$_json" | jq '.gasPrice.maxPriceMultiplier // 1')"
+	[[ $ETH_MAXPRICE_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
+	export ETH_MAXPRICE_MULTIPLIER
+
+  ETH_TIP_MULTIPLIER="$(echo "$_json" | jq '.gasPrice.tipMultiplier // 1')"
+  [[ $ETH_TIP_MULTIPLIER =~ ^[0-9\.]+$ ]] || errors+=("Error - Ethereum Gas price multiplier is invalid, should be a number.")
+  export ETH_TIP_MULTIPLIER
+
 	ETH_GAS_PRIORITY="$(echo "$_json" | jq -r '.gasPrice.priority // "fast"')"
 	[[ $ETH_GAS_PRIORITY =~ ^(slow|standard|fast|fastest)$ ]] || errors+=("Error - Ethereum Gas price priority is invalid.\nValid options are: slow, standard, fast, fastest.")
 	export ETH_GAS_PRIORITY
@@ -139,10 +143,10 @@ importStarkwareEnv() {
 	local _starkdata
 	local _enthropy
 	local _seed
-	
+
 	STARK_CLI="${STARK_CLI:-stark_cli.py}"
 	export STARK_CLI
-	
+
 	_starkdata="537461726b4b657944657269766174696f6e" #StarkKeyDerivation
 	_enthropy=$(signMessage "$_starkdata")
 	_seed=$(keccak256Hash "$_enthropy" | cut -c3-)
@@ -185,7 +189,7 @@ importAssetPairsFeed () {
 	for assetPair in "${!assetInfo[@]}"; do
 		_msgExpiration=$(getMsgExpiration "$assetPair")
 		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgExpiration field, must be positive integer.")
-		
+
 		_msgSpread=$(getMsgSpread "$assetPair")
 		[[ "$_msgSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgSpread field, must be positive integer or float.")
 	done
@@ -208,12 +212,12 @@ importAssetPairsRelayer () {
 	for assetPair in "${!assetInfo[@]}"; do
 		_msgExpiration=$(getMsgExpiration "$assetPair")
 		[[ "$_msgExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing msgExpiration field, must be positive integer.")
-		
+
 		_oracle=$(getOracleContract "$assetPair")
 		[[ "$_oracle" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracle field, must be ethereum address prefixed with 0x.")
-		
+
 		_oracleExpiration=$(getOracleExpiration "$assetPair")
-		[[ "$_oracleExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracleExpiration field, must be positive integer") 
+		[[ "$_oracleExpiration" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracleExpiration field, must be positive integer")
 
 		_oracleSpread=$(getOracleSpread "$assetPair")
 		[[ "$_oracleSpread" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9][0-9]*)$ ]] || errors+=("Error - Asset Pair param $assetPair has invalid or missing oracleSpread field, must be positive integer or float")
@@ -270,7 +274,7 @@ importOptionsEnv () {
 		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
 		export SETZER_MIN_MEDIAN
 	fi
-	
+
 	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
 }
 

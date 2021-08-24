@@ -5,7 +5,8 @@ in { pkgs ? srcs.pkgs, makerpkgs ? srcs.makerpkgs, nodepkgs ? srcs.nodepkgs }@ar
 let
   oracles = import ./.. args;
   median = import ./lib/median args;
-
+  dapptools = import srcs.dapptools;
+  seth = dapptools.seth;
 in pkgs.mkShell rec {
   name = "oracle-test-shell";
   buildInputs = with pkgs;
