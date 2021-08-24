@@ -1,5 +1,8 @@
-# Calculate gas price
-# Example: `getGasPrice`
+# Returns the estimated gas price and tip value as two numbers separated
+# by a space. It requires three environmental variables to work:
+# ETH_MAXPRICE_MULTIPLIER - float number
+# ETH_TIP_MULTIPLIER - float number
+# ETH_GAS_SOURCE - node, gasnow or ethgasstation
 getGasPrice() {
 	[[ $ETH_MAXPRICE_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
 	[[ $ETH_TIP_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
@@ -34,8 +37,6 @@ getGasPrice() {
   echo "$_maxPrice $_tip"
 }
 
-# Using node gas price
-# Example: `getGasPriceFromNode`
 getGasPriceFromNode() {
   local _tip
   _tip=$(ethereum rpc eth_maxPriorityFeePerGas)
@@ -54,8 +55,6 @@ getGasPriceFromNode() {
   echo "$_maxPrice $_tip"
 }
 
-# Using gasnow.org API for fetching gas price
-# Example: `getGasPriceFromGasNow`
 getGasPriceFromGasNow() {
 	local _key
 	_key=$( case $ETH_GAS_PRIORITY in
@@ -72,11 +71,6 @@ getGasPriceFromGasNow() {
 	echo "$_price $_price"
 }
 
-# Takes gas amount from EthGasStation API and multiplies it to 100000000 (converting to wei)
-# API return gas price in x10 Gwei(divite by 10 to convert it to gwei)
-# Will return 0 if API response will be corrupted
-# Or exit code `1` in case of it wouldn't be able to make request
-# Example: `getGasPriceFromEthGasStation`
 getGasPriceFromEthGasStation() {
 	local _key
 	_key=$( case $ETH_GAS_PRIORITY in
