@@ -17,7 +17,7 @@ ETH_MAXPRICE_MULTIPLIER=""
 ETH_TIP_MULTIPLIER=""
 ETH_GAS_PRIORITY=""
 
-plan 8
+plan 10
 
 # Testing default values
 _json=$(jq -c '.ethereum' <<< "$_validConfig")
