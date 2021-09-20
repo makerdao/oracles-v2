@@ -1,78 +1,88 @@
-# Calculate gas price
-getGasPrice()  {
-	# check if multiplier set
-	[[ $ETH_GAS_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
+# Returns the estimated gas price and tip value as two numbers separated
+# by a space. It requires three environmental variables to work:
+# ETH_MAXPRICE_MULTIPLIER - float number
+# ETH_TIP_MULTIPLIER - float number
+# ETH_GAS_SOURCE - node, gasnow or ethgasstation
+getGasPrice() {
+	[[ $ETH_MAXPRICE_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
+	[[ $ETH_TIP_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
 
-	local  _price
+	# Getting price from a source
+	local _fees
+	case $ETH_GAS_SOURCE in
+		node) _fees=($(getGasPriceFromNode)) ;;
+		gasnow) _fees=($(getGasPriceFromGasNow)) ;;
+		ethgasstation) _fees=($(getGasPriceFromEthGasStation)) ;;
+		*) _fees=($(getGasPriceFromNode)) ;;
+	esac
 
-	# Getting price from source
-	_price=$( case $ETH_GAS_SOURCE in
-		node)   getGasPriceFromNode ;;
-		gasnow)   getGasPriceFromGasNow ;;
-		ethgasstation)   getGasPriceFromEthGasStation ;;
-		*)   getGasPriceFromNode ;;
-	esac)
+  # Fallback to node price in case of 0 or invalid price
+  if [[ ! ${_fees[0]} =~ ^[0-9\.]+$ || ${_fees[0]} -eq 0 ]]; then
+    _fees=($(getGasPriceFromNode))
+  fi
 
-	verbose "Sourced gas price" "source=$ETH_GAS_SOURCE" "value#=$_price"
+	verbose "Sourced gas price" "source=$ETH_GAS_SOURCE" "maxPrice#=${_fees[0]}" "tip#=${_fees[1]}"
 
-	# Fallback to node price in case of 0 or invalid price
-	[[ $_price =~ ^[0-9\.]+$  ]] || _price=$(getGasPriceFromNode)
-	[[ $_price -eq 0  ]] && _price=$(getGasPriceFromNode)
-
-	# handle issues with seth
-	if  [[ ! $_price =~ ^[0-9\.]+$ ]]; then
-		error   "Error - Invalid GAS price received: $_price"
-		return   1
+	# Handle issues with seth
+	if  [[ ! ${_fees[0]} =~ ^[0-9\.]+$ ]]; then
+		error "Error - Invalid GAS price received: ${_fees[0]}"
+		return 1
 	fi
 
-	# Making multiplication
-	multiplyGasPrice  $_price $ETH_GAS_MULTIPLIER
+	local _maxPrice
+	_maxPrice=$(echo "(${_fees[0]} * $ETH_MAXPRICE_MULTIPLIER) / 1" | bc)
+	local _tip
+  _tip=$(echo "(${_fees[1]} * $ETH_TIP_MULTIPLIER) / 1" | bc)
+
+  echo "$_maxPrice $_tip"
 }
 
-# Makes multiplication for given gas price.
-# Example: `multiplyGasPrice $GAS_TO_SPEND $MULTIPLIER`
-multiplyGasPrice()  {
-	echo  "$1 * $2" | bc
+getGasPriceFromNode() {
+  local _tip
+  _tip=$(ethereum rpc eth_maxPriorityFeePerGas)
+  if [[ ! $_tip =~ ^[0-9\.]+$ ]]; then
+    echo 0
+    return
+  fi
+
+  local _maxPrice
+  _maxPrice=$(ethereum rpc eth_gasPrice)
+  if [[ ! $_maxPrice =~ ^[0-9\.]+$ ]]; then
+    echo 0
+    return
+  fi
+
+  echo "$_maxPrice $_tip"
 }
 
-# Using node gas price
-getGasPriceFromNode()  {
-	ethereum  gas-price
-}
-
-# Using gasnow.org API for fetching gas price
-getGasPriceFromGasNow()  {
-	# converting gas price priority to local values
-	local  _key
+getGasPriceFromGasNow() {
+	local _key
 	_key=$( case $ETH_GAS_PRIORITY in
-		slow)   printf "slow" ;;
-		standard)   printf "standard" ;;
-		fast)   printf "fast" ;;
-		fastest)   printf "rapid" ;;
-		*)   printf "fast" ;;
+		slow) printf "slow" ;;
+		standard) printf "standard" ;;
+		fast) printf "fast" ;;
+		fastest) printf "rapid" ;;
+		*) printf "fast" ;;
 	esac)
 
-	local  _price
-	_price=$( curl -m 30 --silent --location https://www.gasnow.org/api/v3/gas/price | jq -r --arg key $_key '.data[$key] // 0')
-	[[ $_price =~ ^[0-9\.]+$  ]] && echo $_price || echo 0
+	local _price
+	_price=$(curl -m 30 --silent --location "https://www.gasnow.org/api/v3/gas/price" | jq -r --arg key "$_key" '.data[$key] // 0')
+
+	echo "$_price $_price"
 }
 
-# Takes gas amount from EthGasStation API and multiplies it to 100000000 (converting to wei)
-# API return gas price in x10 Gwei(divite by 10 to convert it to gwei)
-# Will return 0 if API response will be corrupted
-# Or exit code `1` in case of it wouldn't be able to make request
-getGasPriceFromEthGasStation()  {
-	# converting gas price priority to local values
-	local  _key
+getGasPriceFromEthGasStation() {
+	local _key
 	_key=$( case $ETH_GAS_PRIORITY in
-		slow)   printf "safeLow" ;;
-		standard)   printf "average" ;;
-		fast)   printf "fast" ;;
-		fastest)   printf "fastest" ;;
-		*)   printf "fast" ;;
+		slow) printf "safeLow" ;;
+		standard) printf "average" ;;
+		fast) printf "fast" ;;
+		fastest) printf "fastest" ;;
+		*) printf "fast" ;;
 	esac)
 
-	local  _price
-	_price=$( curl -m 30 --silent --location https://ethgasstation.info/json/ethgasAPI.json | jq -r --arg key $_key '.[$key] // 0')
-	[[ $_price =~ ^[0-9\.]+$  ]] && multiplyGasPrice $_price 100000000 || echo 0
+	local _price
+	_price=$(curl -m 30 --silent --location "https://ethgasstation.info/json/ethgasAPI.json" | jq -r --arg key "$_key" '.[$key] // 0')
+
+	echo $((_price * 100000000)) $((_price * 100000000))
 }

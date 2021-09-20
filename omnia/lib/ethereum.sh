@@ -44,7 +44,8 @@ pushOraclePrice () {
 		local _oracleContract
 		
 		# Using custom gas pricing strategy
-		local _gasPrice=$(getGasPrice)
+		local _fees
+		_fees=($(getGasPrice))
 
 		_oracleContract=$(getOracleContract "$_assetPair")
 		if ! [[ "$_oracleContract" =~ ^(0x){1}[0-9a-fA-F]{40}$ ]]; then
@@ -52,7 +53,7 @@ pushOraclePrice () {
 		  return 1
 		fi
 		log "Sending tx..."
-		tx=$(ethereum --rpc-url "$ETH_RPC_URL" --gas-price "$_gasPrice" send --async "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
+		tx=$(ethereum --rpc-url "$ETH_RPC_URL" --gas-price "${_fees[0]}" --prio-fee "${_fees[1]}" send --async "$_oracleContract" 'poke(uint256[] memory,uint256[] memory,uint8[] memory,bytes32[] memory,bytes32[] memory)' \
 				"[$(join "${allPrices[@]}")]" \
 				"[$(join "${allTimes[@]}")]" \
 				"[$(join "${allV[@]}")]" \
@@ -63,5 +64,5 @@ pushOraclePrice () {
 		_gasUsed="$(timeout -s9 60 ethereum --rpc-url "$ETH_RPC_URL" receipt "$tx" gasUsed)"
 		
 		# Monitoring node helper JSON
-		verbose "Transaction receipt" "tx=$tx" "gasPrice=$_gasPrice" "gasUsed=$_gasUsed" "status=$_status"
+		verbose "Transaction receipt" "tx=$tx" "maxGasPrice=${_fees[0]}" "prioFee=${_fees[1]}" "gasUsed=$_gasUsed" "status=$_status"
 }
