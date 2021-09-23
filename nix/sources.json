@@ -72,15 +72,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
-        "branch": "sc-304/add-curve-finance-steth-to-gofer",
+        "branch": "v0.3.0",
         "description": null,
         "homepage": null,
         "owner": "makerdao",
         "repo": "oracle-suite",
-        "rev": "0d547f8e4dc1dc14dc81b4378e53b5c9f3752905",
+        "rev": "c70f8172abf75a64a54a9e084093e63a0aa3fe5d",
         "sha256": "09zrl79aqj1vrpn46rr0gsbp2n4054wbq5v3d21mxnay23q6zivb",
         "type": "tarball",
-        "url": "https://github.com/makerdao/oracle-suite/archive/0d547f8e4dc1dc14dc81b4378e53b5c9f3752905.tar.gz",
+        "url": "https://github.com/makerdao/oracle-suite/archive/c70f8172abf75a64a54a9e084093e63a0aa3fe5d.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
