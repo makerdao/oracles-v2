@@ -84,15 +84,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
-        "branch": "master",
+        "branch": "stETH",
         "description": null,
         "homepage": "",
         "owner": "makerdao",
         "repo": "setzer-mcd",
-        "rev": "6d41613d5974cf0906806c806c727fa2062cab7b",
-        "sha256": "045yb66bjs4ijg39pvgx4sd9ryflfk75l4dlpd088xdv12dc2hlx",
+        "rev": "b58084cbc8a4a7c9c5325f9c77ae8d5f4c3fa872",
+        "sha256": "1bz8hkir2la87v27r6g68mm91ks0xcylgcc9pdw4ifs063d66h5a",
         "type": "tarball",
-        "url": "https://github.com/makerdao/setzer-mcd/archive/6d41613d5974cf0906806c806c727fa2062cab7b.tar.gz",
+        "url": "https://github.com/makerdao/setzer-mcd/archive/b58084cbc8a4a7c9c5325f9c77ae8d5f4c3fa872.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

@@ -42,13 +42,13 @@ importMode () {
 importSources () {
 	local _config="$1"
 	readarray -t OMNIA_FEED_SOURCES < <(jq -r '.sources[]' "$_config")
-	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
+	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("gofer" "setzer")
 }
 
 importTransports () {
 	local _config="$1"
 	readarray -t OMNIA_TRANSPORTS < <(jq -r '.transports[]' "$_config")
-	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("transport-ssb")
+	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("transport-spire" "transport-ssb")
 }
 
 importNetwork () {
