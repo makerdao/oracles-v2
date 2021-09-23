@@ -60,18 +60,19 @@
       "LINKUSD",
       "LRCUSD",
       "MANAUSD",
+      "MATICUSD",
       "PAXGUSD",
       "SNXUSD",
       "SOLUSD",
       "UNIUSD",
       "USDTUSD",
       "WNXMUSD",
+      "WSTETHUSD",
       "XRPUSD",
       "XTZUSD",
       "YFIUSD",
       "ZECUSD",
-      "ZRXUSD",
-      "MATICUSD"
+      "ZRXUSD"
     ]
   }
 }

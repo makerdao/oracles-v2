@@ -68,6 +68,8 @@ subst() {
 }
 
 copyOmniaConf() {
+	echo >&2 "OMNIA_CONFIG: START"
+
   local savedFrom
   local updatedConf
 
@@ -83,13 +85,20 @@ copyOmniaConf() {
   fi
 
   for i in "${!configUpdates[@]}"; do
-    updatedConf=$(jq "${configUpdates[$i]}" "$OMNIA_CONFIG")
-    sudo tee "$OMNIA_CONFIG" <<<"$updatedConf" >/dev/null
+    sudo tee "$OMNIA_CONFIG" <<<"$(jq "${configUpdates[$i]}" "$OMNIA_CONFIG")" >/dev/null
   done
+  for i in "${!configOverrides[@]}"; do
+    sudo tee "$OMNIA_CONFIG" <<<"$(jq "${configOverrides[$i]}" "$OMNIA_CONFIG")" >/dev/null
+  done
+
+	echo >&2 "OMNIA_CONFIG: DONE"
 }
 declare -a configUpdates
+declare -a configOverrides
 
 copySsbConf() {
+	echo >&2 "SSB_CONFIG: START"
+
   local savedFrom
   local updatedConf
   local confDir="$HOME/.ssb"
@@ -117,10 +126,13 @@ copySsbConf() {
     cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"
   fi
 
+	echo >&2 "SSB_CONFIG: DONE"
 }
 mapfile -t ssbConfigUpdates < <(grep -v "^ *#\|^ *$" "$SHARE_DIR/ssb-config-updates")
 
 copySpireConf() {
+	echo >&2 "SPIRE_CONFIG: START"
+
   if [[ ! -f "$SPIRE_CONFIG" ]]
   then
     sudo cp -v "$SHARE_DIR/spire.json" "$SPIRE_CONFIG" >&2
@@ -131,35 +143,69 @@ copySpireConf() {
 		fi
 
 		local _defaultConf
-		_defaultConf=$(jq '{feeds,spire:{pairs:.spire.pairs}}' "$SHARE_DIR/spire.json")
+		_defaultConf=$(jq -c '{feeds,spire:{pairs:.spire.pairs}}' "$SHARE_DIR/spire.json")
 		spireConfigUpdates+=( ". * ${_defaultConf}" )
   fi
 
   for i in "${!spireConfigUpdates[@]}"; do
-    sudo tee "$SPIRE_CONFIG" <<<"$(jq "${spireConfigUpdates[$i]}" "$SPIRE_CONFIG")" >/dev/null
+  	echo >&2 "${spireConfigUpdates[$i]}"
+    sudo tee "$SPIRE_CONFIG" <<<"$(jq -c "${spireConfigUpdates[$i]}" "$SPIRE_CONFIG")" >/dev/null
   done
+  for i in "${!spireConfigOverrides[@]}"; do
+  	echo >&2 "${spireConfigOverrides[$i]}"
+    sudo tee "$SPIRE_CONFIG" <<<"$(jq -c "${spireConfigOverrides[$i]}" "$SPIRE_CONFIG")" >/dev/null
+  done
+
+	echo >&2 "SPIRE_CONFIG: DONE"
 }
 declare -a spireConfigUpdates
+declare -a spireConfigOverrides
 
 copyGoferConf() {
+	echo >&2 "GOFER_CONFIG: START"
+
   if [[ ! -f "$GOFER_CONFIG" ]]; then
     sudo cp -v "$SHARE_DIR/gofer.json" "$GOFER_CONFIG" >&2
     sudo chmod u+w "$GOFER_CONFIG"
 	else
-		if [[ "$(jq -cr '.gofer' < "$GOFER_CONFIG")" == "null" ]]; then
-			goferConfigUpdates+=( "{gofer:.}" )
+		local _goferConfig
+		_goferConfig="$(jq -c '.' < "$GOFER_CONFIG")"
+
+		if [[ "$(jq -cr '.gofer' <<<"$_goferConfig")" == "null" ]]; then
+			echo >&2 "GOFER_CONFIG: A"
+			_goferConfig="$(jq -c '{gofer:.}' < "$GOFER_CONFIG")"
 		fi
 
 		local _defaultConf
-		_defaultConf="$(jq '{gofer:{priceModels:.gofer.priceModels}}' < "$SHARE_DIR/gofer.json")"
-		goferConfigUpdates+=( ". * ${_defaultConf}" )
+		_defaultConf="$(jq -c '{ethRpc:.gofer.ethRpc,origins:.gofer.origins,priceModels:.gofer.priceModels}|del(..|nulls)' < "$SHARE_DIR/gofer.json")"
+		goferConfigUpdates+=( ". * {gofer:${_defaultConf}}" )
+
+		local _apiKeys
+		_apiKeys="$(jq -c <<<"$_goferConfig" '.gofer.origins|to_entries|map({key,value:{params:{apiKey:.value.params.apiKey}}})[]|select(.value.params.apiKey!=null)|[.]|from_entries' | jq -sc add)"
+		if [[ "$_apiKeys" != "null" ]]; then
+			goferConfigUpdates+=( ". * {gofer:{origins:${_apiKeys}}}" )
+		fi
+
+		local _savedData
+		_savedData=$(jq -cr '{ethRpc:.gofer.ethRpc}|del(.. | nulls)' <<<"$_goferConfig")
+		if [[ "$_savedData" != "null" ]] && [[ "$_savedData" != "{}" ]]; then
+			goferConfigUpdates+=( ". * {gofer:$_savedData}" )
+		fi
   fi
 
   for i in "${!goferConfigUpdates[@]}"; do
+  	echo >&2 "${goferConfigUpdates[$i]}"
     sudo tee "$GOFER_CONFIG" <<<"$(jq "${goferConfigUpdates[$i]}" "$GOFER_CONFIG")" >/dev/null
   done
+  for i in "${!goferConfigOverrides[@]}"; do
+  	echo >&2 "${goferConfigOverrides[$i]}"
+    sudo tee "$GOFER_CONFIG" <<<"$(jq "${goferConfigOverrides[$i]}" "$GOFER_CONFIG")" >/dev/null
+  done
+
+	echo >&2 "GOFER_CONFIG: DONE"
 }
 declare -a goferConfigUpdates
+declare -a goferConfigOverrides
 
 installConfigs() {
   copyOmniaConf "$installType.conf"
@@ -174,7 +220,6 @@ installServices() {
   subst ssb-server "$SHARE_DIR"/ssb-server.service
   subst omnia "$SHARE_DIR"/omnia.service
 }
-
 
 case "$1" in
   feed)
@@ -197,41 +242,45 @@ shift
 while [[ -n "$1" ]]; do
   case "$1" in
     --override-origin)
-      goferConfigUpdates+=( ". * {\"gofer\":{\"origins\":{\"$2\":{\"type\":\"$2\",\"name\":\"$2\",\"params\":{\"$3\": \"$4\"}}}}}" )
+      goferConfigOverrides+=( ". * {gofer:{origins:{\"$2\":{type:\"$2\",name:\"$2\",params:{\"$3\": \"$4\"}}}}}" )
       shift;shift;shift
       ;;
+    --sourcing-eth-rpc)
+      goferConfigOverrides+=( ". * {gofer:{ethRpc:\"$2\"}}" )
+      shift
+      ;;
     --from)
-      configUpdates+=( ".ethereum.from = \"$2\"" )
-      spireConfigUpdates+=( ".ethereum.from = \"$2\"" )
-      spireConfigUpdates+=( ".feeds += [\"$2\"]" )
+      configOverrides+=( ".ethereum.from = \"$2\"" )
+      spireConfigOverrides+=( ".ethereum.from = \"$2\"" )
+      spireConfigOverrides+=( ".feeds += [\"$2\"]" )
       shift
       ;;
     --keystore)
-      configUpdates+=( ".ethereum.keystore = \"$2\"" )
-      spireConfigUpdates+=( ".ethereum.keystore = \"$2\"" )
+      configOverrides+=( ".ethereum.keystore = \"$2\"" )
+      spireConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
       shift
       ;;
     --password)
-      configUpdates+=( ".ethereum.password = \"$2\"" )
-      spireConfigUpdates+=( ".ethereum.password = \"$2\"" )
+      configOverrides+=( ".ethereum.password = \"$2\"" )
+      spireConfigOverrides+=( ".ethereum.password = \"$2\"" )
       shift
       ;;
     --network)
-      configUpdates+=( ".ethereum.network = \"$2\"" );
+      configOverrides+=( ".ethereum.network = \"$2\"" );
       shift
       ;;
     --no-transport)
-      configUpdates+=( ".transports = []" )
+      configOverrides+=( ".transports = []" )
       ;;
     --add-transport)
-      configUpdates+=( ".transports += [\"$2\"]" );
+      configOverrides+=( ".transports += [\"$2\"]" );
       shift
       ;;
     --no-source)
-      configUpdates+=( ".sources = []" )
+      configOverrides+=( ".sources = []" )
       ;;
     --add-source)
-      configUpdates+=( ".sources += [\"$2\"]" );
+      configOverrides+=( ".sources += [\"$2\"]" );
       shift
       ;;
     --ssb-external)

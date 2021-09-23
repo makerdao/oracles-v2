@@ -5,10 +5,10 @@
         "homepage": "https://dapp.tools",
         "owner": "dapphub",
         "repo": "dapptools",
-        "rev": "2cf441052489625f8635bc69eb4842f0124f08e4",
-        "sha256": "1zxl01f37ibf0lb9qhc38gd28gjg36jw23p8bgdsn2k7rdg32mxr",
+        "rev": "5cd96ed3d4efa2bf4d726f78cbb4d1c04b87a7da",
+        "sha256": "11sqjapdzwwjzsqb5g919f1r1180w8wvjxklmqdwgrbxmnxv478h",
         "type": "tarball",
-        "url": "https://github.com/dapphub/dapptools/archive/2cf441052489625f8635bc69eb4842f0124f08e4.tar.gz",
+        "url": "https://github.com/dapphub/dapptools/archive/5cd96ed3d4efa2bf4d726f78cbb4d1c04b87a7da.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mach-nix": {
@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "DavHau",
         "repo": "mach-nix",
-        "rev": "3.1.1",
-        "sha256": "06bxmz7x1fnjx2d0gb63fdm0jci2mcdnpa3isbhjr92z1l2a7hl1",
+        "rev": "d223656fc0eff33f4da77d69db19752edc9a5ba5",
+        "sha256": "1lnj8g83nsjl21yy4xbz7mrx152xdj01dyzz1mqrb3zjcwxibc0c",
         "type": "tarball",
-        "url": "https://github.com/DavHau/mach-nix/archive/3.1.1.tar.gz",
+        "url": "https://github.com/DavHau/mach-nix/archive/d223656fc0eff33f4da77d69db19752edc9a5ba5.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "makerpkgs": {
@@ -41,10 +41,10 @@
         "homepage": "https://github.com/nmattia/niv",
         "owner": "nmattia",
         "repo": "niv",
-        "rev": "9d35b9e4837ab88517210b1701127612c260eccf",
-        "sha256": "0q50xhnm8g2yfyakrh0nly4swyygxpi0a8cb9gp65wcakcgvzvdh",
+        "rev": "65a61b147f307d24bfd0a5cd56ce7d7b7cc61d2e",
+        "sha256": "17mirpsx5wyw262fpsd6n6m47jcgw8k2bwcp1iwdnrlzy4dhcgqh",
         "type": "tarball",
-        "url": "https://github.com/nmattia/niv/archive/9d35b9e4837ab88517210b1701127612c260eccf.tar.gz",
+        "url": "https://github.com/nmattia/niv/archive/65a61b147f307d24bfd0a5cd56ce7d7b7cc61d2e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
@@ -53,10 +53,10 @@
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5f746317f10f7206f1dbb8dfcfc2257b04507eee",
-        "sha256": "1wx5g7a5bxa01pz7c5fdp5xk1gsj7dv6xwm1a17g6a8s2a2c05x3",
+        "rev": "e0ce3c683ae677cf5aab597d645520cddd13392b",
+        "sha256": "08ans3w6r4fbs1wx6lzlp4xwhy6p04x3spvvrjz5950w8mzxqm61",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/5f746317f10f7206f1dbb8dfcfc2257b04507eee.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/e0ce3c683ae677cf5aab597d645520cddd13392b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs-dapptools": {
@@ -65,22 +65,22 @@
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f1707d8875276cfa110139435a7e8998b4c2a4fd",
-        "sha256": "14p7qvn3z58asx5naa2l5hvp1fddi186h385f7cj2ciw4pknrj9m",
+        "rev": "e0ce3c683ae677cf5aab597d645520cddd13392b",
+        "sha256": "08ans3w6r4fbs1wx6lzlp4xwhy6p04x3spvvrjz5950w8mzxqm61",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/f1707d8875276cfa110139435a7e8998b4c2a4fd.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/e0ce3c683ae677cf5aab597d645520cddd13392b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
-        "branch": "v0.2.2",
+        "branch": "sc-304/add-curve-finance-steth-to-gofer",
         "description": null,
         "homepage": null,
         "owner": "makerdao",
         "repo": "oracle-suite",
-        "rev": "76bb3d975d63b7778c52ac665b99d07e01c79cfe",
-        "sha256": "07sj5vpr8q9kx4azaa8f0rscakrz2hbcza3xy871pkfr3gprz2p0",
+        "rev": "0d547f8e4dc1dc14dc81b4378e53b5c9f3752905",
+        "sha256": "09zrl79aqj1vrpn46rr0gsbp2n4054wbq5v3d21mxnay23q6zivb",
         "type": "tarball",
-        "url": "https://github.com/makerdao/oracle-suite/archive/76bb3d975d63b7778c52ac665b99d07e01c79cfe.tar.gz",
+        "url": "https://github.com/makerdao/oracle-suite/archive/0d547f8e4dc1dc14dc81b4378e53b5c9f3752905.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
