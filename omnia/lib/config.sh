@@ -273,6 +273,10 @@ importOptionsEnv () {
 		SETZER_MIN_MEDIAN="$(echo "$_json" | jq -S '.setzerMinMedian')"
 		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
 		export SETZER_MIN_MEDIAN
+
+		SETZER_ETH_RPC_URL="$(echo "$_json" | jq -r '.setzerEthRpcUrl')"
+		[[ -n "$SETZER_ETH_RPC_URL" ]] || errors+=("Error - Setzer ethereum RPC address is not set.")
+		export SETZER_ETH_RPC_URL
 	fi
 
 	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }

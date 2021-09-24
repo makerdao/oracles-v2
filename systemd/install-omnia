@@ -246,7 +246,8 @@ while [[ -n "$1" ]]; do
       shift;shift;shift
       ;;
     --sourcing-eth-rpc)
-      goferConfigOverrides+=( ". * {gofer:{ethRpc:\"$2\"}}" )
+      configOverrides+=( ".options.setzerEthRpcUrl = \"$2\"" )
+      goferConfigOverrides+=( ".gofer.ethRpc = \"$2\"" )
       shift
       ;;
     --from)

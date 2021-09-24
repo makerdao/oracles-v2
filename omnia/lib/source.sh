@@ -5,7 +5,7 @@ readSourcesWithSetzer()  {
 	_setzerAssetPair="${_setzerAssetPair,,}"
 	local _prices
 
-	_prices=$(
+	_prices=$(ETH_RPC_URL="$SETZER_ETH_RPC_URL" \
 		setzer sources "$_setzerAssetPair" \
 		| parallel \
 			-j${OMNIA_SOURCE_PARALLEL:-0} \
@@ -32,7 +32,7 @@ _mapSetzer() {
 	if [[ -n $OMNIA_DEBUG ]]; then set -x; fi
 	local _assetPair=$1
 	local _source=$2
-	local _price=$(setzer price "$_assetPair" "$_source")
+	local _price=$(ETH_RPC_URL="$SETZER_ETH_RPC_URL" setzer price "$_assetPair" "$_source")
 	if [[ -n "$_price" && "$_price" =~ ^([1-9][0-9]*([.][0-9]+)?|[0][.][0-9]*[1-9]+[0-9]*)$ ]]; then
 		jq -nc \
 			--arg s $_source \

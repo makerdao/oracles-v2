@@ -84,6 +84,11 @@ in {
       default = defaultFeedConfig.options.setzerMinMedian;
     };
 
+    setzerEthRpcUrl = lib.mkOption {
+      type = lib.types.str;
+      default = defaultFeedConfig.options.setzerEthRpcUrl;
+    };
+
     goferConfig = lib.mkOption {
       type = lib.types.path;
       description = ''
