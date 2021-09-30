@@ -23,16 +23,16 @@ plan 10
 _json=$(jq -c '.ethereum' <<< "$_validConfig")
 assert "importGasPrice should correctly parse values" run importGasPrice $_json
 
-assert "ETH_GAS_SOURCE should have value: gasnow" match "^node" <<<$ETH_GAS_SOURCE
+assert "ETH_GAS_SOURCE should have value: ethgasstation" match "^node" <<<$ETH_GAS_SOURCE
 assert "ETH_MAXPRICE_MULTIPLIER should have value: 1" match "^1$" <<<$ETH_MAXPRICE_MULTIPLIER
 assert "ETH_TIP_MULTIPLIER should have value: 1" match "^1$" <<<$ETH_TIP_MULTIPLIER
 assert "ETH_GAS_PRIORITY should have value: slow" match "^fast" <<<$ETH_GAS_PRIORITY
 
 # Testing changed values
-_json="{\"gasPrice\":{\"source\":\"gasnow\",\"maxPriceMultiplier\":0.5,\"tipMultiplier\":1.0,\"priority\":\"slow\"}}"
+_json="{\"gasPrice\":{\"source\":\"ethgasstation\",\"maxPriceMultiplier\":0.5,\"tipMultiplier\":1.0,\"priority\":\"slow\"}}"
 assert "importGasPrice should correctly parse new values" run importGasPrice $_json
 
-assert "ETH_GAS_SOURCE should have value: gasnow" match "^gasnow$" <<<$ETH_GAS_SOURCE
+assert "ETH_GAS_SOURCE should have value: ethgasstation" match "^ethgasstation$" <<<$ETH_GAS_SOURCE
 assert "ETH_MAXPRICE_MULTIPLIER should have value: 0.5" match "^0.5$" <<<$ETH_MAXPRICE_MULTIPLIER
 assert "ETH_TIP_MULTIPLIER should have value: 1" match "^1$" <<<$ETH_TIP_MULTIPLIER
 assert "ETH_GAS_PRIORITY should have value: slow" match "^slow$" <<<$ETH_GAS_PRIORITY

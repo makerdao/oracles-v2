@@ -2,7 +2,7 @@
 # by a space. It requires three environmental variables to work:
 # ETH_MAXPRICE_MULTIPLIER - float number
 # ETH_TIP_MULTIPLIER - float number
-# ETH_GAS_SOURCE - node, gasnow or ethgasstation
+# ETH_GAS_SOURCE - node or ethgasstation
 getGasPrice() {
 	[[ $ETH_MAXPRICE_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
 	[[ $ETH_TIP_MULTIPLIER =~ ^[0-9\.]+$  ]] || return 1
@@ -11,7 +11,6 @@ getGasPrice() {
 	local _fees
 	case $ETH_GAS_SOURCE in
 		node) _fees=($(getGasPriceFromNode)) ;;
-		gasnow) _fees=($(getGasPriceFromGasNow)) ;;
 		ethgasstation) _fees=($(getGasPriceFromEthGasStation)) ;;
 		*) _fees=($(getGasPriceFromNode)) ;;
 	esac
@@ -53,22 +52,6 @@ getGasPriceFromNode() {
   fi
 
   echo "$_maxPrice $_tip"
-}
-
-getGasPriceFromGasNow() {
-	local _key
-	_key=$( case $ETH_GAS_PRIORITY in
-		slow) printf "slow" ;;
-		standard) printf "standard" ;;
-		fast) printf "fast" ;;
-		fastest) printf "rapid" ;;
-		*) printf "fast" ;;
-	esac)
-
-	local _price
-	_price=$(curl -m 30 --silent --location "https://www.gasnow.org/api/v3/gas/price" | jq -r --arg key "$_key" '.data[$key] // 0')
-
-	echo "$_price $_price"
 }
 
 getGasPriceFromEthGasStation() {
