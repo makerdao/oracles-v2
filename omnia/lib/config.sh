@@ -42,13 +42,13 @@ importMode () {
 importSources () {
 	local _config="$1"
 	readarray -t OMNIA_FEED_SOURCES < <(jq -r '.sources[]' "$_config")
-	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("setzer")
+	[[ "${#OMNIA_FEED_SOURCES[@]}" -gt 0 ]] || OMNIA_FEED_SOURCES=("gofer" "setzer")
 }
 
 importTransports () {
 	local _config="$1"
 	readarray -t OMNIA_TRANSPORTS < <(jq -r '.transports[]' "$_config")
-	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("transport-ssb")
+	[[ "${#OMNIA_TRANSPORTS[@]}" -gt 0 ]] || OMNIA_TRANSPORTS=("transport-spire" "transport-ssb")
 }
 
 importNetwork () {
@@ -273,6 +273,10 @@ importOptionsEnv () {
 		SETZER_MIN_MEDIAN="$(echo "$_json" | jq -S '.setzerMinMedian')"
 		[[ "$SETZER_MIN_MEDIAN" =~ ^[1-9][0-9]*$ ]] || errors+=("Error - Setzer Minimum Median param is invalid, must be positive integer.")
 		export SETZER_MIN_MEDIAN
+
+		SETZER_ETH_RPC_URL="$(echo "$_json" | jq -r '.setzerEthRpcUrl')"
+		[[ -n "$SETZER_ETH_RPC_URL" ]] || errors+=("Error - Setzer ethereum RPC address is not set.")
+		export SETZER_ETH_RPC_URL
 	fi
 
 	[[ -z ${errors[*]} ]] || { printf '%s\n' "${errors[@]}"; exit 1; }
