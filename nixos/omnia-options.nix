@@ -86,7 +86,7 @@ in {
 
     setzerEthRpcUrl = lib.mkOption {
       type = lib.types.str;
-      default = defaultFeedConfig.options.setzerEthRpcUrl;
+      default = "http://127.0.0.1:9989";
     };
 
     goferConfig = lib.mkOption {
@@ -120,6 +120,14 @@ in {
       Transport CLIs to use.
     '';
     default = defaultFeedConfig.transports;
+  };
+
+  ethRpcList = lib.mkOption {
+    type = lib.types.listOf lib.types.str;
+    description = ''
+      RPC List
+    '';
+    default = [ ];
   };
 
   services = {
