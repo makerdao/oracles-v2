@@ -53,7 +53,7 @@ subst() {
     $OMNIA_PATH $OMNIA_CONFIG
     $GOFER_PATH $GOFER_CONFIG
     $SPIRE_PATH $SPIRE_CONFIG
-    $SPLITTER_PATH
+    $SPLITTER_PATH $SPLITTER_URLS
   ' < "$2" \
     | sudo tee "$target" >/dev/null
 
