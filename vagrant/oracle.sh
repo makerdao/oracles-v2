@@ -53,7 +53,7 @@ if [[ "$1" == "configure" ]]; then
 	opts+=(--keystore "/vagrant/tests/resources/keys")
 	opts+=(--password "/vagrant/tests/resources/password")
 	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/tests/resources/keys/UTC--2020-04-20T06-52-55.157141634Z--1f8fbe73820765677e68eb6e933dcb3c94c9b708")")
-	opts+=(--sourcing-eth-rpc "http://127.0.0.1:8888")
+	opts+=(--eth-rpc "http://127.0.0.1:8888")
 
 	_mode="feed"
 	_restart=""
@@ -101,6 +101,8 @@ if [[ "$1" == "enable" ]]; then
 	sudo systemctl enable --now omnia
 	sudo systemctl enable --now gofer-agent
 	sudo systemctl enable --now spire-agent
+	sudo systemctl enable --now spire-agent
+	sudo systemctl enable --now splitter-agent
 
 	oracle status
 fi
@@ -111,6 +113,7 @@ if [[ "$1" == "restart" ]]; then
 	sudo systemctl restart omnia
 	sudo systemctl restart gofer-agent
 	sudo systemctl restart spire-agent
+	sudo systemctl restart splitter-agent
 
 	oracle status
 fi
@@ -122,11 +125,11 @@ if [[ "$1" == "connect" ]]; then
 fi
 
 if [[ "$1" == "status" ]]; then
-	systemctl status ssb-server omnia gofer-agent spire-agent --no-pager
+	systemctl status ssb-server omnia gofer-agent spire-agent splitter-agent --no-pager
 fi
 
 if [[ "$1" == "log-all" ]]; then
-	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent
+	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent -u splitter-agent
 fi
 
 if [[ "$1" == "log" ]]; then
