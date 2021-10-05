@@ -5,10 +5,10 @@
         "homepage": "https://dapp.tools",
         "owner": "dapphub",
         "repo": "dapptools",
-        "rev": "4f57e0975ab469f9bfe5b996182e0a43caa5b29b",
-        "sha256": "024wfl4in3z9yys1ms864301gnlyw96v5a24j2716nmn99an7sph",
+        "rev": "009f850d18b48ef7e994fba3186e0bbafcb02d3b",
+        "sha256": "1mqrp457pyirza44f77bl216wd5rh40kinjjsi5yfvz1psil05hy",
         "type": "tarball",
-        "url": "https://github.com/dapphub/dapptools/archive/4f57e0975ab469f9bfe5b996182e0a43caa5b29b.tar.gz",
+        "url": "https://github.com/dapphub/dapptools/archive/009f850d18b48ef7e994fba3186e0bbafcb02d3b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mach-nix": {
@@ -65,10 +65,10 @@
         "homepage": "",
         "owner": "chronicleprotocol",
         "repo": "omnia",
-        "rev": "8591ed3fe319f00b1026a73dcb5267b55f299be7",
-        "sha256": "0qkyd5zi0mggjzss6b1fcwxvx6wcp05zxqgx2wzh0cm2r5rv3z3i",
+        "rev": "9f2b4d9d4083973bf9a2f7fb419ce0a3ce2dd6a0",
+        "sha256": "0v0mpjayjs8jn2xqzxdk4sd58h7sb56hs556ak9sn4i2k0zq7dyv",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/omnia/archive/8591ed3fe319f00b1026a73dcb5267b55f299be7.tar.gz",
+        "url": "https://github.com/chronicleprotocol/omnia/archive/9f2b4d9d4083973bf9a2f7fb419ce0a3ce2dd6a0.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
