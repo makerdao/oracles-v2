@@ -8,7 +8,7 @@ Environment="PATH=/home/$USER/.nix-profile/bin"
 Environment="SPIRE_CONFIG=$SPIRE_CONFIG"
 User=$USER
 Group=$USER
-ExecStart=$SPIRE_PATH -v debug -c "$SPIRE_CONFIG" agent
+ExecStart=$SPIRE_PATH -c "$SPIRE_CONFIG" agent
 Restart=always
 RestartSec=5
 

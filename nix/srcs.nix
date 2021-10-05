@@ -37,7 +37,7 @@ in rec {
 
   stark-cli = makerpkgs.callPackage ../starkware { };
 
-  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite seth; };
+  omnia = makerpkgs.callPackage sources.omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite seth; };
 
   install-omnia = makerpkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
 }

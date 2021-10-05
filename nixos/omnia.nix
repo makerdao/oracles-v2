@@ -58,6 +58,24 @@ in {
         ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} --log.verbosity debug agent";
       };
     };
+    systemd.services.splitter = {
+      enable = true;
+      description = "RPC Splitter Agent";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" "gofer.service" ];
+
+      serviceConfig = {
+        Type = "simple";
+        User = name;
+        Group = name;
+        PermissionsStartOnly = true;
+        Restart = "always";
+        RestartSec = 5;
+        ExecStart = "${oracle-suite}/bin/rpc-splitter --listen 127.0.0.1:9989 --eth-rpc=${
+            lib.concatStringsSep "," cfg.ethRpcList
+          } --log.verbosity debug agent";
+      };
+    };
 
     systemd.services.ssb-server = {
       enable = true;
