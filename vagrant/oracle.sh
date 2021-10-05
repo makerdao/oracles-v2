@@ -36,9 +36,6 @@ if [[ "$1" == "install" ]]; then
 	elif [[ $_version == "commit" ]]; then
 		_file="https://github.com/makerdao/oracles-v2/archive/${3}.tar.gz"
 	else
-		if [[ "$_version" == "current" ]]; then
-			_version="v$(head /vagrant/omnia/lib/version | tr -d '\n')"
-		fi
 		_file="https://github.com/makerdao/oracles-v2/tarball/$_version"
 	fi
   echo "Uninstalling old Omnia"
