@@ -117,12 +117,11 @@ It consist of 3 available options:
 Available values are: 
 
  - `node` - Getting Gas Price from node (using `seth gas-price`).
- - `gasnow` - Uses [GasNow](https://www.gasnow.org) API for fetching gas price.
  - `ethgasstation` - Uses [ethgasstation](https://ethgasstation.info) API for fetching Gas Price.
 
 `multiplier` - A number the gas pice will be multiplied by after fetching. **Default value: 1**
 
-`priority` - Gas Price priority for `gasnow` or `ethgasstation` sources. **Default value: fast**
+`priority` - Gas Price priority for `ethgasstation` sources. **Default value: fast**
 Due to this API's return set of different prices based on required tx speed we also give you an ability to choose.
 **NOTE:** This option does not have any effect if `source` is set to `node`!
 
