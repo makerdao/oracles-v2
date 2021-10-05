@@ -71,9 +71,9 @@ in {
         PermissionsStartOnly = true;
         Restart = "always";
         RestartSec = 5;
-        ExecStart = "${oracle-suite}/bin/rpc-splitter --listen 127.0.0.1:9989 --eth-rpc="
-          "${cfg.options.ethRpcList # concat with comma
-          }" " --log.verbosity debug agent";
+        ExecStart = "${oracle-suite}/bin/rpc-splitter --listen 127.0.0.1:9989 --eth-rpc=${
+            lib.concatStringsSep "," cfg.ethRpcList
+          } --log.verbosity debug agent";
       };
     };
 
