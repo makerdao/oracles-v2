@@ -1,6 +1,5 @@
 { lib, pkgs }:
 let
-  defaultFeedConfig = lib.importJSON ../omnia/config/feed.conf;
   writeJSON = name: attrs: pkgs.writeText name (builtins.toJSON attrs);
   passJSON = name: file: writeJSON name (lib.importJSON file);
 in {
@@ -11,7 +10,7 @@ in {
     description = ''
       Omnia operational mode (feed or relay)
     '';
-    default = defaultFeedConfig.mode;
+    default = "feed";
   };
 
   options = {
@@ -41,7 +40,7 @@ in {
       description = ''
         Pooling interval
       '';
-      default = defaultFeedConfig.options.interval;
+      default = 60;
     };
 
     msgLimit = lib.mkOption {
@@ -49,7 +48,7 @@ in {
       description = ''
         Message look back limit
       '';
-      default = defaultFeedConfig.options.msgLimit;
+      default = 35;
     };
 
     srcTimeout = lib.mkOption {
@@ -57,7 +56,7 @@ in {
       description = ''
         Price source timeout
       '';
-      default = defaultFeedConfig.options.srcTimeout;
+      default = 600;
     };
 
     setzerTimeout = lib.mkOption {
@@ -65,7 +64,7 @@ in {
       description = ''
         Setzer internal timeout
       '';
-      default = defaultFeedConfig.options.setzerTimeout;
+      default = 600;
     };
 
     setzerCacheExpiry = lib.mkOption {
@@ -73,7 +72,7 @@ in {
       description = ''
         Setzer internal cache expiry
       '';
-      default = defaultFeedConfig.options.setzerCacheExpiry;
+      default = 120;
     };
 
     setzerMinMedian = lib.mkOption {
@@ -81,7 +80,7 @@ in {
       description = ''
         Setzer internal minimum amount of sources for median
       '';
-      default = defaultFeedConfig.options.setzerMinMedian;
+      default = 3;
     };
 
     setzerEthRpcUrl = lib.mkOption {
@@ -111,15 +110,15 @@ in {
     description = ''
       List of sources to use and order they fallback in.
     '';
-    default = defaultFeedConfig.sources;
+    default = [ "gofer" "setzer" ];
   };
 
   transports = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
+    type = lib.types.listOf (lib.types.enum [ "transport-spire" "transport-ssb" ]);
     description = ''
       Transport CLIs to use.
     '';
-    default = defaultFeedConfig.transports;
+    default = [ "transport-spire" "transport-ssb" ];
   };
 
   ethRpcList = lib.mkOption {
@@ -150,7 +149,7 @@ in {
     description = ''
       Trading pairs
     '';
-    default = defaultFeedConfig.pairs;
+    default = [ ];
   };
 
   ethereum = {
