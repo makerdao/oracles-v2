@@ -7,7 +7,7 @@ SCRIPT_DIR=$(cd "${BASH_SOURCE[0]%/*}" && pwd)
 TARGET_DIR=${TARGET_DIR:-/etc/systemd/system}
 SHARE_DIR="${SHARE_PATH:-$SCRIPT_DIR}"
 OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia/lib}
-OMNIA_CONF_PATH=${OMNIA_CONF_PATH:-$SCRIPT_DIR/../omnia/config}
+OMNIA_CONF_PATH="$SCRIPT_DIR/../share"
 
 export SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
 export GOFER_PATH=${GOFER_PATH:-$(command -v gofer)}
