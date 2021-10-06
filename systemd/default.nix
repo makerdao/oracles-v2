@@ -12,17 +12,18 @@ stdenv.mkDerivation rec {
   installPhase = let
     path = lib.makeBinPath passthru.runtimeDeps;
     locales = lib.optionalString (glibcLocales != null) ''--set LOCALE_ARCHIVE "${glibcLocales}"/lib/locale/locale-archive'';
+    omniaConf = ../omnia/config;
   in ''
     mkdir -p $out/{bin,share}
     cp -t $out/bin install-omnia
-    cp -t $out/share *.service *.json *-updates
+    cp -t $out/share *.service *.json *-updates ${omniaConf}/*
 
     wrapProgram "$out/bin/install-omnia" \
       --prefix PATH : "${path}" \
       --set SHARE_PATH "$out/share" \
       --set OMNIA_PATH "${omnia}/bin/omnia" \
       --set OMNIA_LIB_PATH "${omnia}/lib" \
-      --set OMNIA_CONF_PATH "${omnia}/config" \
+      --set OMNIA_CONF_PATH "$out/share" \
       --set GOFER_PATH "${oracle-suite}/bin/gofer" \
       --set SPIRE_PATH "${oracle-suite}/bin/spire" \
       --set SPLITTER_PATH "${oracle-suite}/bin/rpc-splitter" \
