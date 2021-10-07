@@ -57,6 +57,7 @@ if [[ "$1" == "configure" ]]; then
 	opts+=(--password "/vagrant/tests/resources/password")
 	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/tests/resources/keys/UTC--2020-04-20T06-52-55.157141634Z--1f8fbe73820765677e68eb6e933dcb3c94c9b708")")
 	opts+=(--eth-rpc "http://127.0.0.1:8888")
+	opts+=(--eth-rpc "http://127.0.0.1:8889")
 
 	_mode="feed"
 	_restart=""
@@ -104,7 +105,6 @@ if [[ "$1" == "enable" ]]; then
 	sudo systemctl enable --now omnia
 	sudo systemctl enable --now gofer-agent
 	sudo systemctl enable --now spire-agent
-	sudo systemctl enable --now spire-agent
 	sudo systemctl enable --now splitter-agent
 
 	oracle status
@@ -117,6 +117,16 @@ if [[ "$1" == "restart" ]]; then
 	sudo systemctl restart gofer-agent
 	sudo systemctl restart spire-agent
 	sudo systemctl restart splitter-agent
+
+	oracle status
+fi
+
+if [[ "$1" == "stop" ]]; then
+	sudo systemctl stop ssb-server
+	sudo systemctl stop omnia
+	sudo systemctl stop gofer-agent
+	sudo systemctl stop spire-agent
+	sudo systemctl stop splitter-agent
 
 	oracle status
 fi
