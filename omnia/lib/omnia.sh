@@ -49,7 +49,7 @@ initEnv () {
 	echo "Ethereum account:                  $ETH_FROM"
 	echo "  ETH_GAS_SOURCE          = $ETH_GAS_SOURCE"
 	echo "  ETH_MAXPRICE_MULTIPLIER = $ETH_MAXPRICE_MULTIPLIER"
-	echo "  ETH_MAXPRICE_MULTIPLIER = $ETH_MAXPRICE_MULTIPLIER"
+	echo "  ETH_TIP_MULTIPLIER      = $ETH_TIP_MULTIPLIER"
 	[[ $ETH_GAS_SOURCE != "node" ]] && echo "  ETH_GAS_PRIORITY   = $ETH_GAS_PRIORITY"
 	echo ""
 	echo "SCUTTLEBOT"
