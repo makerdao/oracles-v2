@@ -5,4 +5,4 @@ updateNodePackages() {
 		 node2nix -i node-packages.json -c nodepkgs.nix --nodejs-10
 	})
 }
-echo '  * updateNodePackages'
+echo ' * updateNodePackages'
