@@ -8,14 +8,14 @@ version() {
 	fi
 	echo "$_v"
 }
-echo ' * version'
+echo '  * version'
 
 release() {
 	local _level="${1:-stable}"
-	if [[ $_level =~ -?-he?l?p? ]]; then
-		echo >&2 "Usage: release [ -h | --help ] [ LEVEL [ -e | --exact ] ]"
+	if [[ $_level =~ -?-?help ]]; then
+		echo >&2 "Usage: release [--help | LEVEL [-e | --exact]]"
 		echo >&2 "  Arguments:"
-		echo >&2 "    LEVEL: major | minor | patch | rc | stable"
+		echo >&2 "    LEVEL: major, minor, patch, rc or stable"
 		echo >&2 "  Options:"
 		echo >&2 "    -e | --exact: major, minor and patch LEVEL will be prepended by 'pre' if this is not present"
 		return 1
@@ -56,7 +56,7 @@ release() {
 
 	local version
 	if [[ $_level =~ major|minor$ ]]; then
-		[[ $branch == master || -n $OPT_FORCE ]] || {
+		[[ $branch == master ]] || {
 			echo >&2 "Not on master branch, checkout 'master' to create a new release branch."
 			return 1
 		}
@@ -81,7 +81,7 @@ release() {
 		echo >&2 "To patch this '$_level' release checkout the release branch:"
 		echo "   git checkout release/$_branchVersion"
 	elif [[ $_level =~ patch|prerelease$ ]]; then
-		[[ $branch =~ ^release/ || -n $OPT_FORCE ]] || {
+		[[ $branch =~ ^release/ ]] || {
 			echo >&2 "Not on a release branch, checkout a 'release/*' or create one by: release minor|major"
 			return 1
 		}
@@ -99,11 +99,7 @@ release() {
 		echo >&2 "To publish this commit as a release candidate run:"
 		echo "   git push --atomic origin $branch v$version"
 	elif [[ $_level == "stable" ]]; then
-		[[ $branch =~ ^release/ || -n $OPT_FORCE ]] || {
-			echo >&2 "Not on a release branch, checkout a 'release/*' or create one by: release minor|major"
-			return 1
-		}
-		[[ $oldVersion =~ -${_preId}\. ]] || {
+		[[ $oldVersion =~ -${_preId}\. ]] || [[ -n $OPT_FORCE ]] || {
 			echo >&2 "Current version ($oldVersion) is not a Release Candidate. Run: release major|minor|patch|rc"
 			return 1
 		}
@@ -122,4 +118,4 @@ release() {
 		return 1
   fi
 }
-echo ' * release'
+echo '  * release'
