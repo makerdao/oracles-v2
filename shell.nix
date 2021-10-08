@@ -11,5 +11,8 @@ in pkgs.mkShell rec {
   VERSION_FILE = toString ./version;
   ROOT_DIR = toString ./.;
 
-  shellHook = "source ${./shell/functions.sh}";
+  shellHook = ''
+    source ${./shell/versioning.sh}
+    source ${./shell/functions.sh}
+  '';
 }
