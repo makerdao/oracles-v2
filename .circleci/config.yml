@@ -78,30 +78,9 @@ commands:
       path:
         type: string
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
       - run-nix:
           name_: Pre-fetch dependencies for << parameters.path >>
           command: |
-            ls -la ~/.ssh
-            ssh-add -d
-            nix-shell "<< parameters.path >>" --show-trace --run true
-  pre-fetch2:
-    description: Pre-fetch Nix dependencies
-    parameters:
-      path:
-        type: string
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
-      - run-nix:
-          name_: Pre-fetch dependencies for << parameters.path >>
-          command: |
-            mv -f ~/.ssh/id_rsa_ab0634b8a6723d48bb42cbdbe8e430be ~/.ssh/id_rsa
-            rm -f ~/.ssh/id_rsa.pub
-            ls -la ~/.ssh
             nix-shell "<< parameters.path >>" --show-trace --run true
 executors:
   nix-executor:
@@ -133,10 +112,10 @@ jobs:
       - checkout
       - setup-ca:
           cert: tests/resources/mitmproxy/mitmproxy-ca-cert.crt
-      - pre-fetch2:
+      - pre-fetch:
           path: tests
       - run-nix:
-          name_: End 2 end regression test
+          name_: End-to-End regression test
           command: |
             nix-shell tests --run testE2E
       - store_test_results:
