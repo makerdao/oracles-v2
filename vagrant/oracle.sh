@@ -138,7 +138,7 @@ if [[ "$1" == "connect" ]]; then
 fi
 
 if [[ "$1" == "status" ]]; then
-	systemctl status ssb-server omnia gofer-agent spire-agent splitter-agent --no-pager
+	systemctl status ssb-server omnia gofer-agent spire-agent splitter-agent --no-pager --lines=0
 fi
 
 if [[ "$1" == "log-all" ]]; then
