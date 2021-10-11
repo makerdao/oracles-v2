@@ -22,7 +22,9 @@ let
         libff = null;
         #        jays = null;
         #        jshon = null;
+        seth = null; # to be updated in the next phase
         dapp = null;
+        ethsign = null; # to be updated in the next phase
         token = null;
         go-ethereum-unlimited = null;
         qrtx = null;
