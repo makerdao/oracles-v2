@@ -1,6 +1,6 @@
 let srcs = import ../nix/srcs.nix;
 
-in { pkgs ? srcs.pkgs, makerpkgs ? srcs.makerpkgs, nodepkgs ? srcs.nodepkgs }@args:
+in { pkgs ? srcs.pkgs, nodepkgs ? srcs.nodepkgs }@args:
 
 let
   oracles = import ./.. args;
@@ -10,18 +10,8 @@ let
 in pkgs.mkShell rec {
   name = "oracle-test-shell";
   buildInputs = with pkgs;
-    [
-      procps
-      curl
-      jq
-      mitmproxy
-      go-ethereum
-      makerpkgs.dappPkgsVersions.latest.dapp
-      nodepkgs.tap-xunit
-      median
-      oracles.omnia
-      oracles.install-omnia
-    ] ++ oracles.omnia.buildInputs;
+    [ procps curl jq mitmproxy go-ethereum nodepkgs.tap-xunit median oracles.omnia oracles.install-omnia ]
+    ++ oracles.omnia.buildInputs;
 
   RESULTS_DIR = "${toString ./.}/test-results";
   SMOKE_TEST = toString ./smoke/test;
