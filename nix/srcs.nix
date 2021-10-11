@@ -1,11 +1,33 @@
 let
   inherit (builtins) map filter listToAttrs attrValues isString currentSystem;
+  dapptoolsOverlay = (import "${sources.dapptools}/overlay.nix");
   inherit (import sources.nixpkgs {
     overlays = [
       (import "${sources.dapptools}/overlay.nix")
       (self: super: {
-        hevm = null;
+        #        dapptoolsSrc = null;
+        #        haskellPackages = null;
+        unwrappedHaskellPackages = null;
+        sharedHaskellPackages = null;
+        solidityPackage = null;
+        buildDappPackage = null;
+        dapp-tests = null;
+        hevm-tests = null;
+        bashScript = null;
+        solc-versions = null;
         solc = null;
+        solc-static-versions = null;
+        hevm = null;
+        hevmUnwrapped = null;
+        libff = null;
+        #        jays = null;
+        #        jshon = null;
+        dapp = null;
+        token = null;
+        go-ethereum-unlimited = null;
+        qrtx = null;
+        qrtx-term = null;
+        secp256k1 = null;
       })
       (self: super: {
         seth = self.callPackage (import "${sources.dapptools}/src/seth") { };
