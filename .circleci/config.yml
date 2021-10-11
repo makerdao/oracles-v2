@@ -106,7 +106,7 @@ commands:
 executors:
   nix-executor:
     docker:
-      - image: nixos/nix@sha256:909992c623023c15950f088185326b80012584127fbaef6366980d26a91c73d5
+      - image: nixos/nix@sha256:27f6e7f60227e959ee7ece361f75d4844a40e1cc6878b6868fe30140420031ff
   ubuntu-executor:
     machine:
       image: ubuntu-1604:201903-01
