@@ -10,6 +10,8 @@ let
 in rec {
   inherit pkgs;
 
+  makerpkgs = import sources.makerpkgs { };
+
   nodepkgs = let
     nodepkgs' = import ./nodepkgs.nix { pkgs = pkgs // { stdenv = pkgs.stdenv // { lib = pkgs.lib; }; }; };
     shortNames = listToAttrs (map (x: {

@@ -23,6 +23,18 @@
         "url": "https://github.com/DavHau/mach-nix/archive/d223656fc0eff33f4da77d69db19752edc9a5ba5.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
+    "makerpkgs": {
+        "branch": "master",
+        "description": "Common nixpkgs",
+        "homepage": "",
+        "owner": "makerdao",
+        "repo": "makerpkgs",
+        "rev": "76151418a2d9ffcfa55dec8acda5bde10f504224",
+        "sha256": "0vknhf3n54v6rgvq23rhi3b3lraczn9yzd7cw8i1hdxkb028f34r",
+        "type": "tarball",
+        "url": "https://github.com/makerdao/makerpkgs/archive/76151418a2d9ffcfa55dec8acda5bde10f504224.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "niv": {
         "branch": "master",
         "description": "Easy dependency management for Nix projects",
