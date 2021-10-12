@@ -1,12 +1,9 @@
-let
-  srcs = import ./nix/srcs.nix;
-in
+let srcs = import ./nix;
 
-{ pkgs ? srcs.pkgs
-}: with pkgs;
+in { pkgs ? srcs.pkgs }:
+with pkgs;
 
-let
-  ssb-server = lib.setPrio 8 srcs.ssb-server;
+let ssb-server = lib.setPrio 8 srcs.ssb-server;
 in {
   inherit ssb-server;
   inherit (srcs) omnia install-omnia stark-cli oracle-suite;

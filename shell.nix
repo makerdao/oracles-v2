@@ -1,4 +1,4 @@
-let srcs = import ./nix/srcs.nix;
+let srcs = import ./nix;
 
 in { pkgs ? srcs.pkgs }@args:
 
