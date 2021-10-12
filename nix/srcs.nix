@@ -1,15 +1,12 @@
 let
-  inherit (builtins) map filter listToAttrs attrValues isString currentSystem;
+  inherit (builtins) map listToAttrs attrValues isString;
   inherit (import sources.nixpkgs { }) pkgs;
-  inherit (pkgs) fetchgit;
   inherit (pkgs.lib.strings) removePrefix;
 
   getName = x: let parse = drv: (builtins.parseDrvName drv).name; in if isString x then parse x else x.pname or (parse x.name);
 
   sources = import ./sources.nix;
   ssb-patches = ../ssb-server;
-  dapptools = import sources.dapptools { };
-  seth = dapptools.seth;
 in rec {
   inherit pkgs;
 
@@ -33,11 +30,19 @@ in rec {
 
   oracle-suite = pkgs.callPackage sources.oracle-suite { };
 
-  setzer-mcd = makerpkgs.callPackage sources.setzer-mcd { };
+  setzer-mcd = pkgs.callPackage sources.setzer-mcd { };
 
-  stark-cli = makerpkgs.callPackage ../starkware { };
+  stark-cli = pkgs.callPackage ../starkware { };
 
-  omnia = makerpkgs.callPackage ../omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite seth; };
+  omnia = pkgs.callPackage ../omnia rec {
+    inherit ssb-server setzer-mcd stark-cli oracle-suite;
+    ethsign = pkgs.callPackage (import "${sources.dapptools}/src/ethsign") { };
+    seth = pkgs.callPackage (import "${sources.dapptools}/src/seth") {
+      inherit ethsign;
+      hevm = null;
+      dapptoolsSrc = pkgs.callPackage (import "${sources.dapptools}/nix/dapptools-src.nix") { };
+    };
+  };
 
-  install-omnia = makerpkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
+  install-omnia = pkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
 }
