@@ -5,10 +5,10 @@
         "homepage": "https://dapp.tools",
         "owner": "dapphub",
         "repo": "dapptools",
-        "rev": "009f850d18b48ef7e994fba3186e0bbafcb02d3b",
-        "sha256": "1mqrp457pyirza44f77bl216wd5rh40kinjjsi5yfvz1psil05hy",
+        "rev": "4f57e0975ab469f9bfe5b996182e0a43caa5b29b",
+        "sha256": "024wfl4in3z9yys1ms864301gnlyw96v5a24j2716nmn99an7sph",
         "type": "tarball",
-        "url": "https://github.com/dapphub/dapptools/archive/009f850d18b48ef7e994fba3186e0bbafcb02d3b.tar.gz",
+        "url": "https://github.com/dapphub/dapptools/archive/4f57e0975ab469f9bfe5b996182e0a43caa5b29b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mach-nix": {
@@ -75,12 +75,12 @@
         "branch": "v0.3.1",
         "description": null,
         "homepage": null,
-        "owner": "makerdao",
+        "owner": "chronicleprotocol",
         "repo": "oracle-suite",
         "rev": "c1749af88d40181fd17ea88db39c3c5f87a26126",
         "sha256": "132q6nw2m5m79936233j6bfi30qk3wa245qss709lglrhdmps2k8",
         "type": "tarball",
-        "url": "https://github.com/makerdao/oracle-suite/archive/c1749af88d40181fd17ea88db39c3c5f87a26126.tar.gz",
+        "url": "https://github.com/chronicleprotocol/oracle-suite/archive/c1749af88d40181fd17ea88db39c3c5f87a26126.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer-mcd": {
