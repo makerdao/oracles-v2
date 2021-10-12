@@ -78,38 +78,17 @@ commands:
       path:
         type: string
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
       - run-nix:
           name_: Pre-fetch dependencies for << parameters.path >>
           command: |
-            ls -la ~/.ssh
-            ssh-add -d
-            nix-shell "<< parameters.path >>" --show-trace --run true
-  pre-fetch2:
-    description: Pre-fetch Nix dependencies
-    parameters:
-      path:
-        type: string
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "ab:06:34:b8:a6:72:3d:48:bb:42:cb:db:e8:e4:30:be"
-      - run-nix:
-          name_: Pre-fetch dependencies for << parameters.path >>
-          command: |
-            mv -f ~/.ssh/id_rsa_ab0634b8a6723d48bb42cbdbe8e430be ~/.ssh/id_rsa
-            rm -f ~/.ssh/id_rsa.pub
-            ls -la ~/.ssh
             nix-shell "<< parameters.path >>" --show-trace --run true
 executors:
   nix-executor:
     docker:
-      - image: nixos/nix@sha256:909992c623023c15950f088185326b80012584127fbaef6366980d26a91c73d5
+      - image: nixos/nix@sha256:27f6e7f60227e959ee7ece361f75d4844a40e1cc6878b6868fe30140420031ff
   ubuntu-executor:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202010-01
 
 jobs:
   smoke-test:
@@ -133,10 +112,10 @@ jobs:
       - checkout
       - setup-ca:
           cert: tests/resources/mitmproxy/mitmproxy-ca-cert.crt
-      - pre-fetch2:
+      - pre-fetch:
           path: tests
       - run-nix:
-          name_: End 2 end regression test
+          name_: End-to-End regression test
           command: |
             nix-shell tests --run testE2E
       - store_test_results:
