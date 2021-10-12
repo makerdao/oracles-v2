@@ -34,7 +34,7 @@ in rec {
 
   stark-cli = pkgs.callPackage ../starkware { };
 
-  omnia = pkgs.callPackage ../omnia rec {
+  omnia = pkgs.callPackage sources.omnia rec {
     inherit ssb-server setzer-mcd stark-cli oracle-suite;
     ethsign = pkgs.callPackage (import "${sources.dapptools}/src/ethsign") { };
     seth = pkgs.callPackage (import "${sources.dapptools}/src/seth") {
