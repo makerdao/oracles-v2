@@ -8,8 +8,11 @@ in pkgs.mkShell rec {
   name = "oracle-shell";
   buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [ git niv nodePackages.node2nix nodePackages.semver ]);
 
-  VERSION_FILE = toString ./omnia/lib/version;
+  VERSION_FILE = toString ./version;
   ROOT_DIR = toString ./.;
 
-  shellHook = "source ${./shell/functions.sh}";
+  shellHook = ''
+    source ${./shell/versioning.sh}
+    source ${./shell/functions.sh}
+  '';
 }
