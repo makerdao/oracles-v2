@@ -87,6 +87,7 @@ copyOmniaConf() {
     configUpdates=( ". * $savedFrom" "${configUpdates[@]}" )
   fi
 
+	configUpdates+=( ".options.logFormat = \"text\"" )
 	configOverrides+=( ".options.setzerEthRpcUrl = \"http://127.0.0.1:9989\"" )
 
   for i in "${!configUpdates[@]}"; do
@@ -249,6 +250,16 @@ shift
 
 while [[ -n "$1" ]]; do
   case "$1" in
+    --debug)
+      configOverrides+=( ".options.debug = true" )
+      ;;
+    --verbose)
+      configOverrides+=( ".options.verbose = true" )
+    	;;
+    --logFormat)
+      configOverrides+=( ".options.logFormat = \"$2\"" )
+      shift
+    	;;
     --override-origin)
       goferConfigOverrides+=( ". * {gofer:{origins:{\"$2\":{type:\"$2\",name:\"$2\",params:{\"$3\": \"$4\"}}}}}" )
       shift;shift;shift

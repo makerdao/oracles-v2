@@ -6,7 +6,8 @@ let oracles = import ./. args;
 
 in pkgs.mkShell rec {
   name = "oracle-shell";
-  buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [ git niv nodePackages.node2nix nodePackages.semver ]);
+  buildInputs = oracles.omnia.runtimeDeps ++ (with pkgs; [ git niv nodePackages.node2nix nodePackages.semver ])
+    ++ [ srcs.omnia ];
 
   VERSION_FILE = toString ./version;
   ROOT_DIR = toString ./.;
@@ -14,5 +15,7 @@ in pkgs.mkShell rec {
   shellHook = ''
     source ${./shell/versioning.sh}
     source ${./shell/functions.sh}
+
+    cd ${toString ./.}
   '';
 }

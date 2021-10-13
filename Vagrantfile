@@ -38,4 +38,6 @@ Vagrant.configure("2") do |config|
     vb.memory = "4096"
   end
   config.vm.provision "shell", path: "vagrant/init.sh", privileged: false
+  config.vm.synced_folder "../../chronicle", "/opt/chronicle"
+  config.vm.synced_folder "../../maker", "/opt/maker"
 end

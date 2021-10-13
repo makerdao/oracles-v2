@@ -78,6 +78,10 @@ if [[ "$1" == "configure" ]]; then
 				;;
 			--debug)
 				export ORACLE_DEBUG="true"
+				opts+=(--debug)
+				;;
+			--verbose)
+				opts+=(--verbose --logFormat "json")
 				;;
 			*)
 				echo >&2 "\"$2\" is not a valid option"
@@ -119,6 +123,8 @@ if [[ "$1" == "restart" ]]; then
 fi
 
 if [[ "$1" == "stop" ]]; then
+	systemctl daemon-reload
+
 	sudo systemctl stop ssb-server
 	sudo systemctl stop omnia
 	sudo systemctl stop gofer-agent
@@ -143,7 +149,7 @@ if [[ "$1" == "log-all" ]]; then
 fi
 
 if [[ "$1" == "log" ]]; then
-	journalctl -q -f -u omnia
+	journalctl -q -f -u "${2:-omnia}"
 fi
 
 if [[ "$1" == "state" ]]; then
