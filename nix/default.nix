@@ -1,11 +1,16 @@
 let
   inherit (builtins) map listToAttrs attrValues isString;
-  inherit (import sources.nixpkgs { }) pkgs;
+
+  sources = import ./sources.nix;
+
+  inherit (import sources.nixpkgs {
+    overlays = [ (self: super: { inherit (import "${sources.dapptools}/overlay.nix" self super) hevm; }) ];
+  })
+    pkgs;
   inherit (pkgs.lib.strings) removePrefix;
 
   getName = x: let parse = drv: (builtins.parseDrvName drv).name; in if isString x then parse x else x.pname or (parse x.name);
 
-  sources = import ./sources.nix;
   ssb-patches = ../ssb-server;
 in rec {
   inherit pkgs;
@@ -39,7 +44,6 @@ in rec {
     ethsign = pkgs.callPackage (import "${sources.dapptools}/src/ethsign") { };
     seth = pkgs.callPackage (import "${sources.dapptools}/src/seth") {
       inherit ethsign;
-      hevm = null;
       dapptoolsSrc = pkgs.callPackage (import "${sources.dapptools}/nix/dapptools-src.nix") { };
     };
   };
