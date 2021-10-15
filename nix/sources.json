@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "DavHau",
         "repo": "mach-nix",
-        "rev": "d223656fc0eff33f4da77d69db19752edc9a5ba5",
-        "sha256": "1lnj8g83nsjl21yy4xbz7mrx152xdj01dyzz1mqrb3zjcwxibc0c",
+        "rev": "b56a541af15efd2062ffb9abb69f63dcceafb64d",
+        "sha256": "0zdifqdq478q938wm3pwdph8xv9ksk9qvf6s3kckchyzw18x28k0",
         "type": "tarball",
-        "url": "https://github.com/DavHau/mach-nix/archive/d223656fc0eff33f4da77d69db19752edc9a5ba5.tar.gz",
+        "url": "https://github.com/DavHau/mach-nix/archive/b56a541af15efd2062ffb9abb69f63dcceafb64d.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "makerpkgs": {
@@ -65,10 +65,10 @@
         "homepage": "",
         "owner": "chronicleprotocol",
         "repo": "omnia",
-        "rev": "3af6436a39c9b8f45bfbe15c7818e978c3c7acc4",
-        "sha256": "0k84i2yvs5qvwf07n0mgzmjaqp9j0vz0xibnj90rzxhgzr0mjnjm",
+        "rev": "7db9ae252af817d1b3eef4c86ef09dde6f1b1286",
+        "sha256": "1vgqq8g7dapcskl6lga86bkrijl5bhhail9yjcg3p6npw8gyg1xa",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/omnia/archive/3af6436a39c9b8f45bfbe15c7818e978c3c7acc4.tar.gz",
+        "url": "https://github.com/chronicleprotocol/omnia/archive/7db9ae252af817d1b3eef4c86ef09dde6f1b1286.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
