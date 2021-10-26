@@ -4,7 +4,7 @@ let
   sources = import ./sources.nix;
 
   inherit (import sources.nixpkgs {
-    overlays = [ (self: super: { inherit (import "${sources.dapptools}/overlay.nix" self super) hevm; }) ];
+    overlays = [ (self: super: { inherit (import "${sources.dapptools}/overlay.nix" self super) hevm ethsign seth; }) ];
   })
     pkgs;
   inherit (pkgs.lib.strings) removePrefix;
@@ -39,14 +39,7 @@ in rec {
 
   stark-cli = pkgs.callPackage ../starkware { };
 
-  omnia = pkgs.callPackage sources.omnia rec {
-    inherit ssb-server setzer-mcd stark-cli oracle-suite;
-    ethsign = pkgs.callPackage (import "${sources.dapptools}/src/ethsign") { };
-    seth = pkgs.callPackage (import "${sources.dapptools}/src/seth") {
-      inherit ethsign;
-      dapptoolsSrc = pkgs.callPackage (import "${sources.dapptools}/nix/dapptools-src.nix") { };
-    };
-  };
+  omnia = pkgs.callPackage sources.omnia rec { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
 
   install-omnia = pkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
 }
