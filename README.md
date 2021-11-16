@@ -57,13 +57,6 @@ To get whitelisted on a Kovan Oracle please send an email to nik@makerdao.com.
 To get whitelisted on a Mainnet Oracle please submit a proposal in the Oracle section of the Maker Forum forum.makerdao.com
 Your proposal will need to be ratified by MKR Governance to be enacted. Details of the proposal format can be found inside the Forum.
 
-## Installation Instructions
-
-*Currently Maker Internal only
-https://docs.google.com/document/d/1onYu0_1j3fDtInay85hie92O_-zptGkGFgI0OePI86c/edit?usp=sharing
-
-If you run into any problems with the installation instructions please contact @Nik on chat.makerdao.com
-
 ## Install with Nix
 
 Add Maker build cache:
