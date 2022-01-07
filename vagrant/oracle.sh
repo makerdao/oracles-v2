@@ -48,6 +48,7 @@ if [[ "$1" == "configure" ]]; then
   opts=()
 
 	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
+	opts+=(--ssb-keys "/vagrant/tests/resources/ssb-keys.json")
 	opts+=(--override-origin "openexchangerates" "apiKey" "xxx")
 	opts+=(--ssb-external "$(curl -s ifconfig.me)")
 	opts+=(--keystore "/vagrant/tests/resources/keys")

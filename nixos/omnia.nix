@@ -58,6 +58,7 @@ in {
         ExecStart = "${oracle-suite}/bin/spire --config ${cfg.options.spireConfig} --log.verbosity debug agent";
       };
     };
+
     systemd.services.splitter = {
       enable = true;
       description = "RPC Splitter Agent";
@@ -154,6 +155,7 @@ in {
       createHome = true;
       shell = "${pkgs.bash}/bin/bash";
       isSystemUser = true;
+      packages = [ ];
     };
   };
 }

@@ -10,13 +10,18 @@ OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia/lib}
 OMNIA_CONF_PATH="$SCRIPT_DIR/../share"
 
 export SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
+export SSB_CONFIG=${SSB_CONFIG:-$(command -v ssb-server)}
+
 export GOFER_PATH=${GOFER_PATH:-$(command -v gofer)}
-export SPIRE_PATH=${SPIRE_PATH:-$(command -v spire)}
-export OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
-export SPLITTER_PATH=${SPLITTER_PATH:-$(command -v rpc-splitter)}
-export SPIRE_CONFIG=/etc/spire.json
 export GOFER_CONFIG=/etc/gofer.json
+
+export SPIRE_PATH=${SPIRE_PATH:-$(command -v spire)}
+export SPIRE_CONFIG=/etc/spire.json
+
+export OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
 export OMNIA_CONFIG=/etc/omnia.conf
+
+export SPLITTER_PATH=${SPLITTER_PATH:-$(command -v rpc-splitter)}
 export SPLITTER_URLS=""
 
 usage() {
@@ -49,7 +54,7 @@ subst() {
   # shellcheck disable=SC2016
   envsubst '
     $USER
-    $SSB_PATH
+    $SSB_PATH $SSB_CONFIG $SSB_CAPS $SSB_KEYS
     $OMNIA_PATH $OMNIA_CONFIG
     $GOFER_PATH $GOFER_CONFIG
     $SPIRE_PATH $SPIRE_CONFIG
@@ -104,11 +109,14 @@ declare -a configOverrides
 
 copySsbConf() {
 	echo >&2 "SSB_CONFIG: START"
+	export SSB_KEYS="$HOME/.ssb/secret"
+
+  local confDir="$HOME/.ssb"
+  local confPath="$confDir/config"
+	export SSB_CONFIG="$confPath"
 
   local savedFrom
   local updatedConf
-  local confDir="$HOME/.ssb"
-  local confPath="$confDir/config"
 
   mkdir -p "$confDir"
 
@@ -124,8 +132,8 @@ copySsbConf() {
   tee "$confPath" <<<"$updatedConf" >/dev/null 2>&1
 
   if [[ -n "$installSsbSecret" ]]; then
-    cp -iv "$installSsbSecret" "$HOME/.ssb/secret"
-    chmod 600 "$HOME/.ssb/secret"
+    cp -iv "$installSsbSecret" "$SSB_KEYS"
+    chmod 600 "$SSB_KEYS"
   fi
 
   if [[ -n "$installSsbGossip" ]]; then
@@ -332,6 +340,9 @@ while [[ -n "$1" ]]; do
   esac
   shift
 done
+
+#
+#export SSB_CAPS=${SSB_KEYS:-$(command -v ssb-server)}
 
 installConfigs
 

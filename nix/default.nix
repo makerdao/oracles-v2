@@ -4,7 +4,8 @@ let
   sources = import ./sources.nix;
 
   inherit (import sources.nixpkgs {
-    overlays = [ (self: super: { inherit (import "${sources.dapptools}/overlay.nix" self super) hevm ethsign seth; }) ];
+    overlays =
+      [ (self: super: { inherit (import "${sources.dapptools}/overlay.nix" self super) hevm ethsign seth dapptoolsSrc; }) ];
   })
     pkgs;
   inherit (pkgs.lib.strings) removePrefix;

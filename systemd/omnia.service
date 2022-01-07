@@ -9,6 +9,8 @@ Environment="PATH=/home/$USER/.nix-profile/bin"
 Environment="OMNIA_CONFIG=$OMNIA_CONFIG"
 Environment="GOFER_CONFIG=$GOFER_CONFIG"
 Environment="SPIRE_CONFIG=$SPIRE_CONFIG"
+Environment="SSB_CONFIG=$SSB_CONFIG"
+Environment="SSB_KEYS=$SSB_KEYS"
 User=$USER
 Group=$USER
 ExecStart=$OMNIA_PATH
