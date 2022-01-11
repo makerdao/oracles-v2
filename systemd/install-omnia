@@ -54,12 +54,12 @@ subst() {
   # shellcheck disable=SC2016
   envsubst '
     $USER
-    $SSB_PATH $SSB_CONFIG $SSB_CAPS $SSB_KEYS
+    $SSB_PATH $SSB_CONFIG $SSB_CAPS $SSB_KEYS $SSB_PORT $SSB_HOST
     $OMNIA_PATH $OMNIA_CONFIG
     $GOFER_PATH $GOFER_CONFIG
     $SPIRE_PATH $SPIRE_CONFIG
     $SPLITTER_PATH $SPLITTER_URLS
-  ' < "$2" \
+' < "$2" \
     | sudo tee "$target" >/dev/null
 
   echo >&2 "$name -> $target"
@@ -112,16 +112,15 @@ copySsbConf() {
 	export SSB_KEYS="$HOME/.ssb/secret"
 
   local confDir="$HOME/.ssb"
-  local confPath="$confDir/config"
-	export SSB_CONFIG="$confPath"
+  export SSB_CONFIG="$confDir/config"
 
   local savedFrom
   local updatedConf
 
   mkdir -p "$confDir"
 
-  if [[ -f $confPath ]]; then
-    updatedConf=$(jq . "$confPath")
+  if [[ -f $SSB_CONFIG ]]; then
+    updatedConf=$(jq . "$SSB_CONFIG")
   fi
   [[ -n $updatedConf ]] || updatedConf=$(jq . "$SHARE_DIR/ssb-config.json")
 
@@ -129,7 +128,10 @@ copySsbConf() {
     updatedConf=$(jq "${ssbConfigUpdates[$i]}" <<<"$updatedConf")
   done
 
-  tee "$confPath" <<<"$updatedConf" >/dev/null 2>&1
+  tee "$SSB_CONFIG" <<<"$updatedConf" >/dev/null 2>&1
+
+  export SSB_HOST;SSB_HOST="$(jq -cr '.connections.incoming["net"][].host | select(.!= null)' <<<"$updatedConf")"
+  export SSB_PORT;SSB_PORT="$(jq -cr '.connections.incoming["net"][].port | select(.!= null)' <<<"$updatedConf")"
 
   if [[ -n "$installSsbSecret" ]]; then
     cp -iv "$installSsbSecret" "$SSB_KEYS"
@@ -326,6 +328,14 @@ while [[ -n "$1" ]]; do
       installSsbSecret="$2";
       shift
       ;;
+    --ssb-port)
+      ssbConfigUpdates+=( ".connections.incoming[\"net\"][].port = \"$2\"" );
+      shift
+      ;;
+    --ssb-host)
+      ssbConfigUpdates+=( ".connections.incoming[\"net\"][].host = \"$2\"" );
+      shift
+      ;;
     --ssb-gossip)
       installSsbGossip="$2";
       shift
@@ -340,9 +350,6 @@ while [[ -n "$1" ]]; do
   esac
   shift
 done
-
-#
-#export SSB_CAPS=${SSB_KEYS:-$(command -v ssb-server)}
 
 installConfigs
 
