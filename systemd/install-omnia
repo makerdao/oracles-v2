@@ -135,8 +135,8 @@ copySsbConf() {
 
   if [[ -n "$installSsbSecret" ]]; then
     cp -iv "$installSsbSecret" "$SSB_KEYS"
-    chmod 600 "$SSB_KEYS"
   fi
+  chmod 0600 "$SSB_KEYS"
 
   if [[ -n "$installSsbGossip" ]]; then
     cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"

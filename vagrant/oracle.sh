@@ -72,6 +72,9 @@ if [[ "$1" == "configure" ]]; then
 			--spire)
 				opts+=(--no-transport --add-transport "transport-spire")
 				;;
+			--ssb)
+				opts+=(--no-transport --add-transport "transport-ssb" --add-transport "transport-ssb-rpc")
+				;;
 			--ssb-rpc)
 				opts+=(--no-transport --add-transport "transport-ssb-rpc")
 				;;
@@ -101,12 +104,14 @@ if [[ "$1" == "configure" ]]; then
 	echo -e "\n\n${cmd[*]}\n\n"
 
 	"${cmd[@]}"
+
+	sudo systemctl daemon-reload
+
 	[[ -z "$_restart" ]] || oracle restart
 	[[ -z "$_log" ]] || oracle log
 fi
 
 if [[ "$1" == "enable" ]]; then
-	sudo systemctl daemon-reload
 	sudo systemctl enable --now ssb-server
 	sudo systemctl enable --now omnia
 	sudo systemctl enable --now gofer-agent
@@ -116,25 +121,13 @@ if [[ "$1" == "enable" ]]; then
 	oracle status
 fi
 
-if [[ "$1" == "restart" ]]; then
-	sudo systemctl daemon-reload
-	sudo systemctl restart ssb-server
-	sudo systemctl restart omnia
-	sudo systemctl restart gofer-agent
-	sudo systemctl restart spire-agent
-	sudo systemctl restart splitter-agent
+if [[ "$1" == "start" || "$1" == "stop" || "$1" == "restart" ]]; then
+	sudo systemctl "$1" omnia
 
-	oracle status
-fi
-
-if [[ "$1" == "stop" ]]; then
-	systemctl daemon-reload
-
-	sudo systemctl stop ssb-server
-	sudo systemctl stop omnia
-	sudo systemctl stop gofer-agent
-	sudo systemctl stop spire-agent
-	sudo systemctl stop splitter-agent
+	sudo systemctl "$1" ssb-server
+	sudo systemctl "$1" gofer-agent
+	sudo systemctl "$1" spire-agent
+	sudo systemctl "$1" splitter-agent
 
 	oracle status
 fi
