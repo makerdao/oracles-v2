@@ -48,7 +48,8 @@ if [[ "$1" == "configure" ]]; then
   opts=()
 
 	opts+=(--ssb-caps "/vagrant/tests/resources/caps.json")
-	opts+=(--ssb-keys "/vagrant/tests/resources/ssb-keys.json")
+	opts+=(--ssb-port "8008")
+	opts+=(--ssb-host "localhost")
 	opts+=(--override-origin "openexchangerates" "apiKey" "xxx")
 	opts+=(--ssb-external "$(curl -s ifconfig.me)")
 	opts+=(--keystore "/vagrant/tests/resources/keys")
@@ -70,6 +71,9 @@ if [[ "$1" == "configure" ]]; then
 				;;
 			--spire)
 				opts+=(--no-transport --add-transport "transport-spire")
+				;;
+			--ssb-rpc)
+				opts+=(--no-transport --add-transport "transport-ssb-rpc")
 				;;
 			--restart)
 				_restart="true"

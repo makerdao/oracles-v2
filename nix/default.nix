@@ -6,7 +6,7 @@ let
   inherit (import sources.nixpkgs {
     overlays = [
       (self: super: { inherit (import "${sources.dapptools}/overlay.nix" self super) hevm ethsign seth; })
-      (self: super: (super // { dapptoolsSrc = ""; }))
+      (self: super: (super // { dapptoolsSrc = ./.; })) # hacky but works - TODO: suggest to daptools to not use it in seth
     ];
   })
     pkgs;
@@ -42,7 +42,7 @@ in rec {
 
   stark-cli = pkgs.callPackage ../starkware { };
 
-  omnia = pkgs.callPackage sources.omnia rec { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
+  omnia = pkgs.callPackage sources.omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
 
   install-omnia = pkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
 }

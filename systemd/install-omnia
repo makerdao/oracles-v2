@@ -130,8 +130,8 @@ copySsbConf() {
 
   tee "$SSB_CONFIG" <<<"$updatedConf" >/dev/null 2>&1
 
-  export SSB_HOST;SSB_HOST="$(jq -cr '.connections.incoming["net"][].host | select(.!= null)' <<<"$updatedConf")"
-  export SSB_PORT;SSB_PORT="$(jq -cr '.connections.incoming["net"][].port | select(.!= null)' <<<"$updatedConf")"
+  export SSB_HOST;SSB_HOST="$(jq -cr '.connections.incoming["net"][].host | select(.!= null) // "localhost"' <<<"$updatedConf")"
+  export SSB_PORT;SSB_PORT="$(jq -cr '.connections.incoming["net"][].port | select(.!= null) // 8007' <<<"$updatedConf")"
 
   if [[ -n "$installSsbSecret" ]]; then
     cp -iv "$installSsbSecret" "$SSB_KEYS"

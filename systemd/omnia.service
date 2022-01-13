@@ -11,6 +11,8 @@ Environment="GOFER_CONFIG=$GOFER_CONFIG"
 Environment="SPIRE_CONFIG=$SPIRE_CONFIG"
 Environment="SSB_CONFIG=$SSB_CONFIG"
 Environment="SSB_KEYS=$SSB_KEYS"
+Environment="SSB_PORT=$SSB_PORT"
+Environment="SSB_HOST=$SSB_HOST"
 User=$USER
 Group=$USER
 ExecStart=$OMNIA_PATH
