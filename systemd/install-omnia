@@ -10,7 +10,7 @@ OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia/lib}
 OMNIA_CONF_PATH="$SCRIPT_DIR/../share"
 
 export SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
-export SSB_CONFIG=${SSB_CONFIG:-$(command -v ssb-server)}
+export SSB_CONF=${SSB_CONF:-$(command -v ssb-server)}
 
 export GOFER_PATH=${GOFER_PATH:-$(command -v gofer)}
 export GOFER_CONFIG=/etc/gofer.json
@@ -54,7 +54,7 @@ subst() {
   # shellcheck disable=SC2016
   envsubst '
     $USER
-    $SSB_PATH $SSB_CONFIG $SSB_CAPS $SSB_KEYS $SSB_PORT $SSB_HOST
+    $SSB_PATH $SSB_CONF $SSB_CAPS $SSB_KEYS $SSB_PORT $SSB_HOST
     $OMNIA_PATH $OMNIA_CONFIG
     $GOFER_PATH $GOFER_CONFIG
     $SPIRE_PATH $SPIRE_CONFIG
@@ -108,19 +108,19 @@ declare -a configUpdates
 declare -a configOverrides
 
 copySsbConf() {
-	echo >&2 "SSB_CONFIG: START"
+	echo >&2 "SSB_CONF: START"
 	export SSB_KEYS="$HOME/.ssb/secret"
 
   local confDir="$HOME/.ssb"
-  export SSB_CONFIG="$confDir/config"
+  export SSB_CONF="$confDir/config"
 
   local savedFrom
   local updatedConf
 
   mkdir -p "$confDir"
 
-  if [[ -f $SSB_CONFIG ]]; then
-    updatedConf=$(jq . "$SSB_CONFIG")
+  if [[ -f $SSB_CONF ]]; then
+    updatedConf=$(jq . "$SSB_CONF")
   fi
   [[ -n $updatedConf ]] || updatedConf=$(jq . "$SHARE_DIR/ssb-config.json")
 
@@ -128,7 +128,7 @@ copySsbConf() {
     updatedConf=$(jq "${ssbConfigUpdates[$i]}" <<<"$updatedConf")
   done
 
-  tee "$SSB_CONFIG" <<<"$updatedConf" >/dev/null 2>&1
+  tee "$SSB_CONF" <<<"$updatedConf" >/dev/null 2>&1
 
   export SSB_HOST;SSB_HOST="$(jq -cr '.connections.incoming["net"][].host | select(.!= null) // "localhost"' <<<"$updatedConf")"
   export SSB_PORT;SSB_PORT="$(jq -cr '.connections.incoming["net"][].port | select(.!= null) // 8007' <<<"$updatedConf")"
@@ -142,7 +142,7 @@ copySsbConf() {
     cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"
   fi
 
-	echo >&2 "SSB_CONFIG: DONE"
+	echo >&2 "SSB_CONF: DONE"
 }
 mapfile -t ssbConfigUpdates < <(grep -v "^ *#\|^ *$" "$SHARE_DIR/ssb-config-updates")
 
