@@ -4,7 +4,7 @@
     "keystore": "../../resources/keys",
     "password": ""
   },
-  "p2p": {
+  "libp2p": {
     "bootstrapAddrs": [ ]
   },
   "rpc": {
