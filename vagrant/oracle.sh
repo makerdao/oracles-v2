@@ -57,6 +57,8 @@ if [[ "$1" == "configure" ]]; then
 	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/tests/resources/keys/UTC--2020-04-20T06-52-55.157141634Z--1f8fbe73820765677e68eb6e933dcb3c94c9b708")")
 	opts+=(--eth-rpc "http://127.0.0.1:8888")
 	opts+=(--eth-rpc "http://127.0.0.1:8889")
+	opts+=(--l2-eth-rpc "http://127.0.0.2:8888")
+	opts+=(--l2-eth-rpc "http://127.0.0.2:8889")
 
 	_mode="feed"
 	_restart=""

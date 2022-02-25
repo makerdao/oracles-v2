@@ -10,7 +10,7 @@ OMNIA_LIB_PATH=${OMNIA_LIB_PATH:-$SCRIPT_DIR/../omnia/lib}
 OMNIA_CONF_PATH="$SCRIPT_DIR/../share"
 
 export SSB_PATH=${SSB_PATH:-$(command -v ssb-server)}
-export SSB_CONF=${SSB_CONF:-$(command -v ssb-server)}
+export SSB_CONF=${SSB_CONF:-$(dirname "$(command -v ssb-server)")/.ssb/config}
 
 export GOFER_PATH=${GOFER_PATH:-$(command -v gofer)}
 export GOFER_CONFIG=/etc/gofer.json
@@ -24,14 +24,17 @@ export OMNIA_CONFIG=/etc/omnia.conf
 export SPLITTER_PATH=${SPLITTER_PATH:-$(command -v rpc-splitter)}
 export SPLITTER_URLS=""
 
+export LEELOO_PATH=${LEELOO_PATH:-$(command -v leeloo)}
+export LEELOO_CONFIG=/etc/leeloo.conf
+
 usage() {
   cat >&2 <<EOF
 Usage: install-omnia COMMAND OPTIONS...
 
 Commands:
-  relay       Install Omnia service with default relay config
-  feed          Install Omnia service with default feed config
-  help          Print this message
+  relay Install Omnia service with default relay config
+  feed  Install Omnia service with default feed config
+  help  Print this message
 
 Options:
   --from         ADDRESS          Set Ethereum address to use for signing
@@ -58,6 +61,7 @@ subst() {
     $OMNIA_PATH $OMNIA_CONFIG
     $GOFER_PATH $GOFER_CONFIG
     $SPIRE_PATH $SPIRE_CONFIG
+    $LEELOO_PATH $LEELOO_CONFIG
     $SPLITTER_PATH $SPLITTER_URLS
 ' < "$2" \
     | sudo tee "$target" >/dev/null
@@ -155,7 +159,7 @@ copySpireConf() {
     sudo chmod u+w "$SPIRE_CONFIG"
 	else
 		if [[ "$(jq -cr '.spire' < "$SPIRE_CONFIG")" == "null" ]]; then
-			spireConfigUpdates+=( "{ethereum,feeds,spire:{rpc,pairs},transport:{p2p}}" )
+			spireConfigUpdates+=( "{ethereum,feeds,spire:{rpc,pairs},transport:{libp2p}}" )
 		fi
 
 		local _defaultConf
@@ -176,6 +180,33 @@ copySpireConf() {
 }
 declare -a spireConfigUpdates
 declare -a spireConfigOverrides
+
+copyLeelooConf() {
+	echo >&2 "LEELOO_CONFIG: START"
+
+  if [[ ! -f "$LEELOO_CONFIG" ]]
+  then
+    sudo cp -v "$SHARE_DIR/leeloo.json" "$LEELOO_CONFIG" >&2
+    sudo chmod u+w "$LEELOO_CONFIG"
+	else
+		local _defaultConf
+		_defaultConf=$(jq -c '{feeds,leeloo:{pairs:.leeloo.pairs},transport,ethereum}' "$SHARE_DIR/leeloo.json")
+		leelooConfigUpdates+=( ". * ${_defaultConf}" )
+  fi
+
+  for i in "${!leelooConfigUpdates[@]}"; do
+  	echo >&2 "${leelooConfigUpdates[$i]}"
+    sudo tee "$LEELOO_CONFIG" <<<"$(jq -c "${leelooConfigUpdates[$i]}" "$LEELOO_CONFIG")" >/dev/null
+  done
+  for i in "${!leelooConfigOverrides[@]}"; do
+  	echo >&2 "${leelooConfigOverrides[$i]}"
+    sudo tee "$LEELOO_CONFIG" <<<"$(jq -c "${leelooConfigOverrides[$i]}" "$LEELOO_CONFIG")" >/dev/null
+  done
+
+	echo >&2 "LEELOO_CONFIG: DONE"
+}
+declare -a leelooConfigUpdates
+declare -a leelooConfigOverrides
 
 copyGoferConf() {
 	echo >&2 "GOFER_CONFIG: START"
@@ -230,10 +261,12 @@ installConfigs() {
   copySsbConf
   copySpireConf
   copyGoferConf
+  copyLeelooConf
 }
 
 installServices() {
   subst spire-agent "$SHARE_DIR"/spire-agent.service
+  subst leeloo-agent "$SHARE_DIR"/leeloo-agent.service
   subst gofer-agent "$SHARE_DIR"/gofer-agent.service
   subst splitter-agent "$SHARE_DIR"/splitter-agent.service
   subst ssb-server "$SHARE_DIR"/ssb-server.service
@@ -286,16 +319,24 @@ while [[ -n "$1" ]]; do
       configOverrides+=( ".ethereum.from = \"$2\"" )
       spireConfigOverrides+=( ".ethereum.from = \"$2\"" )
       spireConfigOverrides+=( ".feeds += [\"$2\"]" )
+      leelooConfigOverrides+=( ".ethereum.from = \"$2\"" )
+      leelooConfigOverrides+=( ".feeds += [\"$2\"]" )
       shift
       ;;
     --keystore)
       configOverrides+=( ".ethereum.keystore = \"$2\"" )
-      spireConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
+      leelooConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
+      leelooConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
       shift
       ;;
     --password)
       configOverrides+=( ".ethereum.password = \"$2\"" )
       spireConfigOverrides+=( ".ethereum.password = \"$2\"" )
+      leelooConfigOverrides+=( ".ethereum.password = \"$2\"" )
+      shift
+      ;;
+    --l2-eth-rpc)
+      leelooConfigUpdates+=( ".leeloo.listeners.wormhole += [\"$2\"]" );
       shift
       ;;
     --network)
