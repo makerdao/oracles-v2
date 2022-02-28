@@ -56,9 +56,9 @@ if [[ "$1" == "configure" ]]; then
 	opts+=(--password "/vagrant/tests/resources/password")
 	opts+=(--from "0x$(jq -c -r '.address' "/vagrant/tests/resources/keys/UTC--2020-04-20T06-52-55.157141634Z--1f8fbe73820765677e68eb6e933dcb3c94c9b708")")
 	opts+=(--eth-rpc "http://127.0.0.1:8888")
-	opts+=(--eth-rpc "http://127.0.0.1:8889")
-	opts+=(--l2-eth-rpc "http://127.0.0.2:8888")
-	opts+=(--l2-eth-rpc "http://127.0.0.2:8889")
+#	opts+=(--eth-rpc "http://127.0.0.1:8889")
+	opts+=(--l2-eth-rpc "http://127.0.0.1:8888")
+#	opts+=(--l2-eth-rpc "http://127.0.0.1:8889")
 
 	_mode="feed"
 	_restart=""
@@ -115,10 +115,12 @@ fi
 
 if [[ "$1" == "enable" ]]; then
 	sudo systemctl enable --now ssb-server
-	sudo systemctl enable --now omnia
 	sudo systemctl enable --now gofer-agent
 	sudo systemctl enable --now spire-agent
 	sudo systemctl enable --now splitter-agent
+	sudo systemctl enable --now leeloo-agent
+
+	sudo systemctl enable --now omnia
 
 	oracle status
 fi
@@ -130,6 +132,7 @@ if [[ "$1" == "start" || "$1" == "stop" || "$1" == "restart" ]]; then
 	sudo systemctl "$1" gofer-agent
 	sudo systemctl "$1" spire-agent
 	sudo systemctl "$1" splitter-agent
+	sudo systemctl "$1" leeloo-agent
 
 	oracle status
 fi
@@ -141,11 +144,11 @@ if [[ "$1" == "connect" ]]; then
 fi
 
 if [[ "$1" == "status" ]]; then
-	systemctl status ssb-server omnia gofer-agent spire-agent splitter-agent --no-pager --lines=0
+	systemctl status ssb-server omnia gofer-agent spire-agent splitter-agent leeloo-agent --no-pager --lines=0
 fi
 
 if [[ "$1" == "log-all" ]]; then
-	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent -u splitter-agent
+	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent -u splitter-agent -u leeloo-agent
 fi
 
 if [[ "$1" == "log" ]]; then

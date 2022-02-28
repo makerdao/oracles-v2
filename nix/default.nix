@@ -42,7 +42,7 @@ in rec {
 
   stark-cli = pkgs.callPackage ../starkware { };
 
-  omnia = pkgs.callPackage sources.omnia rec {
+  omnia = pkgs.callPackage sources.omnia {
     inherit ssb-server stark-cli oracle-suite;
     setzer-mcd = setzer;
   };
