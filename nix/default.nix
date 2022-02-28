@@ -38,11 +38,14 @@ in rec {
 
   oracle-suite = pkgs.callPackage sources.oracle-suite { };
 
-  setzer-mcd = pkgs.callPackage sources.setzer-mcd { };
+  setzer = pkgs.callPackage sources.setzer { };
 
   stark-cli = pkgs.callPackage ../starkware { };
 
-  omnia = pkgs.callPackage sources.omnia { inherit ssb-server setzer-mcd stark-cli oracle-suite; };
+  omnia = pkgs.callPackage sources.omnia rec {
+    inherit ssb-server stark-cli oracle-suite;
+    setzer-mcd = setzer;
+  };
 
   install-omnia = pkgs.callPackage ../systemd { inherit omnia ssb-server oracle-suite; };
 }
