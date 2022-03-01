@@ -60,15 +60,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "omnia": {
-        "branch": "v1.9.3",
+        "branch": "sc-474-leeloo-nix-installer",
         "description": null,
         "homepage": "",
         "owner": "chronicleprotocol",
         "repo": "omnia",
-        "rev": "3acec14b5e5548e2f5e6e5344b0fe324f38771c0",
-        "sha256": "1i77hcxg0wz81lhq7r5jz6kjv1vdhl3ixhpcs5g7xxfk7qvps66r",
+        "rev": "74be0356386bf7ca25dd5b31c6e9ee44cd80a903",
+        "sha256": "0jisf7i4ydhinxspym6m9j7cj2rn7ihgbqxqqhqwyjipl540dnk4",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/omnia/archive/3acec14b5e5548e2f5e6e5344b0fe324f38771c0.tar.gz",
+        "url": "https://github.com/chronicleprotocol/omnia/archive/74be0356386bf7ca25dd5b31c6e9ee44cd80a903.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
@@ -84,15 +84,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "setzer": {
-        "branch": "v0.4.1",
+        "branch": "v0.4.2",
         "description": null,
         "homepage": "",
         "owner": "chronicleprotocol",
         "repo": "setzer",
-        "rev": "38c76c286a1f31a83d05fd90415643ff6b96f137",
-        "sha256": "18wyh1r06lw35bxjwdkimkkrripihs7a56wfqf27hazpgwrs6vhn",
+        "rev": "61a356fa3b4a3104761414facfe128d160ca198b",
+        "sha256": "1jpyc48n75vr8gy6hvgpkxczkw707idxy2xxv9qcqsr048bjbnbp",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/setzer/archive/38c76c286a1f31a83d05fd90415643ff6b96f137.tar.gz",
+        "url": "https://github.com/chronicleprotocol/setzer/archive/61a356fa3b4a3104761414facfe128d160ca198b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
