@@ -1,13 +1,10 @@
 let
-  srcs = import ../nix/srcs.nix;
+  srcs = import ./default.nix;
 
   inherit (builtins) readFile;
   inherit (srcs) pkgs ssb-server omnia;
 
-  path = with pkgs; lib.makeBinPath [
-    coreutils findutils bash jq gnused
-    ssb-server omnia
-  ];
+  path = with pkgs; lib.makeBinPath [ coreutils findutils bash jq gnused ssb-server omnia ];
 in with pkgs;
 
 runCommand "omnia-runner" { nativeBuildInputs = [ makeWrapper ]; } ''
