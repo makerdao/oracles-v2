@@ -1,4 +1,4 @@
-let srcs = import ../nix/srcs.nix;
+let srcs = import ../nix/default.nix;
 
 in { pkgs ? srcs.pkgs, makerpkgs ? srcs.makerpkgs, nodepkgs ? srcs.nodepkgs }@args:
 
