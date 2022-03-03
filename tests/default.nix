@@ -25,7 +25,6 @@ in pkgs.mkShell rec {
 
   RESULTS_DIR = "${toString ./.}/test-results";
   SMOKE_TEST = toString ./smoke/test;
-  E2E_TEST = toString ./e2e/test;
 
   shellHook = ''
     _xunit() {
@@ -60,7 +59,5 @@ in pkgs.mkShell rec {
     }
 
     testSmoke() { _runTest smoke sh -c 'mkdir -p logs && "$1" | tee logs/smoke.tap' _ "$SMOKE_TEST"; }
-    testE2E() { _runTest e2e "$E2E_TEST" "$@"; }
-    recordE2E() { _runTest e2e-update "$E2E_TEST" --record "$@"; }
   '';
 }

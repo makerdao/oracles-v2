@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-_path=$(cd "${BASH_SOURCE[0]%/*}"; pwd)
-. "$_path/../../lib/include.sh"
-
-output=$(mktemp)
-"$_path/run" >"$output"
-
-"$_path/regression" "$output"

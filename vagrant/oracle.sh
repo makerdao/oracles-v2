@@ -163,10 +163,6 @@ if [[ "$1" == "smoke" ]]; then
 	nix-shell /vagrant/tests --run testSmoke
 fi
 
-if [[ "$1" == "test" ]]; then
-	nix-shell /vagrant/tests --run testE2E
-fi
-
 if [[ "$1" == "rec" ]]; then
 	nix-shell /vagrant/tests --run recordE2E
 fi

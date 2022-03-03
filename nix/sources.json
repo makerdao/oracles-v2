@@ -60,15 +60,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "omnia": {
-        "branch": "sc-474-leeloo-nix-installer",
+        "branch": "v1.9.5",
         "description": null,
         "homepage": "",
         "owner": "chronicleprotocol",
         "repo": "omnia",
-        "rev": "355f62ffbc9f856e8b72a541be8f3e1aaf7348ad",
-        "sha256": "1ckq7n9ggsmsbflr4g5ap0plxcv9vfa21zjg5dxl4rhq49rmh6ki",
+        "rev": "dc42f77625b4961cd649623d0bca1ee5a284909c",
+        "sha256": "114d6l5kzxdal7vrpz197gsm05ij20p3ng2qwcdma0hma2hk0w1q",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/omnia/archive/355f62ffbc9f856e8b72a541be8f3e1aaf7348ad.tar.gz",
+        "url": "https://github.com/chronicleprotocol/omnia/archive/dc42f77625b4961cd649623d0bca1ee5a284909c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
