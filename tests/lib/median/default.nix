@@ -1,12 +1,8 @@
 let
-  srcs = import ../../../nix/srcs.nix;
+  srcs = import ../../../nix/default.nix;
   sources = import ../../../nix/sources.nix;
-in
 
-{ makerpkgs ? srcs.makerpkgs
-, srcRoot ? null
-, ...
-}@args:
+in { makerpkgs ? srcs.makerpkgs, srcRoot ? null, ... }@args:
 
 with makerpkgs;
 
@@ -19,18 +15,14 @@ let
     spec // {
       #inherit doCheck;
       solc = solc-versions.solc_0_5_12;
-    }
-  ) specs.this.deps);
-in
+    }) specs.this.deps);
 
-makerScriptPackage {
+in makerScriptPackage {
   name = "median-deploy";
   nativeBuildInputs = [ bash ];
 
   # Specify files to add to build environment
-  src = lib.sourceByRegex ./. [
-    "bin" "bin/.*"
-  ];
+  src = lib.sourceByRegex ./. [ "bin" "bin/.*" ];
 
   solidityPackages = attrValues deps;
 }

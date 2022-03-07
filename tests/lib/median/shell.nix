@@ -1,5 +1,5 @@
 let
-  srcs = import ../../../nix/srcs.nix;
+  srcs = import ../../../nix/default.nix;
   sources = import ../../../nix/sources.nix;
 
 in { makerpkgs ? import sources.makerpkgs { } }@args:

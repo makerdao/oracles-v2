@@ -5,10 +5,10 @@
         "homepage": "https://dapp.tools",
         "owner": "dapphub",
         "repo": "dapptools",
-        "rev": "4f57e0975ab469f9bfe5b996182e0a43caa5b29b",
-        "sha256": "024wfl4in3z9yys1ms864301gnlyw96v5a24j2716nmn99an7sph",
+        "rev": "249c8cca1a4806b8bc47882ca7214ab380d29082",
+        "sha256": "0lp9s1l0n6s2jhaccymrp6437cg6brag5cfn5c0nnaycvx1mgrdr",
         "type": "tarball",
-        "url": "https://github.com/dapphub/dapptools/archive/4f57e0975ab469f9bfe5b996182e0a43caa5b29b.tar.gz",
+        "url": "https://github.com/dapphub/dapptools/archive/249c8cca1a4806b8bc47882ca7214ab380d29082.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "mach-nix": {
@@ -60,39 +60,39 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "omnia": {
-        "branch": "master",
+        "branch": "v1.9.5",
         "description": null,
         "homepage": "",
         "owner": "chronicleprotocol",
         "repo": "omnia",
-        "rev": "7db9ae252af817d1b3eef4c86ef09dde6f1b1286",
-        "sha256": "1vgqq8g7dapcskl6lga86bkrijl5bhhail9yjcg3p6npw8gyg1xa",
+        "rev": "dc42f77625b4961cd649623d0bca1ee5a284909c",
+        "sha256": "114d6l5kzxdal7vrpz197gsm05ij20p3ng2qwcdma0hma2hk0w1q",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/omnia/archive/7db9ae252af817d1b3eef4c86ef09dde6f1b1286.tar.gz",
+        "url": "https://github.com/chronicleprotocol/omnia/archive/dc42f77625b4961cd649623d0bca1ee5a284909c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "oracle-suite": {
-        "branch": "v0.3.1",
+        "branch": "v0.4.2",
         "description": null,
         "homepage": null,
         "owner": "chronicleprotocol",
         "repo": "oracle-suite",
-        "rev": "c1749af88d40181fd17ea88db39c3c5f87a26126",
-        "sha256": "132q6nw2m5m79936233j6bfi30qk3wa245qss709lglrhdmps2k8",
+        "rev": "8102e416cb3bfcf7dc9b8431140770e1b6c1d528",
+        "sha256": "0jspw0cilnn9p7iv217nps33lv8kql9x6jsia5659dppb8lcz2vn",
         "type": "tarball",
-        "url": "https://github.com/chronicleprotocol/oracle-suite/archive/c1749af88d40181fd17ea88db39c3c5f87a26126.tar.gz",
+        "url": "https://github.com/chronicleprotocol/oracle-suite/archive/8102e416cb3bfcf7dc9b8431140770e1b6c1d528.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "setzer-mcd": {
-        "branch": "v0.4.0",
+    "setzer": {
+        "branch": "v0.4.2",
         "description": null,
         "homepage": "",
-        "owner": "makerdao",
-        "repo": "setzer-mcd",
-        "rev": "57de446abe5352f7877e13a2f8f24d0c534b66a9",
-        "sha256": "1sp287j6kk2ch6mgf30vmpmg8r2g216ybna1y3af5hz5r4gk3h6i",
+        "owner": "chronicleprotocol",
+        "repo": "setzer",
+        "rev": "61a356fa3b4a3104761414facfe128d160ca198b",
+        "sha256": "1jpyc48n75vr8gy6hvgpkxczkw707idxy2xxv9qcqsr048bjbnbp",
         "type": "tarball",
-        "url": "https://github.com/makerdao/setzer-mcd/archive/57de446abe5352f7877e13a2f8f24d0c534b66a9.tar.gz",
+        "url": "https://github.com/chronicleprotocol/setzer/archive/61a356fa3b4a3104761414facfe128d160ca198b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

@@ -1,5 +1,4 @@
 { stdenv, lib, makeWrapper, shellcheck, glibcLocales, coreutils, gettext, jq, omnia, ssb-server, oracle-suite }:
-
 stdenv.mkDerivation rec {
   name = "install-omnia-${version}";
   version = lib.fileContents ../version;
@@ -36,10 +35,10 @@ stdenv.mkDerivation rec {
     shellcheck -x install-omnia
   '';
 
-  meta = with lib; {
+  meta = {
     description = "Installer script for Omnia service";
     homepage = "https://github.com/makerdao/oracles-v2";
-    license = licenses.gpl3;
+    license = lib.licenses.gpl3;
     inherit version;
   };
 }

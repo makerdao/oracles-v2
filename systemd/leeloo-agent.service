@@ -1,16 +1,16 @@
 [Unit]
-Description=RPC Splitter Agent
+Description=Leeloo Agent
 Requires=network.target
 After=network.target
 
 [Service]
 Environment="PATH=/home/$USER/.nix-profile/bin"
+Environment="LEELOO_CONFIG=$LEELOO_CONFIG"
 User=$USER
 Group=$USER
-ExecStart=$SPLITTER_PATH --listen 127.0.0.1:9989 --eth-rpc="$SPLITTER_URLS" agent
+ExecStart=$LEELOO_PATH -c "$LEELOO_CONFIG" agent
 Restart=always
 RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-WantedBy=gofer-agent.service

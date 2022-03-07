@@ -6,12 +6,9 @@ workflows:
     jobs:
       - smoke-test:
           context: clone-gofer-sh
-      - regression:
-          context: clone-gofer-sh
       - cache:
           requires:
             - smoke-test
-            - regression
           context: NIX_BUILD
           filters:
             branches:
@@ -105,24 +102,6 @@ jobs:
             nix-shell tests --run testSmoke
       - store_test_results:
           path: tests/test-results
-  regression:
-    executor: nix-executor
-    steps:
-      - setup-cachix
-      - checkout
-      - setup-ca:
-          cert: tests/resources/mitmproxy/mitmproxy-ca-cert.crt
-      - pre-fetch:
-          path: tests
-      - run-nix:
-          name_: End-to-End regression test
-          command: |
-            nix-shell tests --run testE2E
-      - store_test_results:
-          path: ./tests/test-results
-      - store_artifacts:
-          path: ./logs
-          destination: test-logs
   cache:
     executor: nix-executor
     steps:

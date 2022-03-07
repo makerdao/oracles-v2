@@ -1,10 +1,5 @@
 {
-  "ethereum": {
-    "from": "",
-    "keystore": "",
-    "password": ""
-  },
-  "transport":{
+  "transport": {
     "libp2p": {
       "bootstrapAddrs": [
         "/dns/spire-bootstrap1.makerops.services/tcp/8000/p2p/12D3KooWRfYU5FaY9SmJcRD5Ku7c1XMBRqV6oM4nsnGQ1QRakSJi",
@@ -40,39 +35,24 @@
     "0xaC8519b3495d8A3E3E44c041521cF7aC3f8F63B3",
     "0xd72BA9402E9f3Ff01959D6c841DDD13615FFff42"
   ],
-  "spire": {
-    "rpc": {
-      "address": "127.0.0.1:8082"
-    },
-    "pairs": [
-      "AAVEUSD",
-      "AVAXUSD",
-      "BALUSD",
-      "BATUSD",
-      "BTCUSD",
-      "COMPUSD",
-      "CRVUSD",
-      "DOTUSD",
-      "ETHBTC",
-      "ETHUSD",
-      "FILUSD",
-      "KNCUSD",
-      "LINKUSD",
-      "LRCUSD",
-      "MANAUSD",
-      "MATICUSD",
-      "PAXGUSD",
-      "SNXUSD",
-      "SOLUSD",
-      "UNIUSD",
-      "USDTUSD",
-      "WNXMUSD",
-      "WSTETHUSD",
-      "XRPUSD",
-      "XTZUSD",
-      "YFIUSD",
-      "ZECUSD",
-      "ZRXUSD"
-    ]
+  "ethereum": {
+    "from": "",
+    "keystore": "",
+    "password": ""
+  },
+  "leeloo": {
+    "listeners": {
+      "wormhole": [
+        {
+          "rpc": [],
+          "interval": 30,
+          "blocksBehind": [10, 500, 1000, 2500, 5000, 10000, 20000, 30000, 40000, 50000, 60000],
+          "maxBlocks": 1000,
+          "addresses": [
+            "0x45440Ae4988965A4cD94651E715fC9A04e62Fb41"
+          ]
+        }
+      ]
+    }
   }
 }
