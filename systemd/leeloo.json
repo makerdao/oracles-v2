@@ -44,12 +44,13 @@
     "listeners": {
       "wormhole": [
         {
-          "rpc": [
-          ],
-          "interval": 60,
-          "blocksBehind": [30, 5760, 11520, 17280, 23040, 28800, 34560],
+          "rpc": [],
+          "interval": 30,
+          "blocksBehind": [10, 500, 1000, 2500, 5000, 10000, 20000, 30000, 40000, 50000, 60000],
           "maxBlocks": 1000,
-          "addresses": ["0x20265780907778b4d0e9431c8ba5c7f152707f1d"]
+          "addresses": [
+            "0x45440Ae4988965A4cD94651E715fC9A04e62Fb41"
+          ]
         }
       ]
     }
