@@ -148,7 +148,7 @@ if [[ "$1" == "status" ]]; then
 fi
 
 if [[ "$1" == "log-all" ]]; then
-	journalctl -q -f -u omnia -u ssb-server -u gofer-agent -u spire-agent -u splitter-agent -u leeloo-agent
+	journalctl --quiet --follow -u omnia -u ssb-server -u gofer-agent -u spire-agent -u splitter-agent -u leeloo-agent
 fi
 
 if [[ "$1" == "log" ]]; then

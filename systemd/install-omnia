@@ -327,7 +327,7 @@ while [[ -n "$1" ]]; do
       ;;
     --keystore)
       configOverrides+=( ".ethereum.keystore = \"$2\"" )
-      leelooConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
+      spireConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
       leelooConfigOverrides+=( ".ethereum.keystore = \"$2\"" )
       shift
       ;;
