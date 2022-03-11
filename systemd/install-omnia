@@ -113,9 +113,10 @@ declare -a configOverrides
 
 copySsbConf() {
 	echo >&2 "SSB_CONF: START"
-	export SSB_KEYS="$HOME/.ssb/secret"
 
   local confDir="$HOME/.ssb"
+	export SSB_KEYS="$confDir/secret"
+	export SSB_GOSSIP="$confDir/gossip.json"
   export SSB_CONF="$confDir/config"
 
   local savedFrom
@@ -139,11 +140,12 @@ copySsbConf() {
 
   if [[ -n "$installSsbSecret" ]]; then
     cp -iv "$installSsbSecret" "$SSB_KEYS"
+    chmod 0600 "$SSB_KEYS"
   fi
-  chmod 0600 "$SSB_KEYS"
 
   if [[ -n "$installSsbGossip" ]]; then
-    cp -iv "$installSsbGossip" "$HOME/.ssb/gossip.json"
+    cp -iv "$installSsbGossip" "$SSB_GOSSIP"
+    chmod 0600 "$SSB_GOSSIP"
   fi
 
 	echo >&2 "SSB_CONF: DONE"

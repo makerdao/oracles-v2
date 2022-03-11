@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 curl --silent --location https://nixos.org/nix/install | sh
 source /home/vagrant/.nix-profile/etc/profile.d/nix.sh
