@@ -338,8 +338,8 @@ while [[ -n "$1" ]]; do
       leelooConfigOverrides+=( ".ethereum.password = \"$2\"" )
       shift
       ;;
-    --l2-eth-rpc)
-      leelooConfigUpdates+=( ".leeloo.listeners.wormhole += [\"$2\"]" );
+    --wormhole)
+      leelooConfigOverrides+=( ".leeloo.listeners.wormhole = $2" );
       shift
       ;;
     --network)
