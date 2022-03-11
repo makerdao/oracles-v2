@@ -309,6 +309,10 @@ while [[ -n "$1" ]]; do
       goferConfigOverrides+=( ". * {gofer:{origins:{\"$2\":{type:\"$2\",name:\"$2\",params:{\"$3\": \"$4\"}}}}}" )
       shift;shift;shift
       ;;
+    --gofer-origins)
+      goferConfigOverrides+=( ". * {gofer:{origins:$2}}" )
+      shift
+      ;;
     --eth-rpc)
       goferConfigOverrides+=( ".ethereum.rpc += [\"$2\"]" );
 #    	if [[ -z "$SPLITTER_URLS" ]]; then
