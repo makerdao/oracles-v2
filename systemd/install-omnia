@@ -270,7 +270,7 @@ installServices() {
   subst spire-agent "$SHARE_DIR"/spire-agent.service
   subst leeloo-agent "$SHARE_DIR"/leeloo-agent.service
   subst gofer-agent "$SHARE_DIR"/gofer-agent.service
-  subst splitter-agent "$SHARE_DIR"/splitter-agent.service
+#  subst splitter-agent "$SHARE_DIR"/splitter-agent.service
   subst ssb-server "$SHARE_DIR"/ssb-server.service
   subst omnia "$SHARE_DIR"/omnia.service
 }
@@ -310,11 +310,12 @@ while [[ -n "$1" ]]; do
       shift;shift;shift
       ;;
     --eth-rpc)
-    	if [[ -z "$SPLITTER_URLS" ]]; then
-    		SPLITTER_URLS="$2"
-    	else
-    		SPLITTER_URLS="$SPLITTER_URLS,$2"
-    	fi
+      goferConfigOverrides+=( ".ethereum.rpc += [\"$2\"]" );
+#    	if [[ -z "$SPLITTER_URLS" ]]; then
+#    		SPLITTER_URLS="$2"
+#    	else
+#    		SPLITTER_URLS="$SPLITTER_URLS,$2"
+#    	fi
     	shift
       ;;
     --from)
