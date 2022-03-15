@@ -380,6 +380,10 @@ while [[ -n "$1" ]]; do
       ssbConfigUpdates+=( ".connections.incoming[\"net\"][].port = \"$2\"" );
       shift
       ;;
+    --ssb-port-ws)
+      ssbConfigUpdates+=( ".connections.incoming[\"ws\"][].port = \"$2\"" );
+      shift
+      ;;
     --ssb-host)
       ssbConfigUpdates+=( ".connections.incoming[\"net\"][].host = \"$2\"" );
       shift
