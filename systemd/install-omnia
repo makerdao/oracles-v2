@@ -103,7 +103,6 @@ copyOmniaConf() {
   fi
 
 	configUpdates+=( ".options.logFormat = \"text\"" )
-	configOverrides+=( ".options.setzerEthRpcUrl = \"http://127.0.0.1:9989\"" )
 
   for i in "${!configUpdates[@]}"; do
     sudo tee "$OMNIA_CONFIG" <<<"$(jq "${configUpdates[$i]}" "$OMNIA_CONFIG")" >/dev/null
@@ -247,8 +246,6 @@ copyGoferConf() {
 			goferConfigUpdates+=( ". * {gofer:$_savedData}" )
 		fi
   fi
-
-	goferConfigOverrides+=( ".gofer.ethRpc = \"http://127.0.0.1:9989\"" )
 
   for i in "${!goferConfigUpdates[@]}"; do
   	echo >&2 "${goferConfigUpdates[$i]}"
