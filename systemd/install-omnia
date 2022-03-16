@@ -384,10 +384,6 @@ while [[ -n "$1" ]]; do
       ssbConfigUpdates+=( ".connections.incoming[\"ws\"][].port = \"$2\"" );
       shift
       ;;
-    --ssb-host)
-      ssbConfigUpdates+=( ".connections.incoming[\"net\"][].host = \"$2\"" );
-      shift
-      ;;
     --ssb-gossip)
       installSsbGossip="$2";
       shift
