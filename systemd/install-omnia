@@ -14,9 +14,13 @@ export SSB_CONF=${SSB_CONF:-$(dirname "$(command -v ssb-server)")/.ssb/config}
 
 export GOFER_PATH=${GOFER_PATH:-$(command -v gofer)}
 export GOFER_CONFIG=/etc/gofer.json
+export GOFER_LOG_FORMAT=${GOFER_LOG_FORMAT:-"text"}
+export GOFER_LOG_VERBOSITY=${GOFER_LOG_VERBOSITY:-"error"}
 
 export SPIRE_PATH=${SPIRE_PATH:-$(command -v spire)}
 export SPIRE_CONFIG=/etc/spire.json
+export SPIRE_LOG_FORMAT=${SPIRE_LOG_FORMAT:-"text"}
+export SPIRE_LOG_VERBOSITY=${SPIRE_LOG_VERBOSITY:-"error"}
 
 export OMNIA_PATH=${OMNIA_PATH:-$(command -v omnia)}
 export OMNIA_CONFIG=/etc/omnia.conf
@@ -63,6 +67,8 @@ subst() {
     $SPIRE_PATH $SPIRE_CONFIG
     $LEELOO_PATH $LEELOO_CONFIG
     $SPLITTER_PATH $SPLITTER_URLS
+    $GOFER_LOG_VERBOSITY $GOFER_LOG_FORMAT
+    $SPIRE_LOG_VERBOSITY $SPIRE_LOG_FORMAT
 ' < "$2" \
     | sudo tee "$target" >/dev/null
 
@@ -314,12 +320,8 @@ while [[ -n "$1" ]]; do
       shift
       ;;
     --eth-rpc)
+      configOverrides+=( ".options.setzerEthRpcUrl = \"$2\"" )
       goferConfigOverrides+=( ".ethereum.rpc += [\"$2\"]" );
-#    	if [[ -z "$SPLITTER_URLS" ]]; then
-#    		SPLITTER_URLS="$2"
-#    	else
-#    		SPLITTER_URLS="$SPLITTER_URLS,$2"
-#    	fi
     	shift
       ;;
     --from)
@@ -386,6 +388,22 @@ while [[ -n "$1" ]]; do
       ;;
     --ssb-gossip)
       installSsbGossip="$2";
+      shift
+      ;;
+    --log-format)
+      configOverrides+=( ".options.logFormat = \"$2\"" )
+      GOFER_LOG_FORMAT="$2"
+      SPIRE_LOG_FORMAT="$2"
+      shift
+      ;;
+    --log-verbosity)
+      if [[ $2 =~ warning|info|debug ]]; then
+      	configOverrides+=( ".options.verbose = true" )
+      else
+        configOverrides+=( ".options.verbose = false" )
+      fi
+      GOFER_LOG_VERBOSITY="$2"
+      SPIRE_LOG_VERBOSITY="$2"
       shift
       ;;
     --help|-h)
