@@ -349,6 +349,10 @@ while [[ -n "$1" ]]; do
       configOverrides+=( ".ethereum.network = \"$2\"" );
       shift
       ;;
+    --network-key)
+      configOverrides+=( ".ethereum.infuraKey = \"$2\"" );
+      shift
+      ;;
     --no-transport)
       configOverrides+=( ".transports = []" )
       ;;
