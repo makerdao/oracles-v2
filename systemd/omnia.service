@@ -13,6 +13,7 @@ Environment="SSB_CONF=$SSB_CONF"
 Environment="SSB_KEYS=$SSB_KEYS"
 Environment="SSB_PORT=$SSB_PORT"
 Environment="SSB_HOST=$SSB_HOST"
+Environment="NIX_SSL_CERT_FILE=/etc/ssl/certs/ca-bundle.crt"
 User=$USER
 Group=$USER
 ExecStart=$OMNIA_PATH
