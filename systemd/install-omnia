@@ -345,7 +345,7 @@ while [[ -n "$1" ]]; do
       leelooConfigOverrides+=( ".leeloo.listeners.wormhole = $2" );
       shift
       ;;
-    --feeds)
+    --feed-list)
       configOverrides+=( ".feeds = $2" )
       spireConfigOverrides+=( ".feeds = $2" )
       leelooConfigOverrides+=( ".feeds = $2" )
