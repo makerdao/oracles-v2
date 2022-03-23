@@ -355,6 +355,10 @@ while [[ -n "$1" ]]; do
       configOverrides+=( ".services.scuttlebotIdMap = $2" )
       shift
       ;;
+    --pairs)
+      configOverrides+=( ".pairs = $2" )
+      shift
+      ;;
     --network)
       configOverrides+=( ".ethereum.network = \"$2\"" );
       shift
