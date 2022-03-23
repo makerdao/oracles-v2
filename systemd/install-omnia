@@ -324,9 +324,9 @@ while [[ -n "$1" ]]; do
     --from)
       configOverrides+=( ".ethereum.from = \"$2\"" )
       spireConfigOverrides+=( ".ethereum.from = \"$2\"" )
-      spireConfigOverrides+=( ".feeds += [\"$2\"]" )
+      spireConfigUpdates+=( ".feeds += [\"$2\"]" )
       leelooConfigOverrides+=( ".ethereum.from = \"$2\"" )
-      leelooConfigOverrides+=( ".feeds += [\"$2\"]" )
+      leelooConfigUpdates+=( ".feeds += [\"$2\"]" )
       shift
       ;;
     --keystore)
@@ -343,6 +343,16 @@ while [[ -n "$1" ]]; do
       ;;
     --wormhole)
       leelooConfigOverrides+=( ".leeloo.listeners.wormhole = $2" );
+      shift
+      ;;
+    --feeds)
+      configOverrides+=( ".feeds = $2" )
+      spireConfigOverrides+=( ".feeds = $2" )
+      leelooConfigOverrides+=( ".feeds = $2" )
+      shift
+      ;;
+    --feed-map)
+      configOverrides+=( ".services.scuttlebotIdMap = $2" )
       shift
       ;;
     --network)
