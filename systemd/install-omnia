@@ -365,7 +365,7 @@ while [[ -n "$1" ]]; do
       shift
       ;;
     --spire-port)
-      spireConfigOverrides+=( ".transport.libp2p.listenAddrs = \"/ip4/0.0.0.0/tcp/$2\"" )
+      spireConfigOverrides+=( ".transport.libp2p.listenAddrs = [\"/ip4/0.0.0.0/tcp/$2\"]" )
       shift
       ;;
     --spire-seed)
