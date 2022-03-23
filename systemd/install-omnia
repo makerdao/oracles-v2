@@ -359,6 +359,11 @@ while [[ -n "$1" ]]; do
       configOverrides+=( ".pairs = $2" )
       shift
       ;;
+    --spire-bootstraps)
+      spireConfigOverrides+=( ".transport.libp2p.bootstrapAddrs = $2" )
+      leelooConfigOverrides+=( ".transport.libp2p.bootstrapAddrs = $2" )
+      shift
+      ;;
     --network)
       configOverrides+=( ".ethereum.network = \"$2\"" );
       shift
