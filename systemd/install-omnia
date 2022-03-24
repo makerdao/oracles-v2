@@ -372,6 +372,10 @@ while [[ -n "$1" ]]; do
       spireConfigOverrides+=( ".transport.libp2p.privKeySeed = \"$2\"" )
       shift
       ;;
+    --spire-pairs)
+      spireConfigOverrides+=( ".spire.pairs = $2" )
+      shift
+      ;;
     --network)
       configOverrides+=( ".ethereum.network = \"$2\"" );
       shift
