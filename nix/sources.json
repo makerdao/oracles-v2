@@ -60,7 +60,7 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "omnia": {
-        "branch": "v1.9.6-rc.0",
+        "branch": "sc-525-create-omnia-rc-which-includes-latest-setzer",
         "description": null,
         "homepage": "",
         "owner": "chronicleprotocol",
