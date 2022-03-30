@@ -30,6 +30,8 @@ export SPLITTER_URLS=""
 
 export LEELOO_PATH=${LEELOO_PATH:-$(command -v leeloo)}
 export LEELOO_CONFIG=/etc/leeloo.conf
+export LEELOO_LOG_FORMAT=${LEELOO_LOG_FORMAT:-"text"}
+export LEELOO_LOG_VERBOSITY=${LEELOO_LOG_VERBOSITY:-"error"}
 
 usage() {
   cat >&2 <<EOF
@@ -69,6 +71,7 @@ subst() {
     $SPLITTER_PATH $SPLITTER_URLS
     $GOFER_LOG_VERBOSITY $GOFER_LOG_FORMAT
     $SPIRE_LOG_VERBOSITY $SPIRE_LOG_FORMAT
+    $LEELOO_LOG_VERBOSITY $LEELOO_LOG_FORMAT
 ' < "$2" \
     | sudo tee "$target" >/dev/null
 
@@ -426,6 +429,7 @@ while [[ -n "$1" ]]; do
       configOverrides+=( ".options.logFormat = \"$2\"" )
       GOFER_LOG_FORMAT="$2"
       SPIRE_LOG_FORMAT="$2"
+      LEELOO_LOG_FORMAT="$2"
       shift
       ;;
     --log-verbosity)
@@ -436,6 +440,7 @@ while [[ -n "$1" ]]; do
       fi
       GOFER_LOG_VERBOSITY="$2"
       SPIRE_LOG_VERBOSITY="$2"
+      LEELOO_LOG_VERBOSITY="$2"
       shift
       ;;
     --help|-h)
