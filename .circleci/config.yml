@@ -26,7 +26,7 @@ commands:
       - run:
           name: Install Nix
           command: |
-            curl -L https://nixos.org/nix/install | sh
+            echo "Test"; curl -L https://nixos.org/nix/install | sh
   run-nix:
     description: Source nix profile and run shell command
     parameters:
